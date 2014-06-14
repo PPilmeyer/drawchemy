@@ -1,0 +1,72 @@
+/*
+ * This file is part of the Drawchemy project - https://code.google.com/p/drawchemy/
+ *
+ * Copyright (c) 2014 Pilmeyer Patrick
+ *
+ * Drawchemy is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Drawchemy is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Drawchemy.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.google.code.drawchemy.UI;
+
+import android.app.Fragment;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.RelativeLayout;
+
+import org.al.chemy.R;
+public class CreatorSettingsFragment extends Fragment {
+
+    private RelativeLayout fLayout;
+    private LayoutInflater fLayoutInflater = null;
+    private AbstractCreatorUI fCreator;
+
+    public CreatorSettingsFragment() {
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.creator_base, container, false);
+        fLayout = (RelativeLayout) view.findViewById(R.id.creatorContainer);
+        Button b = (Button) view.findViewById(R.id.finishCreatorButton);
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getFragmentManager().popBackStack();
+            }
+        });
+        fLayoutInflater = inflater;
+
+        fCreator.fillView(fLayoutInflater,fLayout,getActivity());
+        view.invalidate();
+
+        return view;
+    }
+
+    public void getNewCreator(AbstractCreatorUI aAlcCreator) {
+        fCreator = aAlcCreator;
+        if(getView() != null) {
+            fLayout.removeAllViewsInLayout();
+            fCreator.fillView(fLayoutInflater,fLayout,getActivity());
+            getView().invalidate();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
+}

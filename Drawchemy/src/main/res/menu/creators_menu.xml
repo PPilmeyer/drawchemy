@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/i_line"
+        android:title="@string/line"/>
+
+    <item android:id="@+id/i_scraw"
+        android:title="@string/scraw"/>
+
+    <item android:id="@+id/i_ribbon"
+        android:title="@string/ribbon"/>
+
+
+    <item android:id="@+id/i_splatter"
+        android:title="@string/splatter"/>
+
+    <item android:id="@+id/i_xshape"
+        android:title="@string/xshape"/>
+</menu>

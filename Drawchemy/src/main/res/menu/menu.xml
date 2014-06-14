@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/i_zoom"
+        android:icon="@drawable/ic_action_search"
+        android:showAsAction="always"
+        android:title="@string/pan_zoom" />
+
+    <item
+        android:id="@+id/i_reset_view"
+        android:showAsAction="always"
+        android:icon="@drawable/reset_view"
+        android:title="@string/reset_view" />
+
+    <item
+        android:id="@+id/i_undo"
+        android:icon="@drawable/ic_action_undo"
+        android:showAsAction="always"
+        android:title="@string/undo" />
+
+    <item
+        android:id="@+id/i_redo"
+        android:icon="@drawable/ic_action_redo"
+        android:showAsAction="always"
+        android:title="@string/redo" />
+
+    <item
+        android:id="@+id/i_creators"
+        android:icon="@drawable/ic_action_edit"
+        android:showAsAction="always"
+        android:title="@string/action_create">
+        <menu></menu>
+    </item>
+
+    <item
+        android:id="@+id/i_overflow"
+        android:icon="@drawable/ic_action_overflow"
+        android:showAsAction="always"
+        android:title="@string/overflow">
+        <menu></menu>
+    </item>
+
+
+</menu>

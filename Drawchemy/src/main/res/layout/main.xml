@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#00000000"
+    android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/drawingContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.google.code.drawchemy.ZoomPanDrawingView
+                android:id="@+id/drawingView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <ImageButton
+                android:id="@+id/i_show_ui"
+                android:layout_width="?android:actionBarSize"
+                android:layout_height="?android:actionBarSize"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="3dp"
+                android:alpha="0.5"
+                android:background="#00000000"
+                android:contentDescription="@string/show_ui"
+                android:src="@drawable/drawchemy"/>
+
+            <LinearLayout
+                android:id="@+id/settingContainer"
+                android:layout_width="220dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="right"
+                android:layout_marginBottom="?android:actionBarSize"
+                android:layout_marginTop="?android:actionBarSize"
+                android:background="@drawable/ab_background"
+                android:orientation="vertical">
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/bottom_bar"
+                android:layout_width="match_parent"
+                android:layout_height="?android:actionBarSize"
+                android:layout_gravity="bottom"
+                android:background="@drawable/ab_background"
+                android:orientation="horizontal"
+                android:weightSum="0">
+
+                <SeekBar
+                    android:id="@+id/i_stroke_weight"
+                    android:layout_width="220dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center_vertical"
+                    android:max="90"
+                    android:thumb="@drawable/thumb"
+                    />
+
+                <TextView
+                    android:id="@+id/stroke_weight_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_toLeftOf="@id/i_stroke_weight"
+                    android:text="@string/stroke_weight"
+                    android:textAppearance="@android:style/TextAppearance.Small"/>
+
+                <ImageButton
+                    android:id="@+id/i_flip_style"
+                    android:layout_width="?android:actionBarSize"
+                    android:layout_height="?android:actionBarSize"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="right"
+                    android:layout_toLeftOf="@id/stroke_weight_text"
+                    android:background="#00000000"
+                    android:contentDescription="@string/action_style"
+                    android:src="@drawable/stroke"/>
+
+                <ImageButton
+                    android:id="@+id/i_flip_gradient"
+                    android:layout_width="?android:actionBarSize"
+                    android:layout_height="?android:actionBarSize"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@id/i_flip_style"
+                    android:background="#00000000"
+                    android:contentDescription="@string/gradient"
+                    android:src="@drawable/unicolor"/>
+
+                <ImageButton
+                    android:id="@+id/i_flip_v"
+                    android:layout_width="?android:actionBarSize"
+                    android:layout_height="?android:actionBarSize"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@id/i_flip_gradient"
+                    android:background="#00000000"
+                    android:contentDescription="@string/vertical"
+                    android:src="@drawable/flip_vertical"/>
+
+                <ImageButton
+                    android:id="@+id/i_flip_h"
+                    android:layout_width="?android:actionBarSize"
+                    android:layout_height="?android:actionBarSize"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@id/i_flip_v"
+                    android:background="#00000000"
+                    android:contentDescription="@string/horizontal"
+                    android:src="@drawable/flip_horizontal"/>
+
+            </RelativeLayout>
+        </FrameLayout>
+
+</LinearLayout>

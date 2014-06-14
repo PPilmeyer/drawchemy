@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Drawchemy</string>
+    <string name="action_color">Colors</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_create">Creators</string>
+    <string name="action_create_settings">Creator settings</string>
+    <string name="action_style">Switch Style</string>
+    <string name="action_save">Save</string>
+    <string name="action_share">Share</string>
+    <string name="action_clear">Clear</string>
+    <string name="agree">Yes</string>
+    <string name="cancel">Cancel</string>
+    <string name="finish">finish</string>
+    <string name="clear_dialog">This will clear the canvas, are you sure ?</string>
+    <string name="save">Canvas saved</string>
+    <string name="gradient">Gradient</string>
+    <string name="hue_switch_enabled">Hue switch enabled</string>
+    <string name="hue_switch_disabled">Hue switch disabled</string>
+    <string name="about">about</string>
+    <string name="about_text">about txt</string>
+
+
+    <string name="noise">Noise</string>
+    <string name="flow">Flow</string>
+    <string name="detail">Details</string>
+    <string name="gravity">Gravity</string>
+    <string name="friction">Friction</string>
+    <string name="spacing">Spacing</string>
+    <string name="size">Size</string>
+    <string name="drips">Drips</string>
+    <string name="mirror">Mirror</string>
+    <string name="horizontal">Horizontal</string>
+    <string name="vertical">vertical</string>
+
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+    <string name="stroke_weight">stroke weight</string>
+    <string name="line">Line</string>
+    <string name="scraw">Scraw</string>
+    <string name="ribbon">Ribbon</string>
+    <string name="splatter">Splatter</string>
+    <string name="xshape">XShape</string>
+    <string name="overflow">overflow</string>
+    <string name="empty_settings">there is no settings for this creator</string>
+    <string name="pan_zoom">pan and zoom</string>
+    <string name="reset_view">reset view</string>
+    <string name="hue">Hue</string>
+    <string name="saturation">Saturation</string>
+    <string name="brightness">Brightness</string>
+    <string name="alpha">Alpha</string>
+    <string name="show_ui">Show UI</string>
+    <string name="action_help">help</string>
+
+
+</resources>
