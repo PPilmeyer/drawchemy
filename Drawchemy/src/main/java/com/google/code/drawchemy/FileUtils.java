@@ -22,15 +22,18 @@ package com.google.code.drawchemy;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.al.chemy.R;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.UUID;
@@ -109,6 +112,46 @@ public class FileUtils {
                 super.onPostExecute(true);
             } else {
                 Toast.makeText(fContext, "Error during the saving", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+
+    public void load(Context aContext, Uri aTargetUri) {
+        new LoadImageTask(aContext, aTargetUri).execute();
+    }
+
+
+    public class LoadImageTask extends AsyncTask<Object,Integer,Bitmap> {
+
+        private Context fContext;
+        private Uri fTargetUri;
+
+        public LoadImageTask(Context aContext, Uri aTargetUri) {
+            super();
+            fContext = aContext;
+            fTargetUri = aTargetUri;
+        }
+
+        @Override
+        protected Bitmap doInBackground(Object... objects) {
+            Bitmap bitmap;
+            try {
+                bitmap = BitmapFactory.decodeStream(fContext.getContentResolver()
+                        .openInputStream(fTargetUri));
+            } catch (FileNotFoundException e) {
+                bitmap = null;
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            if(bitmap != null) {
+                fManager.putBitmapAsBackground(bitmap);
+            } else {
+                Toast.makeText(fContext, "Error during the loading", Toast.LENGTH_SHORT).show();
             }
         }
     }

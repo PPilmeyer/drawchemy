@@ -11,6 +11,11 @@
         android:title="@string/action_save"
         android:showAsAction="collapseActionView"/>
 
+    <item android:id="@+id/i_load"
+        android:icon="@drawable/ic_action_picture"
+        android:title="@string/action_load"
+        android:showAsAction="collapseActionView"/>
+
     <item android:id="@+id/i_share"
         android:icon="@drawable/ic_action_share"
         android:title="@string/action_share"

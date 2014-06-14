@@ -397,8 +397,8 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
         }
 
         public void limitScale() {
-            if (fScale > 4.f) {
-                fScale = 4.f;
+            if (fScale > 6.f) {
+                fScale = 6.f;
             } else if (fScale < 0.2f) {
                 fScale = 0.2f;
             }

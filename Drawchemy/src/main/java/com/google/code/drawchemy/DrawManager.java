@@ -248,7 +248,6 @@ public class DrawManager implements View.OnTouchListener {
     }
 
 
-
     public Paint.Style getStyle() {
         return fStyle;
     }
@@ -382,9 +381,9 @@ public class DrawManager implements View.OnTouchListener {
             float hsv[] = new float[3];
             Color.colorToHSV(aColor, hsv);
             hsv[0] += DrawUtils.getProbability(90.f * fColorVariation);
-            if(hsv[0] < 0.f) {
+            if (hsv[0] < 0.f) {
                 hsv[0] += 360.f;
-            } else if(hsv[0] > 360.f) {
+            } else if (hsv[0] > 360.f) {
                 hsv[0] -= 360.f;
             }
             return Color.HSVToColor(Color.alpha(aColor), hsv);
@@ -392,6 +391,77 @@ public class DrawManager implements View.OnTouchListener {
             return aColor;
         }
     }
+
+    public void putBitmapAsBackground(Bitmap aBitmap) {
+
+        float width = getWidth();
+        float height = getHeight();
+
+        float bitmapWidth = aBitmap.getWidth();
+        float bitmapHeight = aBitmap.getHeight();
+
+        Matrix matrix = new Matrix();
+        float dx, dy, scale;
+
+        //*
+        if(width > height) {
+            // canvas is in on paysage mode
+
+            if(bitmapHeight > bitmapWidth) {
+                // bitmap is in on portrait mode
+                matrix.setRotate(-90);
+                matrix.postTranslate(0, bitmapWidth);
+
+                float temp = bitmapWidth;
+                bitmapWidth = bitmapHeight;
+                bitmapHeight = temp;
+            }
+
+            scale = width / bitmapWidth;
+            if(scale*bitmapHeight > height) {
+                scale = height / bitmapHeight;
+                dx = (width - scale*bitmapWidth)/2.f;
+                dy = 0.f;
+            } else {
+                dx = 0;
+                dy = (height - scale*bitmapHeight)/2.f;
+            }
+            matrix.postScale(scale,scale);
+            matrix.postTranslate(dx,dy);
+        } else {
+            // canvas is in on portrait mode
+            if(bitmapWidth > bitmapHeight) {
+                // bitmap is in on paysage mode
+                matrix.setRotate(90);
+                matrix.postTranslate(bitmapHeight, 0);
+
+                float temp = bitmapWidth;
+                bitmapWidth = bitmapHeight;
+                bitmapHeight = temp;
+            }
+
+            scale = height / bitmapHeight;
+            if(scale*bitmapWidth > bitmapWidth) {
+                scale = width / bitmapWidth;
+                dx = 0;
+                dy = (height - scale*bitmapHeight)/2.f;
+            } else {
+                dx = (width - scale*bitmapWidth)/2.f;
+                dy = 0.f;
+            }
+            matrix.postScale(scale,scale);
+            matrix.postTranslate(dx,dy);
+        }
+
+        synchronized (fBackgroundCanvas) {
+            fBackgroundCanvas.drawColor(fSubColor | 0xff000000);
+            fOperations.clear();
+            fUndo.clear();
+            fBackgroundCanvas.drawBitmap(aBitmap, matrix, null);
+        }
+        redraw();
+    }
+
 
     private class MirrorOp implements IDrawingOperation {
 
