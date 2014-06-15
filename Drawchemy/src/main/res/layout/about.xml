@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TableLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:padding="5dp">
+
+            <ImageButton
+                android:id="@+id/about_drawchemy"
+                android:background="#00000000"
+                android:src="@drawable/drawchemy_s"
+                android:onClick="aboutClick"/>
+
+            <TextView
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/about_drawchemy"
+                android:singleLine="false"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:padding="5dp">
+
+            <ImageButton
+                android:id="@+id/about_alchemy"
+                android:background="#00000000"
+                android:src="@drawable/alchemy"
+                android:onClick="aboutClick"/>
+
+            <TextView
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/about_alchemy"
+                android:singleLine="false"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:padding="5dp">
+
+            <ImageButton
+                android:id="@+id/about_tumblr"
+                android:background="#00000000"
+                android:src="@drawable/tumblr"
+                android:onClick="aboutClick"/>
+
+            <TextView
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
+                android:text="@string/about_tumblr"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+        </TableRow>
+
+
+
+    </TableLayout>
+</ScrollView>

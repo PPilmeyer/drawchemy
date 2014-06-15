@@ -33,6 +33,8 @@ import android.content.Intent;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -541,8 +543,49 @@ public class DrawActivity extends Activity {
         dialog.show();
     }
 
+    private void startWebIntent(String aUrl) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(aUrl));
+        startActivity(intent);
+    }
+
+    public void aboutClick(View aView) {
+        int id = aView.getId();
+        switch (id) {
+
+            case R.id.about_drawchemy : {
+                startWebIntent("https://code.google.com/p/drawchemy/");
+                break;
+            }
+            case R.id.about_alchemy : {
+                startWebIntent("http://al.chemy.org/");
+                break;
+            }
+            case R.id.about_tumblr : {
+                startWebIntent("http://drawchemy.tumblr.com/");
+                break;
+            }
+
+        }
+    }
+
     private void createInfoDialog() {
-        createSimpleDialog(getResources().getString(R.string.about_text));
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        LayoutInflater inflater = getLayoutInflater();
+        builder.setTitle(getResources().getString(R.string.about));
+
+        builder.setView(inflater.inflate(R.layout.about,null));
+        builder.setCancelable(false);
+        builder.setPositiveButton(getResources().getString(R.string.close), new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void createSimpleDialog(String aMessage) {
@@ -562,7 +605,22 @@ public class DrawActivity extends Activity {
     }
 
     private void createHelpDialog() {
-        createSimpleDialog("Help");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        LayoutInflater inflater = getLayoutInflater();
+        builder.setTitle(getResources().getString(R.string.action_help));
+
+        builder.setView(inflater.inflate(R.layout.help,null));
+        builder.setCancelable(false);
+        builder.setPositiveButton(getResources().getString(R.string.close), new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private class ColorOnTabListener implements ActionBar.TabListener, ColorUIFragment.ColorChangeListener {

@@ -403,7 +403,6 @@ public class DrawManager implements View.OnTouchListener {
         Matrix matrix = new Matrix();
         float dx, dy, scale;
 
-        //*
         if(width > height) {
             // canvas is in on paysage mode
 
@@ -426,8 +425,6 @@ public class DrawManager implements View.OnTouchListener {
                 dx = 0;
                 dy = (height - scale*bitmapHeight)/2.f;
             }
-            matrix.postScale(scale,scale);
-            matrix.postTranslate(dx,dy);
         } else {
             // canvas is in on portrait mode
             if(bitmapWidth > bitmapHeight) {
@@ -449,9 +446,9 @@ public class DrawManager implements View.OnTouchListener {
                 dx = (width - scale*bitmapWidth)/2.f;
                 dy = 0.f;
             }
-            matrix.postScale(scale,scale);
-            matrix.postTranslate(dx,dy);
         }
+        matrix.postScale(scale,scale);
+        matrix.postTranslate(dx,dy);
 
         synchronized (fBackgroundCanvas) {
             fBackgroundCanvas.drawColor(fSubColor | 0xff000000);
