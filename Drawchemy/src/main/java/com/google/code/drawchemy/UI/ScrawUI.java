@@ -59,7 +59,7 @@ public class ScrawUI extends AbstractCreatorUI {
         fFlowBar = (SeekBar) fView.findViewById(R.id.scraw_flow_seekbar);
 
         fNoiseBar.setMax(100);
-        fDetailBar.setMax(100);
+        fDetailBar.setMax(MAX_DETAIL-MIN_DETAIL);
         fFlowBar.setMax(MAX_FLOW-MIN_FLOW);
 
         fFlowBar.setProgress(fScrawCreator.getFlow()-MIN_FLOW);
@@ -67,8 +67,7 @@ public class ScrawUI extends AbstractCreatorUI {
         float noise = (fScrawCreator.getNoise()-MIN_NOISE)*(100.f)/(MAX_NOISE-MIN_NOISE);
         fNoiseBar.setProgress((int) noise);
 
-        float detail = (fScrawCreator.getDetail()-MAX_DETAIL)*(100.f)/(MAX_DETAIL-MIN_DETAIL);
-        fDetailBar.setProgress((int) detail);
+        fDetailBar.setProgress(fScrawCreator.getDetail()-MIN_DETAIL);
 
 
         fNoiseLabel = (TextView) fView.findViewById(R.id.scraw_noise_text);
@@ -98,7 +97,7 @@ public class ScrawUI extends AbstractCreatorUI {
             setLabel(fNoiseLabel,fNoiseTxt,fScrawCreator.getNoise());
 
             int detail = fDetailBar.getProgress();
-            fScrawCreator.setDetail(MIN_DETAIL + (MAX_DETAIL - MIN_DETAIL) * (((float) detail) / 100.f));
+            fScrawCreator.setDetail(MIN_DETAIL + detail);
             setLabel(fDetailLabel,fDetailTxt,fScrawCreator.getDetail());
 
             int flow = fFlowBar.getProgress();

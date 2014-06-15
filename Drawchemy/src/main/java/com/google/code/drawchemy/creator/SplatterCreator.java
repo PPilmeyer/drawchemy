@@ -37,10 +37,10 @@ public class SplatterCreator extends ACreator {
 
     private static final float push = 0.5f;
 
-    private static final float newSizeInfluence = 0.2f;
+    private static final float newSizeInfluence = 0.7f;
 
     // Parameters;
-    private float fMaxLineWidth = 200.f;
+    private float fMaxLineWidth = 120.f;
     private int fDrips = 12;
 
     public static final float MIN_SIZE = 5.f;
@@ -61,7 +61,6 @@ public class SplatterCreator extends ACreator {
 
     @Override
     public IDrawingOperation startDrawingOperation(float x, float y) {
-
 
         startX = x;
         startY = y;
@@ -87,11 +86,11 @@ public class SplatterCreator extends ACreator {
 
         float dst = dist(startX, startY, endX, endY);
 
-        if (dst < 1.f) {
-            dst = 1.f;
+        if (dst < 1.5f) {
+            dst = 1.5f;
         }
 
-        float newSize = fMaxLineWidth / dst;
+        float newSize = fMaxLineWidth /(dst);
         fSize = newSize * (1.f - newSizeInfluence) + fSize * newSizeInfluence;
 
         splat(new PointF(startX, startY), new PointF(endX, endY), new PointF(mX, mY), fSize);
@@ -100,7 +99,6 @@ public class SplatterCreator extends ACreator {
 
     @Override
     public void endDrawingOperation() {
-
     }
 
     public int getDrips() {
@@ -118,7 +116,6 @@ public class SplatterCreator extends ACreator {
     public void setSize(float aSize) {
         this.fMaxLineWidth = aSize * 10;
     }
-
 
     private static class SplatterDrawOp implements IDrawingOperation {
 
@@ -191,7 +188,7 @@ public class SplatterCreator extends ACreator {
             float x5 = getProbability(0.5f);
             float y5 = getProbability(0.5f);
 
-            float dd = d * (RANDOM.nextFloat() + .5f);
+            float dd = Math.min(d * (RANDOM.nextFloat()+0.4f),d);
             Path subPath = new Path();
             subPath.moveTo(start.x + x4, start.y + y4);
             subPath.lineTo(start.x + x4 + x5, start.y + y4 + y5);

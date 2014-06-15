@@ -31,15 +31,15 @@ public class ScrawCreator extends ACreator {
 
     // Parameters
     private float fNoise = 5.0f;
-    private float fDetail = 7.f;
+    private int fDetail = 7;
     private int fFlow = 5;
 
 
     public static final float MIN_NOISE = 1.f;
     public static final float MAX_NOISE = 20.f;
 
-    public static final float MIN_DETAIL = 1.f;
-    public static final float MAX_DETAIL = 20.f;
+    public static final int MIN_DETAIL = 2;
+    public static final int MAX_DETAIL = 20;
 
     public static final int MIN_FLOW = 1;
     public static final int MAX_FLOW = 10;
@@ -60,12 +60,12 @@ public class ScrawCreator extends ACreator {
         this.fNoise = fNoise;
     }
 
-    public float getDetail() {
+    public int getDetail() {
         return fDetail;
     }
 
-    public void setDetail(float fDetail) {
-        this.fDetail = fDetail;
+    public void setDetail(int aDetail) {
+        fDetail = aDetail;
     }
 
     public int getFlow() {

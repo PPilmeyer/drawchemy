@@ -31,16 +31,16 @@ public class XShapeCreator extends ACreator {
     private SimpleLineOperation fCurrentOperation = null;
 
     // Parameters
-    private float fNoise = 15.0f;
-    private float fDetail = 6.f;
-    private int fFlow = 5;
+    private float fNoise = 12;
+    private int fDetail = 5;
+    private int fFlow = 3;
 
 
     public static final float MIN_NOISE = 5.f;
     public static final float MAX_NOISE = 30.f;
 
-    public static final float MIN_DETAIL = 1.f;
-    public static final float MAX_DETAIL = 20.f;
+    public static final int MIN_DETAIL = 2;
+    public static final int MAX_DETAIL = 15;
 
     public static final int MIN_FLOW = 1;
     public static final int MAX_FLOW = 10;
@@ -57,16 +57,16 @@ public class XShapeCreator extends ACreator {
         return fNoise;
     }
 
-    public void setNoise(float fNoise) {
-        this.fNoise = fNoise;
+    public void setNoise(float aNoise) {
+        fNoise = aNoise;
     }
 
-    public float getDetail() {
+    public int getDetail() {
         return fDetail;
     }
 
-    public void setDetail(float fDetail) {
-        this.fDetail = fDetail;
+    public void setDetail(int aDetail) {
+        fDetail = aDetail;
     }
 
     public int getFlow() {
@@ -108,28 +108,28 @@ public class XShapeCreator extends ACreator {
 
     private void scraw(float x, float y) {
         PointF current = new PointF(x, y);
-        float dirX = (current.x - fPreviousPoint.x) / fDetail;
-        float dirY = (current.y - fPreviousPoint.y) / fDetail;
+        float dirX = (current.x - fPreviousPoint.x) / (fDetail);
+        float dirY = (current.y - fPreviousPoint.y) / (fDetail);
 
         float d = Math.abs(dirX) + Math.abs(dirY);
 
         float pDirX = dirY / d;
         float pDirY = dirX / (-d);
 
-        float x_s;
-        float y_s;
+        float x_s = x;
+        float y_s = y;
 
-        for (int i = 0; i < fDetail; i++) {
+        for (int i = 1; i < fDetail; i++) {
             x_s = fPreviousPoint.x + i*dirX + pDirX * getProbability(fNoise);
             y_s = fPreviousPoint.y + i*dirY + pDirY * getProbability(fNoise);
 
             fCurrentOperation.addPoint(x_s, y_s);
         }
 
-        fCurrentOperation.addPoint(x, y);
+        //fCurrentOperation.addPoint(x, y);
 
-        fPreviousPoint.x = x;
-        fPreviousPoint.y = y;
+        fPreviousPoint.x = x_s;
+        fPreviousPoint.y = y_s;
     }
 
 

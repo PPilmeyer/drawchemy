@@ -21,9 +21,9 @@
     <string name="hue_switch_disabled">Hue switch disabled</string>
     <string name="about">about</string>
     <string name="close">Close</string>
-    <string name="about_drawchemy">Drachemy is a Open Source project under the Licence GPLv3.\n You can
+    <string name="about_drawchemy">Drachemy is a Open Source project under the License GPLv3.\n You can
     go to the git repository by clicking on the icon.</string>
-    <string name="about_alchemy">Drachemy is inspired by AlChemy : a drawing desktop application.\n
+    <string name="about_alchemy">Drachemy is inspired by Alchemy : a drawing desktop application.\n
     You can visit their website by clicking on their icon.</string>
     <string name="about_tumblr">Drawchemy possess its own Tumblr.\n Click on the icon to visit.</string>
 
