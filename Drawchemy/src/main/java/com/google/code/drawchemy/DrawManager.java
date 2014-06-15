@@ -371,6 +371,7 @@ public class DrawManager implements View.OnTouchListener {
         p.setStrokeWidth(fStrokeWeight);
         p.setStyle(fStyle);
         p.setStrokeJoin(Paint.Join.ROUND);
+        p.setStrokeCap(Paint.Cap.ROUND);
         p.setAntiAlias(true);
         p.setPathEffect(new CornerPathEffect(7.f));
         return p;
