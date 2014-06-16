@@ -13,21 +13,36 @@
     <string name="action_clear">Clear</string>
     <string name="agree">Yes</string>
     <string name="cancel">Cancel</string>
-    <string name="finish">finish</string>
-    <string name="clear_dialog">This will clear the canvas, are you sure ?</string>
-    <string name="save">Canvas saved</string>
+    <string name="finish">Finish</string>
+    <string name="save">Canvas saved.</string>
     <string name="gradient">Gradient</string>
+    <string name="about">About</string>
+    <string name="close">Close</string>
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+    <string name="line">Line</string>
+    <string name="scraw">Scraw</string>
+    <string name="ribbon">Ribbon</string>
+    <string name="splatter">Splatter</string>
+    <string name="xshape">XShape</string>
+    <string name="overflow">Overflow</string>
+    <string name="pan_zoom">Pan and zoom</string>
+    <string name="reset_view">Reset view</string>
+    <string name="hue">Hue</string>
+    <string name="saturation">Saturation</string>
+    <string name="brightness">Brightness</string>
+    <string name="alpha">Alpha</string>
+    <string name="show_ui">Show UI</string>
+    <string name="action_help">Help</string>
+    <string name="horizontal">Horizontal mirror</string>
+    <string name="vertical">Vertical mirror</string>
+
+    <!-- UI Texts-->
     <string name="hue_switch_enabled">Hue switch enabled</string>
     <string name="hue_switch_disabled">Hue switch disabled</string>
-    <string name="about">about</string>
-    <string name="close">Close</string>
-    <string name="about_drawchemy">Drachemy is a Open Source project under the License GPLv3.\n You can
-    go to the git repository by clicking on the icon.</string>
-    <string name="about_alchemy">Drachemy is inspired by Alchemy : a drawing desktop application.\n
-    You can visit their website by clicking on their icon.</string>
-    <string name="about_tumblr">Drawchemy possess its own Tumblr.\n Click on the icon to visit.</string>
-
-
+    <string name="clear_dialog">This will clear the canvas, are you sure ?</string>
+    <string name="stroke_weight">Stroke width</string>
+    <string name="empty_settings">There is no settings for this creator</string>
     <string name="noise">Noise</string>
     <string name="flow">Flow</string>
     <string name="detail">Details</string>
@@ -36,28 +51,31 @@
     <string name="spacing">Spacing</string>
     <string name="size">Size</string>
     <string name="drips">Drips</string>
-    <string name="mirror">Mirror</string>
-    <string name="horizontal">Horizontal</string>
-    <string name="vertical">vertical</string>
 
-    <string name="undo">Undo</string>
-    <string name="redo">Redo</string>
-    <string name="stroke_weight">stroke weight</string>
-    <string name="line">Line</string>
-    <string name="scraw">Scraw</string>
-    <string name="ribbon">Ribbon</string>
-    <string name="splatter">Splatter</string>
-    <string name="xshape">XShape</string>
-    <string name="overflow">overflow</string>
-    <string name="empty_settings">there is no settings for this creator</string>
-    <string name="pan_zoom">pan and zoom</string>
-    <string name="reset_view">reset view</string>
-    <string name="hue">Hue</string>
-    <string name="saturation">Saturation</string>
-    <string name="brightness">Brightness</string>
-    <string name="alpha">Alpha</string>
-    <string name="show_ui">Show UI</string>
-    <string name="action_help">help</string>
+    <!-- About Texts-->
+    <string name="about_drawchemy">Drachemy is a Open Source project under the License GPLv3. You can
+    go to the git repository by clicking on the icon.</string>
+    <string name="about_alchemy">Drachemy is inspired by Alchemy : a drawing desktop application.
+    You can visit their website by clicking on their icon.</string>
+    <string name="about_tumblr">Drawchemy possess its own Tumblr. Click on the icon to visit.</string>
 
+    <!-- Help Texts-->
+    <string name="show_ui_description">Show/hide the User Interface.</string>
+    <string name="creators_description">Display the list of brushes.</string>
+    <string name="zoom_description">Enter in zoom/pan mode. Click again to exit this mode.</string>
+    <string name="reset_view_description">Reset the scale and the position of the canvas and exit the zoom/pan mode if you were in this mode.</string>
+    <string name="settings_description">Display the settings of the current brush.</string>
+    <string name="mirror_description">Enter in vertical reflection mode. All your shape will be reflected vertically. Click again to exit this mode. There is also a horizontal reflection mode.</string>
+    <string name="unicolor_description">You are in the unicolor mode. Only the main color is used.
+    Click to enter in gradient mode.</string>
+    <string name="gradient_description">You are in the gradient mode.The main and the secondary color are used to paint your lines and shapes with a linear gradient.
+    Click to go back to the unicolor mode.</string>
+    <string name="stroke_description">You are in the stroke mode. You draw lines.
+    Click to enter in fill mode.</string>
+    <string name="fill_description">You are in the stroke mode. You draw filled shapes.
+    Click to go back to the stroke mode.</string>
+    <string name="load_description">Load a image from your device and use it as background.
+    The image is automatically scaled and rotated to fit your canvas for the best.
+    Your previous work is completely erased.</string>
 
 </resources>
