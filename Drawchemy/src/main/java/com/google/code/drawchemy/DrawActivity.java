@@ -33,7 +33,6 @@ import android.content.Intent;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,15 +45,13 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
-import org.al.chemy.R;
-
 import com.google.code.drawchemy.UI.AbstractCreatorUI;
-import com.google.code.drawchemy.UI.RibbonUI;
-import com.google.code.drawchemy.UI.ScrawUI;
-import com.google.code.drawchemy.UI.XShapeUI;
 import com.google.code.drawchemy.UI.CreatorSettingsFragment;
 import com.google.code.drawchemy.UI.CreatorWithoutUI;
+import com.google.code.drawchemy.UI.RibbonUI;
+import com.google.code.drawchemy.UI.ScrawUI;
 import com.google.code.drawchemy.UI.SplatterUI;
+import com.google.code.drawchemy.UI.XShapeUI;
 import com.google.code.drawchemy.color.ColorUIFragment;
 import com.google.code.drawchemy.color.RoundIconGenerator;
 import com.google.code.drawchemy.creator.LineCreator;
@@ -62,6 +59,8 @@ import com.google.code.drawchemy.creator.RibbonCreator;
 import com.google.code.drawchemy.creator.ScrawCreator;
 import com.google.code.drawchemy.creator.SplatterCreator;
 import com.google.code.drawchemy.creator.XShapeCreator;
+
+import org.al.chemy.R;
 
 public class DrawActivity extends Activity {
 
@@ -156,6 +155,12 @@ public class DrawActivity extends Activity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
+                if(fDrawingView.isEnable()) {
+                    fDrawingView.setEnabled(false);
+                    if (fZoomItem.getIcon() != null) {
+                        fZoomItem.getIcon().setAlpha(127);
+                    }
+                }
             }
 
             @Override
@@ -347,6 +352,12 @@ public class DrawActivity extends Activity {
     }
 
     private void getClick(int id) {
+        if(id != R.id.i_zoom && fDrawingView.isEnable()) {
+            fDrawingView.setEnabled(false);
+            if (fZoomItem.getIcon() != null) {
+                fZoomItem.getIcon().setAlpha(127);
+            }
+        }
         switch (id) {
             case R.id.i_undo: {
                 fManager.undo();
@@ -358,10 +369,6 @@ public class DrawActivity extends Activity {
             }
             case R.id.i_reset_view: {
                 fDrawingView.resetZoomPan();
-                fDrawingView.setEnabled(false);
-                if (fZoomItem.getIcon() != null) {
-                    fZoomItem.getIcon().setAlpha(127);
-                }
                 break;
             }
             case R.id.i_zoom: {
@@ -505,6 +512,12 @@ public class DrawActivity extends Activity {
                 fActionBar.show();
                 break;
             }
+            case R.id.i_colors: {
+                int tmp_color = fManager.getMainColor();
+                addFragment(fColorSettings);
+                fColorSettings.setColor(tmp_color, true);
+                break;
+            }
             case R.id.i_load: {
                 Intent intent = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -588,22 +601,6 @@ public class DrawActivity extends Activity {
         dialog.show();
     }
 
-    private void createSimpleDialog(String aMessage) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setMessage(aMessage);
-        builder.setCancelable(false);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
     private void createHelpDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -634,6 +631,12 @@ public class DrawActivity extends Activity {
 
         @Override
         public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+            if(fDrawingView.isEnable()) {
+                fDrawingView.setEnabled(false);
+                if (fZoomItem.getIcon() != null) {
+                    fZoomItem.getIcon().setAlpha(127);
+                }
+            }
             if (isInit) {
                 fManager.switchColor();
             } else {
@@ -658,6 +661,12 @@ public class DrawActivity extends Activity {
 
         @Override
         public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+            if(fDrawingView.isEnable()) {
+                fDrawingView.setEnabled(false);
+                if (fZoomItem.getIcon() != null) {
+                    fZoomItem.getIcon().setAlpha(127);
+                }
+            }
             int tmp_color = fManager.getMainColor();
             addFragment(fColorSettings);
             fColorSettings.setColor(tmp_color, true);

@@ -6,6 +6,11 @@
         android:title="@string/action_settings"
         android:showAsAction="collapseActionView"/>
 
+    <item android:id="@+id/i_colors"
+        android:icon="@drawable/color"
+        android:title="@string/action_color"
+        android:showAsAction="collapseActionView"/>
+
     <item android:id="@+id/i_save"
         android:icon="@drawable/ic_action_save"
         android:title="@string/action_save"

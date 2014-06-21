@@ -211,26 +211,6 @@ public class RibbonCreator extends ACreator {
                 }
                 fCurrentPath.quadTo(p0.fX,p0.fY,p1.leftFirstX,p1.leftFirstY);
                 fCurrentOperation.setTop(fCurrentPath);
-                /*fCurrentPath.rewind();
-                Particle p0 = fParticles[(first) % fNbOfParticles];
-                Particle p1 = fParticles[(first + 1) % fNbOfParticles];
-                fCurrentPath.moveTo(p1.controlLeftX, p1.controlLeftY);
-
-                for (int i = 1; i < particlesAssigned - 1; i++) {
-                    Particle p = fParticles[(first + i) % fNbOfParticles];
-                    fCurrentPath.lineTo(p.controlLeftX, p.controlLeftY);
-                }
-                Particle lastp = fParticles[(first + particlesAssigned - 2) % fNbOfParticles];
-
-                fCurrentPath.quadTo(last.fX, last.fY, lastp.controlRightX, lastp.controlRightY);
-
-                for (int i = particlesAssigned - 2; i >= 1; i--) {
-                    Particle p = fParticles[(first + i) % fNbOfParticles];
-                    fCurrentPath.lineTo(p.controlRightX, p.controlRightY);
-                }
-
-                fCurrentPath.quadTo(p0.fX, p0.fY, p1.controlLeftX, p1.controlLeftY);
-                fCurrentOperation.setTop(fCurrentPath);*/
             }
 
         }

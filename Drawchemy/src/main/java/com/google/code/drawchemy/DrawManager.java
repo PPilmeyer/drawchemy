@@ -42,7 +42,7 @@ import java.util.Map;
 public class DrawManager implements View.OnTouchListener {
 
     // Number of Operations possibles which can be cancelled
-    private static final int MAX_OP = 5;
+    private static final int MAX_OP = 8;
     LinkedList<IDrawingOperation> fOperations;
     LinkedList<IDrawingOperation> fUndo;
 

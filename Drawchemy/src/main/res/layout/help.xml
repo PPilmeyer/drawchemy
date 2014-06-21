@@ -3,7 +3,9 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -45,6 +47,26 @@
                 android:paddingRight="5dp"
                 android:singleLine="false"
                 android:text="@string/creators_description"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:padding="5dp">
+
+            <ImageView
+                android:background="#00000000"
+                android:src="@drawable/color" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxEms="25"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:singleLine="false"
+                android:text="@string/colors_description"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </TableRow>
 
@@ -230,4 +252,5 @@
         </TableRow>
 
     </TableLayout>
+</HorizontalScrollView>
 </ScrollView>
