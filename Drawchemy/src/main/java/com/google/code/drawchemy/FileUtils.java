@@ -27,7 +27,6 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.util.Log;
 import android.widget.Toast;
 
 import org.al.chemy.R;

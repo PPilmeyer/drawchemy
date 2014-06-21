@@ -21,6 +21,11 @@ package com.google.code.drawchemy.color;
 
 import android.app.Fragment;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Paint;
+import android.graphics.Shader;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,10 +63,19 @@ public class ColorUIFragment extends Fragment {
 
     private float temp[];
 
+    private ShapeDrawable fHueDrawable;
+    private ShapeDrawable fSaturationDrawable;
+    private ShapeDrawable fBrightnessDrawable;
+    private ShapeDrawable fAlphaDrawable;
+
     public ColorUIFragment() {
         fColorListeners = new ArrayList<ColorChangeListener>();
         fHueSwitchListeners = new ArrayList<HueSwitchListener>();
         temp = new float[3];
+        fHueDrawable = new ShapeDrawable(new RectShape());
+        fSaturationDrawable = new ShapeDrawable(new RectShape());
+        fBrightnessDrawable = new ShapeDrawable(new RectShape());
+        fAlphaDrawable = new ShapeDrawable(new RectShape());
     }
 
     @Override
@@ -72,6 +86,7 @@ public class ColorUIFragment extends Fragment {
         setColor(fColor);
 
         fHueBar = (SeekBar) view.findViewById(R.id.seekHue);
+
         fSaturationBar = (SeekBar) view.findViewById(R.id.seekSaturation);
         fBrightnessBar = (SeekBar) view.findViewById(R.id.seekBrightness);
         fAlphaSeekBar = (SeekBar) view.findViewById(R.id.seekAlpha);
@@ -80,6 +95,14 @@ public class ColorUIFragment extends Fragment {
         fSaturationBar.setProgress(fSaturation);
         fBrightnessBar.setProgress(fBrightness);
         fAlphaSeekBar.setProgress(fAlpha);
+
+        fSaturationBar.setProgressDrawable(fSaturationDrawable);
+        fBrightnessBar.setProgressDrawable(fBrightnessDrawable);
+        fHueBar.setProgressDrawable(fHueDrawable);
+
+        setBrightnessDrawable();
+        setSaturationDrawable();
+        setHueDrawable();
 
         MyOnSeekBarChangeListener listener = new MyOnSeekBarChangeListener();
         fHueBar.setOnSeekBarChangeListener(listener);
@@ -111,7 +134,7 @@ public class ColorUIFragment extends Fragment {
 
         fHueCheckBox = (CheckBox) view.findViewById(R.id.i_hue_switch);
         fHueCheckBox.setChecked(fHueEnable);
-        if(fHueEnable) {
+        if (fHueEnable) {
             fHueCheckBox.setText(R.string.hue_switch_enabled);
         } else {
             fHueCheckBox.setText(R.string.hue_switch_disabled);
@@ -121,7 +144,7 @@ public class ColorUIFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 fHueEnable = fHueCheckBox.isChecked();
-                if(fHueEnable) {
+                if (fHueEnable) {
                     fHueCheckBox.setText(R.string.hue_switch_enabled);
                 } else {
                     fHueCheckBox.setText(R.string.hue_switch_disabled);
@@ -146,15 +169,18 @@ public class ColorUIFragment extends Fragment {
 
 
     private void changeColor() {
-        int hue = fHueBar.getProgress();
-        int saturation = fSaturationBar.getProgress();
-        int brightness = fBrightnessBar.getProgress();
-        temp[0] = hue;
-        temp[1] = saturation/100.f;
-        temp[2] = brightness/100.f;
-        int alpha = fAlphaSeekBar.getProgress();
+        fHue  = fHueBar.getProgress();
+        fSaturation = fSaturationBar.getProgress();
+        fBrightness = fBrightnessBar.getProgress();
+        temp[0] = fHue;
+        temp[1] = fSaturation / 100.f;
+        temp[2] = fBrightness / 100.f;
+        fAlpha = fAlphaSeekBar.getProgress();
 
-        fColor = Color.HSVToColor(alpha, temp);
+        fColor = Color.HSVToColor(fAlpha, temp);
+
+        setBrightnessDrawable();
+        setSaturationDrawable();
 
         for (ColorChangeListener listener : fColorListeners) {
             listener.colorChange(fColor);
@@ -170,6 +196,9 @@ public class ColorUIFragment extends Fragment {
         fSaturationBar.setProgress(fSaturation);
         fBrightnessBar.setProgress(fBrightness);
         fAlphaSeekBar.setProgress(fAlpha);
+
+        setBrightnessDrawable();
+        setSaturationDrawable();
 
         if (sendEvent) {
             for (ColorChangeListener listener : fColorListeners) {
@@ -229,15 +258,68 @@ public class ColorUIFragment extends Fragment {
     }
 
     private void setColor(int aColor) {
-        Color.colorToHSV(aColor,temp);
+        Color.colorToHSV(aColor, temp);
         fHue = (int) temp[0];
-        fSaturation = (int) (temp[1]*100);
-        fBrightness = (int) (temp[2]*100);
-
-
-
+        fSaturation = (int) (temp[1] * 100);
+        fBrightness = (int) (temp[2] * 100);
         fAlpha = Color.alpha(aColor);
         fColor = aColor;
     }
 
+
+    private void setBrightnessDrawable() {
+        Paint p = fBrightnessDrawable.getPaint();
+        final int colorA = Color.HSVToColor(new float[]{fHue, fSaturation / 100.f, 0.f});
+        final int colorB = Color.HSVToColor(new float[]{fHue, fSaturation / 100.f, 1.f});
+        int width = fBrightnessBar.getWidth();
+        p.setShader(new LinearGradient(0, 0, width, 0, colorA, colorB, Shader.TileMode.CLAMP));
+        fBrightnessDrawable.setShaderFactory(new ShapeDrawable.ShaderFactory() {
+            @Override
+            public Shader resize(int i, int i2) {
+                return new LinearGradient(0, 0, i, 0, colorA, colorB, Shader.TileMode.CLAMP);
+            }
+        });
+        fBrightnessBar.invalidate();
+    }
+
+    private void setSaturationDrawable() {
+        Paint p = fSaturationDrawable.getPaint();
+        final int colorA = Color.HSVToColor(new float[]{fHue, 0.f, fBrightness/100.f});
+        final int colorB = Color.HSVToColor(new float[]{fHue, 1.f, fBrightness/100.f});
+        int width = fSaturationBar.getWidth();
+        p.setShader(new LinearGradient(0, 0, width, 0, colorA, colorB, Shader.TileMode.CLAMP));
+        fSaturationDrawable.setShaderFactory(new ShapeDrawable.ShaderFactory() {
+            @Override
+            public Shader resize(int i, int i2) {
+                return new LinearGradient(0, 0, i, 0, colorA, colorB, Shader.TileMode.CLAMP);
+            }
+        });
+        fSaturationBar.invalidate();
+    }
+
+    private void setHueDrawable() {
+        Paint p = fHueDrawable.getPaint();
+        int size = 6;
+        final int colors[] = new int[size+1];
+
+        float temp[] = new float[3];
+        temp[1] = 1.f;
+        temp[2] = 1.f;
+        for(int i = 0; i < size; i++){
+            temp[0] = i*(360.f/size);
+            colors[i] = Color.HSVToColor(temp);
+        }
+        temp[0] = 0.f;
+        colors[size] = Color.HSVToColor(temp);
+
+        int width = fHueBar.getWidth();
+        p.setShader(new LinearGradient(0, 0, width, 0, colors, null, Shader.TileMode.MIRROR));
+        fHueDrawable.setShaderFactory(new ShapeDrawable.ShaderFactory() {
+            @Override
+            public Shader resize(int i, int i2) {
+                return new LinearGradient(0, 0, i, 0, colors, null, Shader.TileMode.MIRROR);
+            }
+        });
+        fHueBar.invalidate();
+    }
 }

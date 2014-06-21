@@ -31,15 +31,15 @@
     <string name="hue">Hue</string>
     <string name="saturation">Saturation</string>
     <string name="brightness">Brightness</string>
-    <string name="alpha">Alpha</string>
+    <string name="alpha">Opacity</string>
     <string name="show_ui">Show UI</string>
     <string name="action_help">Help</string>
     <string name="horizontal">Horizontal mirror</string>
     <string name="vertical">Vertical mirror</string>
 
     <!-- UI Texts-->
-    <string name="hue_switch_enabled">Hue switch enabled</string>
-    <string name="hue_switch_disabled">Hue switch disabled</string>
+    <string name="hue_switch_enabled">Hue noise enabled</string>
+    <string name="hue_switch_disabled">Hue noise disabled</string>
     <string name="clear_dialog">This will clear the canvas, are you sure ?</string>
     <string name="stroke_weight">Stroke width</string>
     <string name="empty_settings">There is no settings for this creator</string>
@@ -62,8 +62,8 @@
     <!-- Help Texts-->
     <string name="show_ui_description">Show/hide the User Interface.</string>
     <string name="creators_description">Display the list of brushes.</string>
-    <string name="zoom_description">Enter in zoom/pan mode. Click again to exit this mode.</string>
-    <string name="reset_view_description">Reset the scale and the position of the canvas and exit the zoom/pan mode if you were in this mode.</string>
+    <string name="zoom_description">Enter in zoom/pan mode. Click again to exit this mode or click on another icon.</string>
+    <string name="reset_view_description">Reset the scale and the position of the canvase.</string>
     <string name="settings_description">Display the settings of the current brush.</string>
     <string name="mirror_description">Enter in vertical reflection mode. All your shape will be reflected vertically. Click again to exit this mode. There is also a horizontal reflection mode.</string>
     <string name="unicolor_description">You are in the unicolor mode. Only the main color is used.
@@ -77,5 +77,9 @@
     <string name="load_description">Load a image from your device and use it as background.
     The image is automatically scaled and rotated to fit your canvas for the best.
     Your previous work is completely erased.</string>
+    <string name="colors_description">The two circles next to the Logo are the colors, the biggest is the main color, the smallest the secondary.
+    If you click on the secondary color, the color become the main one. If you click on the main color, the color settings appear.
+    These settings allow you to change the main color and activate the hue noise. The hue noise will change randomly the hue of your strokes.
+    The intensity of the noise is settable by the slidebar bellow the hue noise checkbox.</string>
 
 </resources>
