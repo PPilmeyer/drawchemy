@@ -97,10 +97,14 @@ public class RibbonCreator extends ACreator {
 
         private Paint fPaint;
         private LinkedList<Path> fPaths;
+        private RectF fBounds;
+        private RectF fBoundsTemp;
 
         public RibbonOperation(Paint aPaint) {
             fPaint = aPaint;
             fPaths = new LinkedList<Path>();
+            fBounds = new RectF();
+            fBoundsTemp = new RectF();
         }
 
         @Override
@@ -111,6 +115,12 @@ public class RibbonCreator extends ACreator {
         }
 
         public synchronized void addPath() {
+            if(fPaths.size()==1){
+                fPaths.getLast().computeBounds(fBounds,true);
+            } else if(fPaths.size()>1){
+                fPaths.getLast().computeBounds(fBoundsTemp,true);
+                fBounds.union(fBoundsTemp);
+            }
             fPaths.addLast(new Path());
         }
 
@@ -124,18 +134,12 @@ public class RibbonCreator extends ACreator {
         }
 
         @Override
-        public void computeBounds(RectF aBoundSFCT) {
-            RectF temp = new RectF();
-            boolean init = false;
-            for (Path p : fPaths) {
-                if (!init) {
-                    p.computeBounds(aBoundSFCT, true);
-                    init = true;
-                } else {
-                    p.computeBounds(temp, true);
-                    aBoundSFCT.union(temp);
-                }
+        public synchronized void computeBounds(RectF aBoundSFCT) {
+            fPaths.getLast().computeBounds(aBoundSFCT,true);
+            if(fPaths.size()>1) {
+                aBoundSFCT.union(fBounds);
             }
+
         }
     }
 

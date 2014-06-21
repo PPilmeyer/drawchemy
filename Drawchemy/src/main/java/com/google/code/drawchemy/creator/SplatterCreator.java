@@ -121,6 +121,8 @@ public class SplatterCreator extends ACreator {
 
         LinkedList<Pair<Path, Float>> fPaths;
         private Paint fPaint;
+        private RectF fBounds = null;
+        private RectF fBoundsTemp;
 
         public SplatterDrawOp(Paint aPaint) {
             fPaths = new LinkedList<Pair<Path, Float>>();
@@ -128,6 +130,7 @@ public class SplatterCreator extends ACreator {
             fPaint.setStrokeCap(Paint.Cap.ROUND);
             fPaint.setStyle(Paint.Style.STROKE);
             fPaint.setShader(null);
+            fBoundsTemp = new RectF();
         }
 
         @Override
@@ -139,6 +142,13 @@ public class SplatterCreator extends ACreator {
         }
 
         public synchronized void addPath(Path aPath, float aStrokeWidth) {
+            if(fBounds == null) {
+                fBounds = new RectF();
+                aPath.computeBounds(fBounds,true);
+            } else {
+                aPath.computeBounds(fBoundsTemp,true);
+                fBounds.union(fBoundsTemp);
+            }
             fPaths.add(new Pair<Path, Float>(aPath, aStrokeWidth));
         }
 
@@ -148,18 +158,8 @@ public class SplatterCreator extends ACreator {
         }
 
         @Override
-        public void computeBounds(RectF aBoundSFCT) {
-            RectF temp = new RectF();
-            boolean init = false;
-            for (Pair<Path, Float> p : fPaths) {
-                if (!init) {
-                    p.first.computeBounds(aBoundSFCT, true);
-                    init = true;
-                } else {
-                    p.first.computeBounds(temp, true);
-                    aBoundSFCT.union(temp);
-                }
-            }
+        public synchronized void computeBounds(RectF aBoundSFCT) {
+            aBoundSFCT.set(fBounds);
         }
     }
 

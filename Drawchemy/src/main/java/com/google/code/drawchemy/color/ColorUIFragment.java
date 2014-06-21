@@ -66,7 +66,6 @@ public class ColorUIFragment extends Fragment {
     private ShapeDrawable fHueDrawable;
     private ShapeDrawable fSaturationDrawable;
     private ShapeDrawable fBrightnessDrawable;
-    private ShapeDrawable fAlphaDrawable;
 
     public ColorUIFragment() {
         fColorListeners = new ArrayList<ColorChangeListener>();
@@ -75,7 +74,6 @@ public class ColorUIFragment extends Fragment {
         fHueDrawable = new ShapeDrawable(new RectShape());
         fSaturationDrawable = new ShapeDrawable(new RectShape());
         fBrightnessDrawable = new ShapeDrawable(new RectShape());
-        fAlphaDrawable = new ShapeDrawable(new RectShape());
     }
 
     @Override
@@ -169,7 +167,7 @@ public class ColorUIFragment extends Fragment {
 
 
     private void changeColor() {
-        fHue  = fHueBar.getProgress();
+        fHue = fHueBar.getProgress();
         fSaturation = fSaturationBar.getProgress();
         fBrightness = fBrightnessBar.getProgress();
         temp[0] = fHue;
@@ -188,14 +186,20 @@ public class ColorUIFragment extends Fragment {
     }
 
     public void setColor(int aColor, boolean sendEvent) {
+
         setColor(aColor);
         if (fHueBar == null) {
             return;
         }
-        fHueBar.setProgress(fHue);
-        fSaturationBar.setProgress(fSaturation);
-        fBrightnessBar.setProgress(fBrightness);
-        fAlphaSeekBar.setProgress(fAlpha);
+
+        int hue = fHue;
+        int saturation = fSaturation;
+        int brightness = fBrightness;
+        int alpha = fAlpha;
+        fHueBar.setProgress(hue);
+        fSaturationBar.setProgress(saturation);
+        fBrightnessBar.setProgress(brightness);
+        fAlphaSeekBar.setProgress(alpha);
 
         setBrightnessDrawable();
         setSaturationDrawable();
@@ -284,8 +288,8 @@ public class ColorUIFragment extends Fragment {
 
     private void setSaturationDrawable() {
         Paint p = fSaturationDrawable.getPaint();
-        final int colorA = Color.HSVToColor(new float[]{fHue, 0.f, fBrightness/100.f});
-        final int colorB = Color.HSVToColor(new float[]{fHue, 1.f, fBrightness/100.f});
+        final int colorA = Color.HSVToColor(new float[]{fHue, 0.f, fBrightness / 100.f});
+        final int colorB = Color.HSVToColor(new float[]{fHue, 1.f, fBrightness / 100.f});
         int width = fSaturationBar.getWidth();
         p.setShader(new LinearGradient(0, 0, width, 0, colorA, colorB, Shader.TileMode.CLAMP));
         fSaturationDrawable.setShaderFactory(new ShapeDrawable.ShaderFactory() {
@@ -300,13 +304,13 @@ public class ColorUIFragment extends Fragment {
     private void setHueDrawable() {
         Paint p = fHueDrawable.getPaint();
         int size = 6;
-        final int colors[] = new int[size+1];
+        final int colors[] = new int[size + 1];
 
         float temp[] = new float[3];
         temp[1] = 1.f;
         temp[2] = 1.f;
-        for(int i = 0; i < size; i++){
-            temp[0] = i*(360.f/size);
+        for (int i = 0; i < size; i++) {
+            temp[0] = i * (360.f / size);
             colors[i] = Color.HSVToColor(temp);
         }
         temp[0] = 0.f;
