@@ -17,17 +17,24 @@
  * along with Drawchemy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.google.code.drawchemy.creator;
+package draw.chemy.UI;
 
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.RectF;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
-public interface IDrawingOperation {
+public abstract class AbstractCreatorUI {
 
-    public void draw(Canvas aCanvas);
+    public abstract void fillView(LayoutInflater aInflater, ViewGroup aViewGroup, Context aContext);
 
-    public Paint getPaint();
+    protected void setLabel(TextView aTextView, String aMessage, float aValue) {
+        aTextView.setText(aMessage + " : " + String.format("%.1f", aValue));
+        aTextView.invalidate();
+    }
 
-    public void computeBounds(RectF aBoundSFCT);
+    protected void setLabel(TextView aTextView, String aMessage, int aValue) {
+        aTextView.setText(aMessage + " : " + aValue);
+        aTextView.invalidate();
+    }
 }

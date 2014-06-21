@@ -17,7 +17,7 @@
  * along with Drawchemy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.google.code.drawchemy;
+package draw.chemy;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -45,20 +45,20 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
-import com.google.code.drawchemy.UI.AbstractCreatorUI;
-import com.google.code.drawchemy.UI.CreatorSettingsFragment;
-import com.google.code.drawchemy.UI.CreatorWithoutUI;
-import com.google.code.drawchemy.UI.RibbonUI;
-import com.google.code.drawchemy.UI.ScrawUI;
-import com.google.code.drawchemy.UI.SplatterUI;
-import com.google.code.drawchemy.UI.XShapeUI;
-import com.google.code.drawchemy.color.ColorUIFragment;
-import com.google.code.drawchemy.color.RoundIconGenerator;
-import com.google.code.drawchemy.creator.LineCreator;
-import com.google.code.drawchemy.creator.RibbonCreator;
-import com.google.code.drawchemy.creator.ScrawCreator;
-import com.google.code.drawchemy.creator.SplatterCreator;
-import com.google.code.drawchemy.creator.XShapeCreator;
+import draw.chemy.UI.AbstractCreatorUI;
+import draw.chemy.UI.CreatorSettingsFragment;
+import draw.chemy.UI.CreatorWithoutUI;
+import draw.chemy.UI.RibbonUI;
+import draw.chemy.UI.ScrawUI;
+import draw.chemy.UI.SplatterUI;
+import draw.chemy.UI.XShapeUI;
+import draw.chemy.color.ColorUIFragment;
+import draw.chemy.color.RoundIconGenerator;
+import draw.chemy.creator.LineCreator;
+import draw.chemy.creator.RibbonCreator;
+import draw.chemy.creator.ScrawCreator;
+import draw.chemy.creator.SplatterCreator;
+import draw.chemy.creator.XShapeCreator;
 
 import org.al.chemy.R;
 

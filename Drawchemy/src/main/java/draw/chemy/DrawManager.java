@@ -17,7 +17,7 @@
  * along with Drawchemy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.google.code.drawchemy;
+package draw.chemy;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -32,8 +32,8 @@ import android.graphics.Shader;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.google.code.drawchemy.creator.ACreator;
-import com.google.code.drawchemy.creator.IDrawingOperation;
+import draw.chemy.creator.ACreator;
+import draw.chemy.creator.IDrawingOperation;
 
 import java.util.HashMap;
 import java.util.LinkedList;

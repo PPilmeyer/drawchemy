@@ -17,18 +17,21 @@
  * along with Drawchemy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.google.code.drawchemy.UI;
+package draw.chemy.creator;
 
+import draw.chemy.DrawManager;
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
+public abstract class ACreator {
 
-import org.al.chemy.R;
+    protected final DrawManager fManager;
 
-public class CreatorWithoutUI extends AbstractCreatorUI {
-    @Override
-    public void fillView(LayoutInflater aInflater, ViewGroup aViewGroup, Context aContext) {
-        aInflater.inflate(R.layout.empty_settings,aViewGroup);
+    public ACreator(DrawManager aManager) {
+        fManager = aManager;
     }
+
+    public abstract IDrawingOperation startDrawingOperation(float x, float y);
+
+    public abstract void updateDrawingOperation(float x, float y);
+
+    public abstract void endDrawingOperation();
 }

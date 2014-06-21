@@ -17,7 +17,7 @@
  * along with Drawchemy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.google.code.drawchemy;
+package draw.chemy;
 
 import java.util.Random;
 

@@ -17,9 +17,9 @@
  * along with Drawchemy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.google.code.drawchemy.creator;
+package draw.chemy.creator;
 
-import com.google.code.drawchemy.DrawManager;
+import draw.chemy.DrawManager;
 
 public class LineCreator extends ACreator {
 

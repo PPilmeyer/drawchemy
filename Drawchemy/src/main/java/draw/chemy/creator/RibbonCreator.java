@@ -17,18 +17,18 @@
  * along with Drawchemy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.google.code.drawchemy.creator;
+package draw.chemy.creator;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 
-import com.google.code.drawchemy.DrawManager;
+import draw.chemy.DrawManager;
 
 import java.util.LinkedList;
 
-import static com.google.code.drawchemy.DrawUtils.getProbability;
+import static draw.chemy.DrawUtils.getProbability;
 
 public class RibbonCreator extends ACreator {
 

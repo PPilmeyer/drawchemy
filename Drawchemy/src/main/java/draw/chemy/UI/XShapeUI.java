@@ -17,7 +17,7 @@
  * along with Drawchemy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.google.code.drawchemy.UI;
+package draw.chemy.UI;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -27,13 +27,13 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import org.al.chemy.R;
-import com.google.code.drawchemy.creator.ScrawCreator;
+import draw.chemy.creator.XShapeCreator;
 
-import static com.google.code.drawchemy.creator.ScrawCreator.*;
+import static draw.chemy.creator.XShapeCreator.*;
 
-public class ScrawUI extends AbstractCreatorUI {
+public class XShapeUI extends AbstractCreatorUI {
 
-    private ScrawCreator fScrawCreator;
+    private final XShapeCreator fXShapeCreator;
     private View fView;
     private SeekBar fNoiseBar;
     private SeekBar fDetailBar;
@@ -46,41 +46,40 @@ public class ScrawUI extends AbstractCreatorUI {
     private String fNoiseTxt;
     private String fDetailTxt;
     private String fFlowTxt;
-
-    public ScrawUI(ScrawCreator aScrawCreator) {
-        fScrawCreator = aScrawCreator;
+    
+    public XShapeUI(XShapeCreator aXShapeCreator) {
+        fXShapeCreator = aXShapeCreator;
     }
 
     @Override
     public void fillView(LayoutInflater aInflater, ViewGroup aViewGroup, Context aContext) {
-        fView = aInflater.inflate(R.layout.scraw_ui,aViewGroup);
-        fNoiseBar = (SeekBar) fView.findViewById(R.id.scraw_noise_seekbar);
-        fDetailBar = (SeekBar) fView.findViewById(R.id.scraw_detail_seekbar);
-        fFlowBar = (SeekBar) fView.findViewById(R.id.scraw_flow_seekbar);
+        fView = aInflater.inflate(R.layout.xshape_ui, aViewGroup);
+        fNoiseBar = (SeekBar) fView.findViewById(R.id.xshape_noise_seekbar);
+        fDetailBar = (SeekBar) fView.findViewById(R.id.xshape_detail_seekbar);
+        fFlowBar = (SeekBar) fView.findViewById(R.id.xshape_flow_seekbar);
 
         fNoiseBar.setMax(100);
         fDetailBar.setMax(MAX_DETAIL-MIN_DETAIL);
         fFlowBar.setMax(MAX_FLOW-MIN_FLOW);
 
-        fFlowBar.setProgress(fScrawCreator.getFlow()-MIN_FLOW);
+        fFlowBar.setProgress(fXShapeCreator.getFlow()-MIN_FLOW);
 
-        float noise = (fScrawCreator.getNoise()-MIN_NOISE)*(100.f)/(MAX_NOISE-MIN_NOISE);
+        float noise = (fXShapeCreator.getNoise()-MIN_NOISE)*(100.f)/(MAX_NOISE-MIN_NOISE);
         fNoiseBar.setProgress((int) noise);
 
-        fDetailBar.setProgress(fScrawCreator.getDetail()-MIN_DETAIL);
+        fDetailBar.setProgress(fXShapeCreator.getDetail()-MIN_DETAIL);
 
-
-        fNoiseLabel = (TextView) fView.findViewById(R.id.scraw_noise_text);
-        fDetailLabel = (TextView) fView.findViewById(R.id.scraw_detail_text);
-        fFlowLabel = (TextView) fView.findViewById(R.id.scraw_flow_text);
+        fNoiseLabel = (TextView) fView.findViewById(R.id.xshape_noise_text);
+        fDetailLabel = (TextView) fView.findViewById(R.id.xshape_detail_text);
+        fFlowLabel = (TextView) fView.findViewById(R.id.xshape_flow_text);
 
         fNoiseTxt = aContext.getResources().getString(R.string.noise);
         fDetailTxt = aContext.getResources().getString(R.string.detail);
         fFlowTxt = aContext.getResources().getString(R.string.flow);
 
-        setLabel(fNoiseLabel,fNoiseTxt,fScrawCreator.getNoise());
-        setLabel(fDetailLabel,fDetailTxt,fScrawCreator.getDetail());
-        setLabel(fFlowLabel,fFlowTxt,fScrawCreator.getFlow());
+        setLabel(fNoiseLabel,fNoiseTxt,fXShapeCreator.getNoise());
+        setLabel(fDetailLabel,fDetailTxt,fXShapeCreator.getDetail());
+        setLabel(fFlowLabel,fFlowTxt,fXShapeCreator.getFlow());
 
         Listener listener = new Listener();
         fNoiseBar.setOnSeekBarChangeListener(listener);
@@ -93,16 +92,16 @@ public class ScrawUI extends AbstractCreatorUI {
         @Override
         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
             int noise = fNoiseBar.getProgress();
-            fScrawCreator.setNoise(MIN_NOISE + (MAX_NOISE-MIN_NOISE)*(((float)noise)/100.f));
-            setLabel(fNoiseLabel,fNoiseTxt,fScrawCreator.getNoise());
+            fXShapeCreator.setNoise(MIN_NOISE + (MAX_NOISE-MIN_NOISE)*(((float)noise)/100.f));
+            setLabel(fNoiseLabel,fNoiseTxt,fXShapeCreator.getNoise());
 
             int detail = fDetailBar.getProgress();
-            fScrawCreator.setDetail(MIN_DETAIL + detail);
-            setLabel(fDetailLabel,fDetailTxt,fScrawCreator.getDetail());
+            fXShapeCreator.setDetail(MIN_DETAIL + detail);
+            setLabel(fDetailLabel,fDetailTxt,fXShapeCreator.getDetail());
 
             int flow = fFlowBar.getProgress();
-            fScrawCreator.setFlow(MIN_FLOW + flow);
-            setLabel(fFlowLabel,fFlowTxt,fScrawCreator.getFlow());
+            fXShapeCreator.setFlow(MIN_FLOW + flow);
+            setLabel(fFlowLabel,fFlowTxt,fXShapeCreator.getFlow());
 
             fView.invalidate();
         }

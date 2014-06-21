@@ -17,7 +17,7 @@
  * along with Drawchemy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.google.code.drawchemy.creator;
+package draw.chemy.creator;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;

@@ -17,7 +17,7 @@
  * along with Drawchemy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.google.code.drawchemy.UI;
+package draw.chemy.UI;
 
 import android.app.Fragment;
 import android.os.Bundle;

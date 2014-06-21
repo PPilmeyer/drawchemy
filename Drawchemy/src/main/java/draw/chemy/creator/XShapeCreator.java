@@ -17,29 +17,30 @@
  * along with Drawchemy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.google.code.drawchemy.creator;
+package draw.chemy.creator;
 
+import android.graphics.Paint;
 import android.graphics.PointF;
 
-import com.google.code.drawchemy.DrawManager;
+import draw.chemy.DrawManager;
 
-import static com.google.code.drawchemy.DrawUtils.getProbability;
+import static draw.chemy.DrawUtils.getProbability;
 
-public class ScrawCreator extends ACreator {
+public class XShapeCreator extends ACreator {
 
     private SimpleLineOperation fCurrentOperation = null;
 
     // Parameters
-    private float fNoise = 5.0f;
-    private int fDetail = 7;
-    private int fFlow = 5;
+    private float fNoise = 12;
+    private int fDetail = 5;
+    private int fFlow = 3;
 
 
-    public static final float MIN_NOISE = 1.f;
-    public static final float MAX_NOISE = 20.f;
+    public static final float MIN_NOISE = 5.f;
+    public static final float MAX_NOISE = 30.f;
 
     public static final int MIN_DETAIL = 2;
-    public static final int MAX_DETAIL = 20;
+    public static final int MAX_DETAIL = 15;
 
     public static final int MIN_FLOW = 1;
     public static final int MAX_FLOW = 10;
@@ -47,7 +48,7 @@ public class ScrawCreator extends ACreator {
     private PointF fPreviousPoint;
     private int fCount = 0;
 
-    public ScrawCreator(DrawManager aManager) {
+    public XShapeCreator(DrawManager aManager) {
         super(aManager);
         fPreviousPoint = new PointF();
     }
@@ -56,8 +57,8 @@ public class ScrawCreator extends ACreator {
         return fNoise;
     }
 
-    public void setNoise(float fNoise) {
-        this.fNoise = fNoise;
+    public void setNoise(float aNoise) {
+        fNoise = aNoise;
     }
 
     public int getDetail() {
@@ -79,7 +80,17 @@ public class ScrawCreator extends ACreator {
     @Override
     public IDrawingOperation startDrawingOperation(float x, float y) {
 
-        fCurrentOperation = new SimpleLineOperation(x,y,fManager.getPaint());
+        Paint p = fManager.getPaint();
+
+        Paint paint = new Paint();
+        paint.setColor(p.getColor());
+        paint.setStrokeWidth(p.getStrokeWidth());
+        paint.setStyle(p.getStyle());
+        paint.setAntiAlias(true);
+        paint.setStrokeJoin(Paint.Join.MITER);
+        paint.setStrokeCap(Paint.Cap.SQUARE);
+
+        fCurrentOperation = new SimpleLineOperation(x,y, paint);
 
         fPreviousPoint.x = x;
         fPreviousPoint.y = y;
@@ -97,17 +108,25 @@ public class ScrawCreator extends ACreator {
 
     private void scraw(float x, float y) {
         PointF current = new PointF(x, y);
-        float dirX = (current.x - fPreviousPoint.x) / fDetail;
-        float dirY = (current.y - fPreviousPoint.y) / fDetail;
+        float dirX = (current.x - fPreviousPoint.x) / (fDetail);
+        float dirY = (current.y - fPreviousPoint.y) / (fDetail);
 
-        float x_s = fPreviousPoint.x;
-        float y_s = fPreviousPoint.y;
+        float d = Math.abs(dirX) + Math.abs(dirY);
 
-        for (int i = 0; i < fDetail; i++) {
-            x_s += (dirX + getProbability(fNoise));
-            y_s += (dirY + getProbability(fNoise));
+        float pDirX = dirY / d;
+        float pDirY = dirX / (-d);
+
+        float x_s = x;
+        float y_s = y;
+
+        for (int i = 1; i < fDetail; i++) {
+            x_s = fPreviousPoint.x + i*dirX + pDirX * getProbability(fNoise);
+            y_s = fPreviousPoint.y + i*dirY + pDirY * getProbability(fNoise);
+
             fCurrentOperation.addPoint(x_s, y_s);
         }
+
+        //fCurrentOperation.addPoint(x, y);
 
         fPreviousPoint.x = x_s;
         fPreviousPoint.y = y_s;

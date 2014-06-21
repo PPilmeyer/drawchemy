@@ -17,7 +17,7 @@
  * along with Drawchemy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.google.code.drawchemy.color;
+package draw.chemy.color;
 
 import android.content.Context;
 import android.graphics.Bitmap;

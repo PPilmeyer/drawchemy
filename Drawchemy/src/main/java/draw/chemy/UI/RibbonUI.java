@@ -17,7 +17,7 @@
  * along with Drawchemy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.google.code.drawchemy.UI;
+package draw.chemy.UI;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -28,9 +28,9 @@ import android.widget.TextView;
 
 import org.al.chemy.R;
 
-import com.google.code.drawchemy.creator.RibbonCreator;
+import draw.chemy.creator.RibbonCreator;
 
-import static com.google.code.drawchemy.creator.RibbonCreator.*;
+import static draw.chemy.creator.RibbonCreator.*;
 
 public class RibbonUI extends AbstractCreatorUI {
 
