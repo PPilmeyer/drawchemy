@@ -30,8 +30,8 @@ public class BoxCreator extends ACreator {
     private float fY;
     private MultiPathOperation fCurrentOperation;
 
-    private static final float COS_HALF_PI = 1.f;
-    private static final float SIN_HALF_PI = 0.f;
+    private static final float COS_HALF_PI = 0.f;
+    private static final float SIN_HALF_PI = 1.f;
 
     public BoxCreator(DrawManager aManager) {
         super(aManager);
