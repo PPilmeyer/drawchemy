@@ -19,20 +19,15 @@
 
 package draw.chemy.creator;
 
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.RectF;
 
 import draw.chemy.DrawManager;
-
-import java.util.LinkedList;
 
 import static draw.chemy.DrawUtils.getProbability;
 
 public class RibbonCreator extends ACreator {
 
-    private RibbonOperation fCurrentOperation;
+    private MultiPathOperation fCurrentOperation;
     private Path fCurrentPath;
 
     private static final float PI = (float) Math.PI * 0.5f;
@@ -67,7 +62,7 @@ public class RibbonCreator extends ACreator {
 
     @Override
     public IDrawingOperation startDrawingOperation(float x, float y) {
-        fCurrentOperation = new RibbonOperation(fManager.getPaint());
+        fCurrentOperation = new MultiPathOperation(fManager.getPaint());
         fCurrentOperation.addPath();
         fRibbon.init();
         fRibbon.update(x, y);
@@ -91,56 +86,6 @@ public class RibbonCreator extends ACreator {
     @Override
     public void endDrawingOperation() {
         fCurrentOperation = null;
-    }
-
-    private class RibbonOperation implements IDrawingOperation {
-
-        private Paint fPaint;
-        private LinkedList<Path> fPaths;
-        private RectF fBounds;
-        private RectF fBoundsTemp;
-
-        public RibbonOperation(Paint aPaint) {
-            fPaint = aPaint;
-            fPaths = new LinkedList<Path>();
-            fBounds = new RectF();
-            fBoundsTemp = new RectF();
-        }
-
-        @Override
-        public synchronized void draw(Canvas aCanvas) {
-            for (Path p : fPaths) {
-                aCanvas.drawPath(p, fPaint);
-            }
-        }
-
-        public synchronized void addPath() {
-            if(fPaths.size()==1){
-                fPaths.getLast().computeBounds(fBounds,true);
-            } else if(fPaths.size()>1){
-                fPaths.getLast().computeBounds(fBoundsTemp,true);
-                fBounds.union(fBoundsTemp);
-            }
-            fPaths.addLast(new Path());
-        }
-
-        public synchronized void setTop(Path aPath) {
-            fPaths.getLast().set(aPath);
-        }
-
-        @Override
-        public Paint getPaint() {
-            return fPaint;
-        }
-
-        @Override
-        public synchronized void computeBounds(RectF aBoundSFCT) {
-            fPaths.getLast().computeBounds(aBoundSFCT,true);
-            if(fPaths.size()>1) {
-                aBoundSFCT.union(fBounds);
-            }
-
-        }
     }
 
     private class Ribbon {

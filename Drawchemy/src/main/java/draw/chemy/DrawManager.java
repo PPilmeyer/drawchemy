@@ -32,12 +32,14 @@ import android.graphics.Shader;
 import android.view.MotionEvent;
 import android.view.View;
 
-import draw.chemy.creator.ACreator;
-import draw.chemy.creator.IDrawingOperation;
-
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+
+import draw.chemy.creator.ACreator;
+import draw.chemy.creator.IDrawingOperation;
 
 public class DrawManager implements View.OnTouchListener {
 
@@ -53,7 +55,6 @@ public class DrawManager implements View.OnTouchListener {
     private float fColorVariation;
     private DrawListener fDrawListener;
     private Matrix fInputMatrix = new Matrix();
-
 
     public enum MIRROR {
         None,
@@ -80,6 +81,10 @@ public class DrawManager implements View.OnTouchListener {
 
     private MIRROR fMirrorState = MIRROR.None;
     private boolean fGradientActive = false;
+
+    private boolean fNewColorUsageFlag = false;
+
+    private NewColorUsedListener fNewColorUsedListener;
 
     public DrawManager(int aWidth, int aHeight) {
 
@@ -111,6 +116,9 @@ public class DrawManager implements View.OnTouchListener {
 
     }
 
+    public void setNewColorUsedListener(NewColorUsedListener aListener) {
+        fNewColorUsedListener = aListener;
+    }
 
     public boolean getMirrorHorizontal() {
         return fMirrorState == MIRROR.Horizontal || fMirrorState == MIRROR.Both;
@@ -230,6 +238,7 @@ public class DrawManager implements View.OnTouchListener {
 
     public void setMainColor(int aColor) {
         fMainColor = aColor;
+        fNewColorUsageFlag = true;
     }
 
     public ACreator getCurrentCreator() {
@@ -245,6 +254,7 @@ public class DrawManager implements View.OnTouchListener {
         int tmp = fMainColor;
         fMainColor = fSubColor;
         fSubColor = tmp;
+        fNewColorUsageFlag = true;
     }
 
 
@@ -285,6 +295,10 @@ public class DrawManager implements View.OnTouchListener {
                 case MotionEvent.ACTION_DOWN: {
                     setPictureOp();
                     addOperation(fCurrentCreator.startDrawingOperation(points[0], points[1]));
+                    if(fNewColorUsageFlag) {
+                        fNewColorUsageFlag = false;
+                        newColorUsed();
+                    }
                     break;
                 }
                 case MotionEvent.ACTION_MOVE: {
@@ -302,6 +316,13 @@ public class DrawManager implements View.OnTouchListener {
         }
         return true;
     }
+
+    private void newColorUsed() {
+        if(fNewColorUsedListener != null) {
+            fNewColorUsedListener.newColorUsed(fMainColor);
+        }
+    }
+
 
     private void setPictureOp() {
         if (fUndo.size() > 0) {
@@ -595,5 +616,9 @@ public class DrawManager implements View.OnTouchListener {
 
     public interface DrawListener {
         public void redraw();
+    }
+
+    public interface NewColorUsedListener {
+        void newColorUsed(int aNewColor);
     }
 }

@@ -24,6 +24,7 @@ import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Shader;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.os.Bundle;
@@ -39,7 +40,9 @@ import org.al.chemy.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ColorUIFragment extends Fragment {
+import draw.chemy.DrawManager;
+
+public class ColorUIFragment extends Fragment implements DrawManager.NewColorUsedListener {
 
     private SeekBar fHueBar;
     private SeekBar fSaturationBar;
@@ -67,6 +70,9 @@ public class ColorUIFragment extends Fragment {
     private ShapeDrawable fSaturationDrawable;
     private ShapeDrawable fBrightnessDrawable;
 
+    private Button[] fPaletteButton;
+    private ColorElem[] fPalette;
+
     public ColorUIFragment() {
         fColorListeners = new ArrayList<ColorChangeListener>();
         fHueSwitchListeners = new ArrayList<HueSwitchListener>();
@@ -74,7 +80,22 @@ public class ColorUIFragment extends Fragment {
         fHueDrawable = new ShapeDrawable(new RectShape());
         fSaturationDrawable = new ShapeDrawable(new RectShape());
         fBrightnessDrawable = new ShapeDrawable(new RectShape());
+        initPalette();
     }
+
+    private void initPalette() {
+        fPalette = new ColorElem[8];
+        fPalette[0] = new ColorElem(Color.BLACK,0);
+        fPalette[1] = new ColorElem(Color.WHITE,1);
+        fPalette[2] = new ColorElem(Color.RED,2);
+        fPalette[3] = new ColorElem(Color.GREEN,3);
+        fPalette[4] = new ColorElem(Color.BLUE,4);
+        fPalette[5] = new ColorElem(Color.YELLOW,5);
+        fPalette[6] = new ColorElem(Color.MAGENTA,6);
+        fPalette[7] = new ColorElem(Color.CYAN,7);
+
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -162,9 +183,62 @@ public class ColorUIFragment extends Fragment {
             }
         });
 
+        fPaletteButton = new Button[8];
+        fPaletteButton[0] = (Button) view.findViewById(R.id.color_a);
+        fPaletteButton[1] = (Button) view.findViewById(R.id.color_b);
+        fPaletteButton[2] = (Button) view.findViewById(R.id.color_c);
+        fPaletteButton[3] = (Button) view.findViewById(R.id.color_d);
+        fPaletteButton[4] = (Button) view.findViewById(R.id.color_e);
+        fPaletteButton[5] = (Button) view.findViewById(R.id.color_f);
+        fPaletteButton[6] = (Button) view.findViewById(R.id.color_g);
+        fPaletteButton[7] = (Button) view.findViewById(R.id.color_h);
+
+        setColorPalette();
         return view;
     }
 
+    private void setColorPalette() {
+
+        View.OnClickListener onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                for(int i = 0; i < fPaletteButton.length; i++) {
+                    if(fPaletteButton[i].getId()==view.getId()) {
+                        setColor(fPalette[i].color, true);
+                    }
+                }
+            }
+        };
+        for(int i = 0; i < fPaletteButton.length; i++) {
+            GradientDrawable drawable = (GradientDrawable) fPaletteButton[i].getBackground();
+            drawable.setColor(fPalette[i].color);
+            fPaletteButton[i].setOnClickListener(onClickListener);
+        }
+    }
+
+    private void updateColor(int aNewColor) {
+        for(int i = 0; i < fPalette.length; i++ ) {
+            fPalette[i].priority++;
+        }
+        int idx = 0;
+        int priority = -1;
+        for(int i = 0; i < fPalette.length; i++ ) {
+            if(fPalette[i].color == aNewColor) {
+                fPalette[i].priority = 0;
+                return;
+            } else if(priority < fPalette[i].priority) {
+                priority = fPalette[i].priority;
+                idx = i;
+            }
+        }
+        fPalette[idx].priority = 0;
+        fPalette[idx].color = aNewColor;
+        if(fPaletteButton != null) {
+            ((GradientDrawable)fPaletteButton[idx].getBackground()).setColor(aNewColor);
+        }
+
+    }
 
     private void changeColor() {
         fHue = fHueBar.getProgress();
@@ -221,6 +295,11 @@ public class ColorUIFragment extends Fragment {
         fAlphaSeekBar = null;
         fHueSwitchSeekbar = null;
         fHueCheckBox = null;
+    }
+
+    @Override
+    public void newColorUsed(int aNewColor) {
+        updateColor(aNewColor);
     }
 
     private class MyOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
@@ -325,5 +404,22 @@ public class ColorUIFragment extends Fragment {
             }
         });
         fHueBar.invalidate();
+    }
+
+
+    private class ColorElem implements Comparable {
+
+        int color;
+        int priority;
+
+        public ColorElem(int aColor, int aPriority) {
+            color = aColor;
+            priority = aPriority;
+        }
+
+        @Override
+        public int compareTo(Object o) {
+            return priority - ((ColorElem) o).priority;
+        }
     }
 }

@@ -16,4 +16,13 @@
 
     <item android:id="@+id/i_xshape"
         android:title="@string/xshape"/>
+
+    <item android:id="@+id/i_paintbrush"
+        android:title="@string/paintbrush"/>
+
+    <item android:id="@+id/i_ball"
+        android:title="@string/ball"/>
+
+    <item android:id="@+id/i_box"
+        android:title="@string/box"/>
 </menu>

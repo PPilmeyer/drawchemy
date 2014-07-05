@@ -54,7 +54,10 @@ import draw.chemy.UI.SplatterUI;
 import draw.chemy.UI.XShapeUI;
 import draw.chemy.color.ColorUIFragment;
 import draw.chemy.color.RoundIconGenerator;
+import draw.chemy.creator.BallCreator;
+import draw.chemy.creator.BoxCreator;
 import draw.chemy.creator.LineCreator;
+import draw.chemy.creator.PaintBrushCreator;
 import draw.chemy.creator.RibbonCreator;
 import draw.chemy.creator.ScrawCreator;
 import draw.chemy.creator.SplatterCreator;
@@ -124,6 +127,9 @@ public class DrawActivity extends Activity {
         fManager.addTool(2, new SplatterCreator(fManager));
         fManager.addTool(3, new RibbonCreator(fManager));
         fManager.addTool(4, new XShapeCreator(fManager));
+        fManager.addTool(5, new PaintBrushCreator(fManager));
+        fManager.addTool(6, new BallCreator(fManager));
+        fManager.addTool(7, new BoxCreator(fManager));
 
         fManager.setCurrentTool(0);
 
@@ -199,6 +205,7 @@ public class DrawActivity extends Activity {
 
         fColorSettings = new ColorUIFragment();
         fColorSettings.setColor(fManager.getMainColor(), false);
+        fManager.setNewColorUsedListener(fColorSettings);
 
         fColorSettings.addHueSwitchListener(new ColorUIFragment.HueSwitchListener() {
             @Override
@@ -405,6 +412,21 @@ public class DrawActivity extends Activity {
             case R.id.i_xshape: {
                 fManager.setCurrentTool(4);
                 fCreatorSettings.getNewCreator(new XShapeUI((XShapeCreator) fManager.getCurrentCreator()));
+                break;
+            }
+            case R.id.i_paintbrush: {
+                fManager.setCurrentTool(5);
+                fCreatorSettings.getNewCreator(fEmptySettings);
+                break;
+            }
+            case R.id.i_ball: {
+                fManager.setCurrentTool(6);
+                fCreatorSettings.getNewCreator(fEmptySettings);
+                break;
+            }
+            case R.id.i_box: {
+                fManager.setCurrentTool(7);
+                fCreatorSettings.getNewCreator(fEmptySettings);
                 break;
             }
             case R.id.i_flip_h: {

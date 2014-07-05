@@ -32,8 +32,6 @@ public class LineCreator extends ACreator {
     @Override
     public IDrawingOperation startDrawingOperation(float x, float y) {
         fCurrentOperation = new SimpleLineOperation(x, y, fManager.getPaint());
-
-
         return fCurrentOperation;
     }
 

@@ -25,6 +25,9 @@
     <string name="ribbon">Ribbon</string>
     <string name="splatter">Splatter</string>
     <string name="xshape">XShape</string>
+    <string name="paintbrush">PainBrush</string>
+    <string name="ball">Ball</string>
+    <string name="box">Box</string>
     <string name="overflow">Overflow</string>
     <string name="pan_zoom">Pan and zoom</string>
     <string name="reset_view">Reset view</string>
