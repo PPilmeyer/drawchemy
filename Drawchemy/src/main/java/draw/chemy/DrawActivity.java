@@ -122,6 +122,7 @@ public class DrawActivity extends Activity {
 
         fDrawingView = (ZoomPanDrawingView) findViewById(R.id.drawingView);
         fManager = fDrawingView.getCanvasManager();
+        new FileUtils(fManager).loadTempImage(this);
 
         fManager.addTool(0, new LineCreator(fManager));
         fManager.addTool(1, new ScrawCreator(fManager));
@@ -704,5 +705,11 @@ public class DrawActivity extends Activity {
                 fSecondColor.setIcon(fSecondIconGenerator.getIcon(fManager.getMainColor(), true));
             }
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        new FileUtils(fManager).saveOnPause(this);
     }
 }
