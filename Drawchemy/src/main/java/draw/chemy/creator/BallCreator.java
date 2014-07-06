@@ -35,7 +35,7 @@ public class BallCreator extends ACreator {
     public static final int MIN_FLOW = 1;
     public static final int MAX_FLOW = 10;
 
-    public static final float MIN_SIZE = 10.f;
+    public static final float MIN_SIZE = 8.f;
     public static final float MAX_SIZE = 30.f;
 
     public static final int MIN_RADIUS = 1;
@@ -44,7 +44,7 @@ public class BallCreator extends ACreator {
     int fCount;
 
     private int fFlow = 3;
-    private float fSize = 5;
+    private float fSize = 18;
     private int fRadius = 5;
 
     private BallOperation fCurrentOperation;
