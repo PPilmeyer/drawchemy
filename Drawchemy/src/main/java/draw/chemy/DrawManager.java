@@ -45,6 +45,7 @@ public class DrawManager implements View.OnTouchListener {
     private static final int MAX_OP = 5;
     LinkedList<IDrawingOperation> fOperations;
     LinkedList<IDrawingOperation> fUndo;
+    IDrawingOperation fCurrentOperation = null;
 
     Map<Integer, ACreator> fCreators;
     private ACreator fCurrentCreator;
@@ -70,6 +71,10 @@ public class DrawManager implements View.OnTouchListener {
     private final Bitmap fBackgroundImage;
 
     private final Canvas fBackgroundCanvas;
+
+    private final Bitmap fBackgroundImageBackUP;
+
+    private final Canvas fBackgroundCanvasBackUP;
     //Default
     private int fMainColor = Color.BLACK;
     private int fSubColor = Color.WHITE;
@@ -89,8 +94,13 @@ public class DrawManager implements View.OnTouchListener {
         fBackgroundImage = Bitmap.createBitmap(aWidth, aHeight, Bitmap.Config.ARGB_8888);
 
         fBackgroundCanvas = new Canvas(fBackgroundImage);
-        fBackgroundCanvas.drawColor(fSubColor);
 
+        fBackgroundImageBackUP = Bitmap.createBitmap(aWidth, aHeight, Bitmap.Config.ARGB_8888);
+
+        fBackgroundCanvasBackUP = new Canvas(fBackgroundImageBackUP);
+
+        fBackgroundCanvas.drawColor(fSubColor);
+        fBackgroundCanvasBackUP.drawColor(fSubColor);
 
         fOperations = new LinkedList<IDrawingOperation>();
         fUndo = new LinkedList<IDrawingOperation>();
@@ -173,6 +183,7 @@ public class DrawManager implements View.OnTouchListener {
     public void clear() {
         synchronized (fBackgroundCanvas) {
             fBackgroundCanvas.drawColor(fSubColor | 0xff000000);
+            fBackgroundCanvasBackUP.drawColor(fSubColor);
             fOperations.clear();
             fUndo.clear();
         }
@@ -182,6 +193,7 @@ public class DrawManager implements View.OnTouchListener {
     public void undo() {
         if (fOperations.size() != 0) {
             fUndo.addFirst(fOperations.removeLast());
+            backup();
             redraw();
         }
     }
@@ -189,7 +201,17 @@ public class DrawManager implements View.OnTouchListener {
     public void redo() {
         if (fUndo.size() != 0) {
             fOperations.addLast(fUndo.removeFirst());
+            backup();
             redraw();
+        }
+    }
+
+    private void backup() {
+        synchronized (fBackgroundCanvas) {
+            fBackgroundCanvas.drawBitmap(fBackgroundImageBackUP, 0, 0, fDitherPaint);
+            for (IDrawingOperation op : fOperations) {
+                op.draw(fBackgroundCanvas);
+            }
         }
     }
 
@@ -305,6 +327,7 @@ public class DrawManager implements View.OnTouchListener {
                 }
                 case MotionEvent.ACTION_UP: {
                     fCurrentCreator.endDrawingOperation();
+                    finishOp();
                     break;
                 }
                 default:
@@ -341,8 +364,20 @@ public class DrawManager implements View.OnTouchListener {
         if (fMirrorState != MIRROR.None) {
             op = new MirrorOp(op, fMirrorState);
         }
-        synchronized (fOperations) {
-            fOperations.add(op);
+        synchronized (fBackgroundCanvas) {
+            fCurrentOperation = op;
+            fOperations.addLast(fCurrentOperation);
+            while (fOperations.size() > MAX_OP) {
+                op = fOperations.removeFirst();
+                op.draw(fBackgroundCanvasBackUP);
+            }
+        }
+    }
+
+    private void finishOp() {
+        synchronized (fBackgroundCanvas) {
+            fCurrentOperation.draw(fBackgroundCanvas);
+            fCurrentOperation = null;
         }
     }
 
@@ -356,18 +391,11 @@ public class DrawManager implements View.OnTouchListener {
 
     public void draw(Canvas aCanvas) {
         synchronized (fBackgroundCanvas) {
-            while (fOperations.size() > MAX_OP) {
-                IDrawingOperation op = fOperations.removeFirst();
-                op.draw(fBackgroundCanvas);
-            }
             aCanvas.drawBitmap(fBackgroundImage, 0.f, 0.f, fDitherPaint);
-        }
-        synchronized (fOperations) {
-            for (IDrawingOperation op : fOperations) {
-                op.draw(aCanvas);
+            if (fCurrentOperation != null) {
+                fCurrentOperation.draw(aCanvas);
             }
         }
-
     }
 
     public int getWidth() {

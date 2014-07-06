@@ -31,7 +31,10 @@ public class PaintBrushCreator extends ACreator {
 
     private static float DIV =  0.85f;
 
-    private static int NUM = 8;
+    private int fBristlesNumber = 10;
+    public static int MIN_BRISLTES_NUM = 7;
+    public static int MAX_BRISLTES_NUM = 25;
+
 
     private MultiLineOperation fCurrentOperation = null;
 
@@ -42,21 +45,29 @@ public class PaintBrushCreator extends ACreator {
 
     public PaintBrushCreator(DrawManager aManager) {
         super(aManager);
-        fPainters = new Painter[NUM];
-        for(int i = 0; i < NUM; i++) {
+        fPainters = new Painter[MAX_BRISLTES_NUM];
+        for (int i = 0; i < MAX_BRISLTES_NUM; i++) {
             fPainters[i] = new Painter();
         }
+    }
+
+    public void setBristlesNumber(int aBristlesNumber) {
+        fBristlesNumber = aBristlesNumber;
+    }
+
+    public int getBristlesNumber() {
+        return fBristlesNumber;
     }
 
     @Override
     public IDrawingOperation startDrawingOperation(float x, float y) {
 
-        for(int i = 0; i < NUM; i++) {
+        for (int i = 0; i < fBristlesNumber; i++) {
             fPainters[i].start(x, y);
         }
         Paint p = fManager.getPaint();
         p.setStyle(Paint.Style.STROKE);
-        fCurrentOperation = new MultiLineOperation(x,y,p,NUM);
+        fCurrentOperation = new MultiLineOperation(x, y, p, fBristlesNumber);
         fX = x;
         fY = y;
         return fCurrentOperation;
@@ -66,7 +77,7 @@ public class PaintBrushCreator extends ACreator {
     public void updateDrawingOperation(float x, float y) {
         fX = x;
         fY = y;
-        for(int i = 0; i < NUM; i++) {
+        for (int i = 0; i < fBristlesNumber; i++) {
             fPainters[i].update(x, y);
             fCurrentOperation.addPoint(fPainters[i].X, fPainters[i].Y, i);
         }
@@ -75,17 +86,17 @@ public class PaintBrushCreator extends ACreator {
 
     @Override
     public void endDrawingOperation() {
-        for(int i = 0; i < NUM; i++) {
+        for (int i = 0; i < fBristlesNumber; i++) {
             fPainters[i].update(fX, fY);
             fCurrentOperation.addPoint(fPainters[i].X, fPainters[i].Y, i);
         }
 
-        for (int i = 0; i < NUM; i++) {
+        for (int i = 0; i < fBristlesNumber; i++) {
             fCurrentOperation.addCurve(
                     fPainters[i].X, fPainters[i].Y, fX, fY, i);
         }
 
-        for(int i = 0; i < NUM; i++) {
+        for (int i = 0; i < MAX_BRISLTES_NUM; i++) {
             fPainters[i].reset();
         }
 

@@ -47,6 +47,7 @@
     <string name="stroke_weight">Stroke width</string>
     <string name="empty_settings">There is no settings for this creator</string>
     <string name="noise">Noise</string>
+    <string name="bristles">Bristles</string>
     <string name="flow">Flow</string>
     <string name="detail">Details</string>
     <string name="gravity">Gravity</string>

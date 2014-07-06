@@ -51,6 +51,7 @@ import draw.chemy.UI.AbstractCreatorUI;
 import draw.chemy.UI.BallUI;
 import draw.chemy.UI.CreatorSettingsFragment;
 import draw.chemy.UI.CreatorWithoutUI;
+import draw.chemy.UI.PaintBrushUI;
 import draw.chemy.UI.RibbonUI;
 import draw.chemy.UI.ScrawUI;
 import draw.chemy.UI.SplatterUI;
@@ -418,7 +419,7 @@ public class DrawActivity extends Activity {
             }
             case R.id.i_paintbrush: {
                 fManager.setCurrentTool(5);
-                fCreatorSettings.getNewCreator(fEmptySettings);
+                fCreatorSettings.getNewCreator(new PaintBrushUI((PaintBrushCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_ball: {
