@@ -32,8 +32,6 @@ import android.graphics.Shader;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -295,7 +293,7 @@ public class DrawManager implements View.OnTouchListener {
                 case MotionEvent.ACTION_DOWN: {
                     setPictureOp();
                     addOperation(fCurrentCreator.startDrawingOperation(points[0], points[1]));
-                    if(fNewColorUsageFlag) {
+                    if (fNewColorUsageFlag) {
                         fNewColorUsageFlag = false;
                         newColorUsed();
                     }
@@ -318,7 +316,7 @@ public class DrawManager implements View.OnTouchListener {
     }
 
     private void newColorUsed() {
-        if(fNewColorUsedListener != null) {
+        if (fNewColorUsedListener != null) {
             fNewColorUsedListener.newColorUsed(fMainColor);
         }
     }
@@ -425,10 +423,10 @@ public class DrawManager implements View.OnTouchListener {
         Matrix matrix = new Matrix();
         float dx, dy, scale;
 
-        if(width > height) {
+        if (width > height) {
             // canvas is in on paysage mode
 
-            if(bitmapHeight > bitmapWidth) {
+            if (bitmapHeight > bitmapWidth) {
                 // bitmap is in on portrait mode
                 matrix.setRotate(-90);
                 matrix.postTranslate(0, bitmapWidth);
@@ -439,17 +437,17 @@ public class DrawManager implements View.OnTouchListener {
             }
 
             scale = width / bitmapWidth;
-            if(scale*bitmapHeight > height) {
+            if (scale * bitmapHeight > height) {
                 scale = height / bitmapHeight;
-                dx = (width - scale*bitmapWidth)/2.f;
+                dx = (width - scale * bitmapWidth) / 2.f;
                 dy = 0.f;
             } else {
                 dx = 0;
-                dy = (height - scale*bitmapHeight)/2.f;
+                dy = (height - scale * bitmapHeight) / 2.f;
             }
         } else {
             // canvas is in on portrait mode
-            if(bitmapWidth > bitmapHeight) {
+            if (bitmapWidth > bitmapHeight) {
                 // bitmap is in on paysage mode
                 matrix.setRotate(90);
                 matrix.postTranslate(bitmapHeight, 0);
@@ -460,17 +458,17 @@ public class DrawManager implements View.OnTouchListener {
             }
 
             scale = height / bitmapHeight;
-            if(scale*bitmapWidth > bitmapWidth) {
+            if (scale * bitmapWidth > bitmapWidth) {
                 scale = width / bitmapWidth;
                 dx = 0;
-                dy = (height - scale*bitmapHeight)/2.f;
+                dy = (height - scale * bitmapHeight) / 2.f;
             } else {
-                dx = (width - scale*bitmapWidth)/2.f;
+                dx = (width - scale * bitmapWidth) / 2.f;
                 dy = 0.f;
             }
         }
-        matrix.postScale(scale,scale);
-        matrix.postTranslate(dx,dy);
+        matrix.postScale(scale, scale);
+        matrix.postTranslate(dx, dy);
 
         synchronized (fBackgroundCanvas) {
             fBackgroundCanvas.drawColor(fSubColor | 0xff000000);

@@ -31,16 +31,21 @@ import draw.chemy.DrawUtils;
 
 public class BallCreator extends ACreator {
 
-    private int fFlow = 3;
 
-    private float fSize = 5;
-
-    int fCount;
     public static final int MIN_FLOW = 1;
     public static final int MAX_FLOW = 10;
 
-    public static final float MIN_SIZE = 5.f;
+    public static final float MIN_SIZE = 10.f;
     public static final float MAX_SIZE = 30.f;
+
+    public static final int MIN_RADIUS = 1;
+    public static final int MAX_RADIUS = 10;
+
+    int fCount;
+
+    private int fFlow = 3;
+    private float fSize = 5;
+    private int fRadius = 5;
 
     private BallOperation fCurrentOperation;
 
@@ -66,9 +71,9 @@ public class BallCreator extends ACreator {
     }
 
     private void ball(float x, float y) {
-        Ball b = new Ball(x,y,5);
-        for(int i = 0; i < 5; i++) {
-            b.addRadius(DrawUtils.RANDOM.nextFloat()*fSize);
+        Ball b = new Ball(x, y, fRadius);
+        for (int i = 0; i < fRadius; i++) {
+            b.addRadius(DrawUtils.RANDOM.nextFloat() * (4.f * fSize / (float) fRadius));
         }
         fCurrentOperation.addBall(b);
     }
@@ -82,8 +87,24 @@ public class BallCreator extends ACreator {
         return fFlow;
     }
 
-    public void setFlow(int fFlow) {
-        this.fFlow = fFlow;
+    public void setFlow(int aFlow) {
+        fFlow = aFlow;
+    }
+
+    public int getRadius() {
+        return fRadius;
+    }
+
+    public void setRadius(int aRadius) {
+        fRadius = aRadius;
+    }
+
+    public float getSize() {
+        return fSize;
+    }
+
+    public void setSize(float aSize) {
+        fSize = aSize;
     }
 
     private class Ball {
@@ -145,13 +166,13 @@ public class BallCreator extends ACreator {
             fBalls.addLast(b);
             float x = b.fX;
             float y = b.fY;
-            float r = b.fRadius[b.fRadius.length-1];
+            float r = b.fRadius[b.fRadius.length - 1];
 
-            if(fBounds == null) {
-                fBounds = new RectF(x-r,y-r,x+r,y+r);
+            if (fBounds == null) {
+                fBounds = new RectF(x - r, y - r, x + r, y + r);
             } else {
-                fBounds.union(x-r,y-r);
-                fBounds.union(x+r,y+r);
+                fBounds.union(x - r, y - r);
+                fBounds.union(x + r, y + r);
             }
         }
     }

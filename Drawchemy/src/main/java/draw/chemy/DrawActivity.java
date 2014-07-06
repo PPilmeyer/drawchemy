@@ -45,7 +45,10 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import org.al.chemy.R;
+
 import draw.chemy.UI.AbstractCreatorUI;
+import draw.chemy.UI.BallUI;
 import draw.chemy.UI.CreatorSettingsFragment;
 import draw.chemy.UI.CreatorWithoutUI;
 import draw.chemy.UI.RibbonUI;
@@ -62,8 +65,6 @@ import draw.chemy.creator.RibbonCreator;
 import draw.chemy.creator.ScrawCreator;
 import draw.chemy.creator.SplatterCreator;
 import draw.chemy.creator.XShapeCreator;
-
-import org.al.chemy.R;
 
 public class DrawActivity extends Activity {
 
@@ -421,7 +422,7 @@ public class DrawActivity extends Activity {
             }
             case R.id.i_ball: {
                 fManager.setCurrentTool(6);
-                fCreatorSettings.getNewCreator(fEmptySettings);
+                fCreatorSettings.getNewCreator(new BallUI((BallCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_box: {
