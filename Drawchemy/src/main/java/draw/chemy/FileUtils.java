@@ -159,7 +159,11 @@ public class FileUtils {
         if (dir != null && dir.exists() && dir.isDirectory()) {
             File img = new File(dir, FILENAME);
             if (img != null && img.exists()) {
-                new LoadImageTask(aContext, Uri.fromFile(img)).execute();
+                new LoadImageTask(aContext, Uri.fromFile(img)) {
+                    @Override
+                    protected void errorMessage() {
+                    }
+                }.execute();
             }
         }
     }
@@ -193,8 +197,12 @@ public class FileUtils {
             if (bitmap != null) {
                 fManager.putBitmapAsBackground(bitmap);
             } else {
-                Toast.makeText(fContext, "Error during the loading", Toast.LENGTH_SHORT).show();
+                errorMessage();
             }
+        }
+
+        protected void errorMessage() {
+            Toast.makeText(fContext, "Error during the loading", Toast.LENGTH_SHORT).show();
         }
     }
 }
