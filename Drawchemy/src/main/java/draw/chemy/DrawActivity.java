@@ -285,10 +285,16 @@ public class DrawActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
-        fManager.close();
-        fManager = null;
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        fManager.close();
+        fDrawingView.close();
+        fDrawingView = null;
+        fManager = null;
+    }
 
     private void addFragment(Fragment aFragment) {
 

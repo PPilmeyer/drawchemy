@@ -205,12 +205,14 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
                     fInstance.fDrawLock.unlock();
                 }
             }
-            fInstance.fCanvasManager = null;
-            fInstance.fZoomManager.fDelegate = null;
-            fInstance.fZoomManager = null;
-            fInstance.fDrawListener = null;
             fInstance = null;
         }
+    }
+
+    public void close() {
+        fCanvasManager = null;
+        fZoomManager.fDelegate = null;
+        fZoomManager = null;
     }
 
     public void setEnabled(boolean check) {
