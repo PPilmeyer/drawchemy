@@ -103,12 +103,12 @@ public class DrawActivity extends Activity {
 
     private static float sAlphaHide = 0.3f;
     private static int sDurationAnimation = 600;
+    private boolean fFirstResume;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         fContext = this;
-
+        fFirstResume = true;
         setContentView(R.layout.main);
 
         fShowUI = (ImageButton) findViewById(R.id.i_show_ui);
@@ -123,7 +123,7 @@ public class DrawActivity extends Activity {
 
         fDrawingView = (ZoomPanDrawingView) findViewById(R.id.drawingView);
         fManager = fDrawingView.getCanvasManager();
-        new FileUtils(fManager).loadTempImage(this);
+
 
         fManager.addTool(0, new LineCreator(fManager));
         fManager.addTool(1, new ScrawCreator(fManager));
@@ -272,6 +272,23 @@ public class DrawActivity extends Activity {
             fActionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (fFirstResume) {
+            fFirstResume = false;
+            new FileUtils(fManager).loadTempImage(this);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        fManager.close();
+        fManager = null;
+    }
+
 
     private void addFragment(Fragment aFragment) {
 

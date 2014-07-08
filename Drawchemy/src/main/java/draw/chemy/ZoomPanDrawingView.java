@@ -130,8 +130,9 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         setOnTouchListener(fZoomManager);
-        fThread = new ViewThread();
+        fThread = new ViewThread(this);
         fThread.start();
+
         fCanvasManager.redraw();
     }
 
@@ -142,52 +143,73 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+
         fThread.stopThread();
     }
 
-    private class ViewThread extends Thread {
+    public void stopThread() {
+        if (fThread != null) {
+            fThread.stopThread();
+        }
+    }
+
+    private static class ViewThread extends Thread {
 
         private boolean fRun = true;
+        private ZoomPanDrawingView fInstance;
+
+        public ViewThread(ZoomPanDrawingView aInstance) {
+            fInstance = aInstance;
+        }
 
         public void stopThread() {
             fRun = false;
-            interrupt();
+            if (fInstance.fDrawListener != null) {
+                fInstance.fDrawListener.redraw();
+            }
         }
 
         @Override
         public void run() {
             while (fRun) {
                 try {
-                    fDrawLock.lock();
-                    while (!fDrawFlag && !fZoomFlag) {
-                        fDrawCondition.await();
-                    }
-                    if (fZoomFlag) {
-                        fZoomManager.setViewMatrix(fViewMatrix);
-                        fZoomManager.hadZoomed();
-                    }
-                    Canvas canvas = fHolder.lockCanvas(fHolder.getSurfaceFrame());
+                    fInstance.fDrawLock.lock();
+                    if (fRun) {
+                        while (!fInstance.fDrawFlag && !fInstance.fZoomFlag) {
+                            fInstance.fDrawCondition.await();
+                        }
+                        if (fInstance.fZoomFlag) {
+                            fInstance.fZoomManager.setViewMatrix(fInstance.fViewMatrix);
+                            fInstance.fZoomManager.hadZoomed();
+                        }
+                        Canvas canvas = fInstance.fHolder.lockCanvas(fInstance.fHolder.getSurfaceFrame());
 
-                    if (canvas != null) {
-                        fCorners[0] = 0;
-                        fCorners[1] = 0;
-                        fCorners[2] = fWidth;
-                        fCorners[3] = fHeight;
-                        fViewMatrix.mapPoints(fCorners);
-                        canvas.drawColor(Color.GRAY);
-                        canvas.clipRect(fCorners[2], fCorners[3], fCorners[0], fCorners[1]);
+                        if (canvas != null) {
+                            fInstance.fCorners[0] = 0;
+                            fInstance.fCorners[1] = 0;
+                            fInstance.fCorners[2] = fInstance.fWidth;
+                            fInstance.fCorners[3] = fInstance.fHeight;
+                            fInstance.fViewMatrix.mapPoints(fInstance.fCorners);
+                            canvas.drawColor(Color.GRAY);
+                            canvas.clipRect(fInstance.fCorners[2], fInstance.fCorners[3], fInstance.fCorners[0], fInstance.fCorners[1]);
 
-                        canvas.setMatrix(fViewMatrix);
-                        fCanvasManager.draw(canvas);
-                        fDrawListener.hadRedraw();
-                        fHolder.unlockCanvasAndPost(canvas);
+                            canvas.setMatrix(fInstance.fViewMatrix);
+                            fInstance.fCanvasManager.draw(canvas);
+                            fInstance.fDrawListener.hadRedraw();
+                            fInstance.fHolder.unlockCanvasAndPost(canvas);
+                        }
                     }
                 } catch (InterruptedException e) {
 
                 } finally {
-                    fDrawLock.unlock();
+                    fInstance.fDrawLock.unlock();
                 }
             }
+            fInstance.fCanvasManager = null;
+            fInstance.fZoomManager.fDelegate = null;
+            fInstance.fZoomManager = null;
+            fInstance.fDrawListener = null;
+            fInstance = null;
         }
     }
 

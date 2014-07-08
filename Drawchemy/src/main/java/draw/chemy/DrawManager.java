@@ -90,17 +90,16 @@ public class DrawManager implements View.OnTouchListener {
     private NewColorUsedListener fNewColorUsedListener;
 
     public DrawManager(int aWidth, int aHeight) {
-
-        fBackgroundImage = Bitmap.createBitmap(aWidth, aHeight, Bitmap.Config.ARGB_8888);
+        fBackgroundImage = Bitmap.createBitmap(aWidth, aHeight, Bitmap.Config.RGB_565);
 
         fBackgroundCanvas = new Canvas(fBackgroundImage);
 
-        fBackgroundImageBackUP = Bitmap.createBitmap(aWidth, aHeight, Bitmap.Config.ARGB_8888);
+        fBackgroundImageBackUP = Bitmap.createBitmap(aWidth, aHeight, Bitmap.Config.RGB_565);
 
         fBackgroundCanvasBackUP = new Canvas(fBackgroundImageBackUP);
 
-        fBackgroundCanvas.drawColor(fSubColor);
-        fBackgroundCanvasBackUP.drawColor(fSubColor);
+        fBackgroundCanvas.drawColor(fSubColor | 0xff000000);
+        fBackgroundCanvasBackUP.drawColor(fSubColor | 0xff000000);
 
         fOperations = new LinkedList<IDrawingOperation>();
         fUndo = new LinkedList<IDrawingOperation>();
@@ -183,7 +182,7 @@ public class DrawManager implements View.OnTouchListener {
     public void clear() {
         synchronized (fBackgroundCanvas) {
             fBackgroundCanvas.drawColor(fSubColor | 0xff000000);
-            fBackgroundCanvasBackUP.drawColor(fSubColor);
+            fBackgroundCanvasBackUP.drawColor(fSubColor | 0xff000000);
             fOperations.clear();
             fUndo.clear();
         }
@@ -191,18 +190,22 @@ public class DrawManager implements View.OnTouchListener {
     }
 
     public void undo() {
-        if (fOperations.size() != 0) {
-            fUndo.addFirst(fOperations.removeLast());
-            backup();
-            redraw();
+        synchronized (fBackgroundCanvas) {
+            if (fOperations.size() != 0) {
+                fUndo.addFirst(fOperations.removeLast());
+                backup();
+                redraw();
+            }
         }
     }
 
     public void redo() {
-        if (fUndo.size() != 0) {
-            fOperations.addLast(fUndo.removeFirst());
-            backup();
-            redraw();
+        synchronized (fBackgroundCanvas) {
+            if (fUndo.size() != 0) {
+                fOperations.addLast(fUndo.removeFirst());
+                backup();
+                redraw();
+            }
         }
     }
 
@@ -313,7 +316,7 @@ public class DrawManager implements View.OnTouchListener {
         if (fCurrentCreator != null) {
             switch (action) {
                 case MotionEvent.ACTION_DOWN: {
-                    setPictureOp();
+
                     addOperation(fCurrentCreator.startDrawingOperation(points[0], points[1]));
                     if (fNewColorUsageFlag) {
                         fNewColorUsageFlag = false;
@@ -341,13 +344,6 @@ public class DrawManager implements View.OnTouchListener {
     private void newColorUsed() {
         if (fNewColorUsedListener != null) {
             fNewColorUsedListener.newColorUsed(fMainColor);
-        }
-    }
-
-
-    private void setPictureOp() {
-        if (fUndo.size() > 0) {
-            fUndo.addLast(new PictureOp(fUndo.removeLast()));
         }
     }
 
@@ -379,6 +375,7 @@ public class DrawManager implements View.OnTouchListener {
             fCurrentOperation.draw(fBackgroundCanvas);
             fCurrentOperation = null;
         }
+        redraw();
     }
 
     public boolean isGradientActive() {
@@ -406,8 +403,8 @@ public class DrawManager implements View.OnTouchListener {
         return fBackgroundImage.getHeight();
     }
 
-    public Bitmap getBitmap() {
-        Bitmap result = Bitmap.createBitmap(fBackgroundImage.getWidth(), fBackgroundImage.getHeight(), Bitmap.Config.ARGB_8888);
+    public Bitmap copyBitmap() {
+        Bitmap result = Bitmap.createBitmap(fBackgroundImage.getWidth(), fBackgroundImage.getHeight(), Bitmap.Config.RGB_565);
         draw(new Canvas(result));
         return result;
     }
@@ -503,6 +500,7 @@ public class DrawManager implements View.OnTouchListener {
             fOperations.clear();
             fUndo.clear();
             fBackgroundCanvas.drawBitmap(aBitmap, matrix, null);
+            fBackgroundCanvasBackUP.drawBitmap(aBitmap, matrix, null);
         }
         redraw();
     }
@@ -647,4 +645,10 @@ public class DrawManager implements View.OnTouchListener {
     public interface NewColorUsedListener {
         void newColorUsed(int aNewColor);
     }
+
+    public void close() {
+        fNewColorUsedListener = null;
+        fDrawListener = null;
+    }
+
 }

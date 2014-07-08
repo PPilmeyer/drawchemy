@@ -49,15 +49,15 @@ public class FileUtils {
     }
 
     public void save(Context aContext) {
-        new SavingImageTask(aContext, fManager.getBitmap(), false).execute();
+        new SavingImageTask(aContext, fManager.copyBitmap(), false).execute();
     }
 
     public void saveOnPause(Context aContext) {
-        new SavingImageTaskOnPause(aContext, fManager.getBitmap()).execute();
+        new SavingImageTaskOnPause(aContext, fManager.copyBitmap()).execute();
     }
 
     public void share(Context aContext) {
-        new SavingImageTask(aContext, fManager.getBitmap(), true).execute();
+        new SavingImageTask(aContext, fManager.copyBitmap(), true).execute();
     }
 
     private static File getDirectory() {
@@ -65,9 +65,9 @@ public class FileUtils {
                 Environment.DIRECTORY_PICTURES), "DRAWCHEMY");
     }
 
-    public class SavingImageTask extends AsyncTask<Object, Integer, Boolean> {
+    public static class SavingImageTask extends AsyncTask<Object, Integer, Boolean> {
 
-        private final Bitmap fBitmap;
+        private Bitmap fBitmap;
         private final Context fContext;
         private final boolean fShare;
         protected File fFile;
@@ -98,13 +98,16 @@ public class FileUtils {
                 outStream.close();
 
             } catch (Exception e) {
+                fBitmap = null;
                 return false;
             }
+            fBitmap = null;
             return true;
         }
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
+
             addFileToMedia(fFile);
             if (aBoolean) {
                 Toast.makeText(fContext, fContext.getResources().getString(R.string.save), Toast.LENGTH_SHORT).show();
@@ -131,7 +134,7 @@ public class FileUtils {
         }
     }
 
-    public class SavingImageTaskOnPause extends SavingImageTask {
+    public static class SavingImageTaskOnPause extends SavingImageTask {
 
 
         public SavingImageTaskOnPause(Context aContext, Bitmap aBitmap) {
@@ -151,7 +154,7 @@ public class FileUtils {
 
 
     public void load(Context aContext, Uri aTargetUri) {
-        new LoadImageTask(aContext, aTargetUri).execute();
+        new LoadImageTask(aContext, aTargetUri, fManager).execute();
     }
 
     public void loadTempImage(Context aContext) {
@@ -159,24 +162,22 @@ public class FileUtils {
         if (dir != null && dir.exists() && dir.isDirectory()) {
             File img = new File(dir, FILENAME);
             if (img != null && img.exists()) {
-                new LoadImageTask(aContext, Uri.fromFile(img)) {
-                    @Override
-                    protected void errorMessage() {
-                    }
-                }.execute();
+                new ReloadImageTask(aContext, Uri.fromFile(img), fManager).execute();
             }
         }
     }
 
-    public class LoadImageTask extends AsyncTask<Object, Integer, Bitmap> {
+    public static class LoadImageTask extends AsyncTask<Object, Integer, Bitmap> {
 
         private Context fContext;
         private Uri fTargetUri;
+        private DrawManager fManager;
 
-        public LoadImageTask(Context aContext, Uri aTargetUri) {
+        public LoadImageTask(Context aContext, Uri aTargetUri, DrawManager aManager) {
             super();
             fContext = aContext;
             fTargetUri = aTargetUri;
+            fManager = aManager;
         }
 
         @Override
@@ -197,12 +198,44 @@ public class FileUtils {
             if (bitmap != null) {
                 fManager.putBitmapAsBackground(bitmap);
             } else {
-                errorMessage();
+                Toast.makeText(fContext, "Error during the loading", Toast.LENGTH_SHORT).show();
             }
         }
+    }
 
-        protected void errorMessage() {
-            Toast.makeText(fContext, "Error during the loading", Toast.LENGTH_SHORT).show();
+    public static class ReloadImageTask extends AsyncTask<Object, Integer, Bitmap> {
+
+        private Context fContext;
+        private Uri fTargetUri;
+        private DrawManager fManager;
+
+        public ReloadImageTask(Context aContext, Uri aTargetUri, DrawManager aManager) {
+            super();
+            fContext = aContext;
+            fTargetUri = aTargetUri;
+            fManager = aManager;
+        }
+
+        @Override
+        protected Bitmap doInBackground(Object... objects) {
+            Bitmap bitmap;
+            try {
+                bitmap = BitmapFactory.decodeStream(fContext.getContentResolver()
+                        .openInputStream(fTargetUri));
+            } catch (FileNotFoundException e) {
+                bitmap = null;
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            if (bitmap != null) {
+                fManager.putBitmapAsBackground(bitmap);
+            } else {
+                Toast.makeText(fContext, "Error during the loading", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

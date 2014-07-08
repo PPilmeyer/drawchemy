@@ -61,7 +61,7 @@ public class PaintBrushUI extends AbstractCreatorUI {
         fBristlesSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                int bristlesNumber = fCreator.getBristlesNumber();
+                int bristlesNumber = fBristlesSeekBar.getProgress();
                 fCreator.setBristlesNumber(MIN_BRISLTES_NUM + bristlesNumber);
                 setLabel(fBristleLabel, fBristlesTxt, fCreator.getBristlesNumber());
             }
