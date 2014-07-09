@@ -617,6 +617,10 @@ public class DrawActivity extends Activity {
                 startWebIntent("http://drawchemy.tumblr.com/");
                 break;
             }
+            case R.id.about_mrdoob: {
+                startWebIntent("http://mrdoob.com/projects/harmony");
+                break;
+            }
 
         }
     }

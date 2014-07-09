@@ -74,6 +74,28 @@
                 android:text="@string/about_tumblr"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
         </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:padding="5dp">
+
+            <ImageButton
+                android:id="@+id/about_mrdoob"
+                android:background="#00000000"
+                android:src="@drawable/ic_action_forward"
+                android:onClick="aboutClick" />
+
+            <TextView
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="false"
+                android:maxEms="25"
+                android:text="@string/about_mrdoob"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+        </TableRow>
     </TableLayout>
     </HorizontalScrollView>
 </ScrollView>
