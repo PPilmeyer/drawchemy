@@ -63,7 +63,7 @@
     <string name="about_alchemy">Drachemy is inspired by Alchemy : a drawing desktop application.
     You can visit their website by clicking on their icon.</string>
     <string name="about_tumblr">Drawchemy possess its own Tumblr. Click on the icon to visit.</string>
-    <string name="about_mrdoob">Few brushs are from the web application harmony. You can access it by clicking on the icon </string>
+    <string name="about_mrdoob">Few brushes are from the web application harmony. You can access it by clicking on the icon.</string>
 
     <!-- Help Texts-->
     <string name="show_ui_description">Show/hide the User Interface.</string>
