@@ -1,43 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/i_settings"
-        android:icon="@drawable/ic_action_settings"
-        android:title="@string/action_settings"
-        android:showAsAction="collapseActionView"/>
 
-    <item android:id="@+id/i_colors"
+    <item
+        android:id="@+id/i_colors"
         android:icon="@drawable/color"
         android:title="@string/action_color"
-        android:showAsAction="collapseActionView"/>
+        android:showAsAction="collapseActionView" />
 
-    <item android:id="@+id/i_save"
+    <item
+        android:id="@+id/i_save"
         android:icon="@drawable/ic_action_save"
         android:title="@string/action_save"
-        android:showAsAction="collapseActionView"/>
+        android:showAsAction="collapseActionView" />
 
-    <item android:id="@+id/i_load"
+    <item
+        android:id="@+id/i_load"
         android:icon="@drawable/ic_action_picture"
         android:title="@string/action_load"
-        android:showAsAction="collapseActionView"/>
+        android:showAsAction="collapseActionView" />
 
-    <item android:id="@+id/i_share"
+    <item
+        android:id="@+id/i_share"
         android:icon="@drawable/ic_action_share"
         android:title="@string/action_share"
-        android:showAsAction="collapseActionView"/>
+        android:showAsAction="collapseActionView" />
 
-    <item android:id="@+id/i_clear"
+    <item
+        android:id="@+id/i_clear"
         android:icon="@drawable/ic_action_discard"
         android:title="@string/action_clear"
-        android:showAsAction="ifRoom|collapseActionView"/>
+        android:showAsAction="ifRoom|collapseActionView" />
 
-    <item android:id="@+id/i_about"
+    <item
+        android:id="@+id/i_about"
         android:icon="@drawable/ic_action_about"
         android:title="@string/about"
-        android:showAsAction="ifRoom|collapseActionView"/>
+        android:showAsAction="ifRoom|collapseActionView" />
 
-    <item android:id="@+id/i_help"
+    <item
+        android:id="@+id/i_help"
         android:icon="@drawable/ic_action_help"
         android:title="@string/action_help"
-        android:showAsAction="collapseActionView"/>
+        android:showAsAction="collapseActionView" />
 </menu>

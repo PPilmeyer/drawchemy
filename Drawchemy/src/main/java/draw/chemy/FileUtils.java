@@ -233,8 +233,6 @@ public class FileUtils {
             super.onPostExecute(bitmap);
             if (bitmap != null) {
                 fManager.putBitmapAsBackground(bitmap);
-            } else {
-                Toast.makeText(fContext, "Error during the loading", Toast.LENGTH_SHORT).show();
             }
         }
     }

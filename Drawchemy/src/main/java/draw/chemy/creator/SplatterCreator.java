@@ -26,9 +26,9 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 import android.util.Pair;
 
-import draw.chemy.DrawManager;
-
 import java.util.LinkedList;
+
+import draw.chemy.DrawManager;
 
 import static draw.chemy.DrawUtils.RANDOM;
 import static draw.chemy.DrawUtils.getProbability;
@@ -159,7 +159,9 @@ public class SplatterCreator extends ACreator {
 
         @Override
         public synchronized void computeBounds(RectF aBoundSFCT) {
-            aBoundSFCT.set(fBounds);
+            if (fBounds != null) {
+                aBoundSFCT.set(fBounds);
+            }
         }
     }
 

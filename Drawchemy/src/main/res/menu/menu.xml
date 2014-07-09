@@ -35,6 +35,12 @@
     </item>
 
     <item
+        android:id="@+id/i_settings"
+        android:icon="@drawable/ic_action_settings"
+        android:showAsAction="always"
+        android:title="@string/action_settings" />
+
+    <item
         android:id="@+id/i_overflow"
         android:icon="@drawable/ic_action_overflow"
         android:showAsAction="always"

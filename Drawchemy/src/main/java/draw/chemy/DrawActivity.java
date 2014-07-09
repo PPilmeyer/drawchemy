@@ -123,7 +123,7 @@ public class DrawActivity extends Activity {
 
         fDrawingView = (ZoomPanDrawingView) findViewById(R.id.drawingView);
         fManager = fDrawingView.getCanvasManager();
-
+        new FileUtils(fManager).loadTempImage(this);
 
         fManager.addTool(0, new LineCreator(fManager));
         fManager.addTool(1, new ScrawCreator(fManager));
@@ -270,15 +270,6 @@ public class DrawActivity extends Activity {
 
             fActionBar.setDisplayUseLogoEnabled(false);
             fActionBar.setDisplayHomeAsUpEnabled(true);
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (fFirstResume) {
-            fFirstResume = false;
-            new FileUtils(fManager).loadTempImage(this);
         }
     }
 
