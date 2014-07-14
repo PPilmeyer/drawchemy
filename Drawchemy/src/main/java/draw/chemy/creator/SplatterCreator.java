@@ -163,6 +163,21 @@ public class SplatterCreator extends ACreator {
                 aBoundSFCT.set(fBounds);
             }
         }
+
+        @Override
+        public void undo() {
+
+        }
+
+        @Override
+        public void redo() {
+
+        }
+
+        @Override
+        public void complete() {
+
+        }
     }
 
     private void splat(PointF start, PointF end, PointF mid, float d) {

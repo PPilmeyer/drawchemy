@@ -153,6 +153,21 @@ public class BallCreator extends ACreator {
         }
 
         @Override
+        public void undo() {
+
+        }
+
+        @Override
+        public void redo() {
+
+        }
+
+        @Override
+        public void complete() {
+
+        }
+
+        @Override
         public Paint getPaint() {
             return fPaint;
         }

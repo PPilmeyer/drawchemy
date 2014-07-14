@@ -88,5 +88,7 @@
     You can access to the color settings in the menu.
     These settings allow you to change the main color and activate the hue noise. The hue noise will change randomly the hue of your lines and shapes.
     The intensity of the noise is settable by the slidebar bellow the hue noise checkbox.</string>
+    <string name="straight_line">Straight Line</string>
+    <string name="nearest_points">web brush</string>
 
 </resources>

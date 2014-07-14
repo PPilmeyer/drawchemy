@@ -29,7 +29,7 @@ import draw.chemy.DrawUtils;
 
 public class PaintBrushCreator extends ACreator {
 
-    private static float DIV =  0.85f;
+    private static float DIV = 0.85f;
 
     private int fBristlesNumber = 10;
     public static int MIN_BRISLTES_NUM = 7;
@@ -115,7 +115,7 @@ public class PaintBrushCreator extends ACreator {
         public void reset() {
             dX = 0;
             dY = 0;
-            fEase = DrawUtils.RANDOM.nextFloat()*.2f+.2f;
+            fEase = DrawUtils.RANDOM.nextFloat() * .2f + .2f;
         }
 
         public void start(float x, float y) {
@@ -124,9 +124,9 @@ public class PaintBrushCreator extends ACreator {
         }
 
         public void update(float x, float y) {
-            dX = (dX + (X - x)*DIV)*fEase;
+            dX = (dX + (X - x) * DIV) * fEase;
             X = X - (dX);
-            dY = (dY + (Y - y)*DIV)*fEase;
+            dY = (dY + (Y - y) * DIV) * fEase;
             Y = Y - (dY);
         }
     }
@@ -169,9 +169,24 @@ public class PaintBrushCreator extends ACreator {
             aBoundSFCT.set(fBounds);
         }
 
-        public synchronized void addCurve(float x1, float y1,float x2, float y2, int id) {
-            fPaths[id].quadTo(x1,y1,x2,y2);
+        public synchronized void addCurve(float x1, float y1, float x2, float y2, int id) {
+            fPaths[id].quadTo(x1, y1, x2, y2);
             fBounds.union(x2, y2);
+        }
+
+        @Override
+        public void undo() {
+
+        }
+
+        @Override
+        public void redo() {
+
+        }
+
+        @Override
+        public void complete() {
+
         }
     }
 }

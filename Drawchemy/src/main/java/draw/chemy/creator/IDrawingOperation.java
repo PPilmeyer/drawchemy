@@ -30,4 +30,10 @@ public interface IDrawingOperation {
     public Paint getPaint();
 
     public void computeBounds(RectF aBoundSFCT);
+
+    public void undo();
+
+    public void redo();
+
+    public void complete();
 }

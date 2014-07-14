@@ -48,10 +48,10 @@ class MultiPathOperation implements IDrawingOperation {
     }
 
     public synchronized void addPath() {
-        if(fPaths.size()==1){
-            fPaths.getLast().computeBounds(fBounds,true);
-        } else if(fPaths.size()>1){
-            fPaths.getLast().computeBounds(fBoundsTemp,true);
+        if (fPaths.size() == 1) {
+            fPaths.getLast().computeBounds(fBounds, true);
+        } else if (fPaths.size() > 1) {
+            fPaths.getLast().computeBounds(fBoundsTemp, true);
             fBounds.union(fBoundsTemp);
         }
         fPaths.addLast(new Path());
@@ -68,10 +68,25 @@ class MultiPathOperation implements IDrawingOperation {
 
     @Override
     public synchronized void computeBounds(RectF aBoundSFCT) {
-        fPaths.getLast().computeBounds(aBoundSFCT,true);
-        if(fPaths.size()>1) {
+        fPaths.getLast().computeBounds(aBoundSFCT, true);
+        if (fPaths.size() > 1) {
             aBoundSFCT.union(fBounds);
         }
+
+    }
+
+    @Override
+    public void undo() {
+
+    }
+
+    @Override
+    public void redo() {
+
+    }
+
+    @Override
+    public void complete() {
 
     }
 }

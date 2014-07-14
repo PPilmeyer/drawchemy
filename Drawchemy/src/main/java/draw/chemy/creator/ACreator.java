@@ -34,4 +34,9 @@ public abstract class ACreator {
     public abstract void updateDrawingOperation(float x, float y);
 
     public abstract void endDrawingOperation();
+
+    public void clear() {
+    }
+
+    ;
 }

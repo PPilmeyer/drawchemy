@@ -34,7 +34,7 @@ class SimpleLineOperation implements IDrawingOperation {
         fPath = new Path();
         fPath.moveTo(x, y);
         fPaint = aPaint;
-        fBounds = new RectF(x,y,x,y);
+        fBounds = new RectF(x, y, x, y);
     }
 
     @Override
@@ -44,7 +44,7 @@ class SimpleLineOperation implements IDrawingOperation {
 
     public synchronized void addPoint(float x, float y) {
         fPath.lineTo(x, y);
-        fBounds.union(x,y);
+        fBounds.union(x, y);
     }
 
     @Override
@@ -55,5 +55,20 @@ class SimpleLineOperation implements IDrawingOperation {
     @Override
     public synchronized void computeBounds(RectF aBoundSFCT) {
         aBoundSFCT.set(fBounds);
+    }
+
+    @Override
+    public void undo() {
+
+    }
+
+    @Override
+    public void redo() {
+
+    }
+
+    @Override
+    public void complete() {
+
     }
 }

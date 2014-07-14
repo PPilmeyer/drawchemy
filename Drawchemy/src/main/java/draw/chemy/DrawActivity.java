@@ -61,10 +61,12 @@ import draw.chemy.color.RoundIconGenerator;
 import draw.chemy.creator.BallCreator;
 import draw.chemy.creator.BoxCreator;
 import draw.chemy.creator.LineCreator;
+import draw.chemy.creator.NearestPointLineCreator;
 import draw.chemy.creator.PaintBrushCreator;
 import draw.chemy.creator.RibbonCreator;
 import draw.chemy.creator.ScrawCreator;
 import draw.chemy.creator.SplatterCreator;
+import draw.chemy.creator.StraightlineCreator;
 import draw.chemy.creator.XShapeCreator;
 
 public class DrawActivity extends Activity {
@@ -133,6 +135,8 @@ public class DrawActivity extends Activity {
         fManager.addTool(5, new PaintBrushCreator(fManager));
         fManager.addTool(6, new BallCreator(fManager));
         fManager.addTool(7, new BoxCreator(fManager));
+        fManager.addTool(8, new StraightlineCreator(fManager));
+        fManager.addTool(9, new NearestPointLineCreator(fManager));
 
         fManager.setCurrentTool(0);
 
@@ -443,6 +447,16 @@ public class DrawActivity extends Activity {
             }
             case R.id.i_box: {
                 fManager.setCurrentTool(7);
+                fCreatorSettings.getNewCreator(fEmptySettings);
+                break;
+            }
+            case R.id.i_straigtline: {
+                fManager.setCurrentTool(8);
+                fCreatorSettings.getNewCreator(fEmptySettings);
+                break;
+            }
+            case R.id.i_nearestpoints: {
+                fManager.setCurrentTool(9);
                 fCreatorSettings.getNewCreator(fEmptySettings);
                 break;
             }

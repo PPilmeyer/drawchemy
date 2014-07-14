@@ -25,4 +25,12 @@
 
     <item android:id="@+id/i_box"
         android:title="@string/box"/>
+
+    <item
+        android:id="@+id/i_straigtline"
+        android:title="@string/straight_line" />
+
+    <item
+        android:id="@+id/i_nearestpoints"
+        android:title="@string/nearest_points" />
 </menu>

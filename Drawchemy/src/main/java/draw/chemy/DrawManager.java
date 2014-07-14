@@ -26,7 +26,6 @@ import android.graphics.CornerPathEffect;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Picture;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.view.MotionEvent;
@@ -185,6 +184,10 @@ public class DrawManager implements View.OnTouchListener {
             fBackgroundCanvasBackUP.drawColor(fSubColor | 0xff000000);
             fOperations.clear();
             fUndo.clear();
+            for (Map.Entry<Integer, ACreator> creator : fCreators.entrySet()) {
+                creator.getValue().clear();
+                ;
+            }
         }
         redraw();
     }
@@ -192,7 +195,9 @@ public class DrawManager implements View.OnTouchListener {
     public void undo() {
         synchronized (fBackgroundCanvas) {
             if (fOperations.size() != 0) {
-                fUndo.addFirst(fOperations.removeLast());
+                IDrawingOperation op = fOperations.removeLast();
+                op.undo();
+                fUndo.addFirst(op);
                 backup();
                 redraw();
             }
@@ -202,7 +207,9 @@ public class DrawManager implements View.OnTouchListener {
     public void redo() {
         synchronized (fBackgroundCanvas) {
             if (fUndo.size() != 0) {
-                fOperations.addLast(fUndo.removeFirst());
+                IDrawingOperation op = fUndo.removeFirst();
+                op.redo();
+                fOperations.addLast(op);
                 backup();
                 redraw();
             }
@@ -365,6 +372,7 @@ public class DrawManager implements View.OnTouchListener {
             fOperations.addLast(fCurrentOperation);
             while (fOperations.size() > MAX_OP) {
                 op = fOperations.removeFirst();
+                op.complete();
                 op.draw(fBackgroundCanvasBackUP);
             }
         }
@@ -501,6 +509,9 @@ public class DrawManager implements View.OnTouchListener {
             fUndo.clear();
             fBackgroundCanvas.drawBitmap(aBitmap, matrix, null);
             fBackgroundCanvasBackUP.drawBitmap(aBitmap, matrix, null);
+            for (Map.Entry<Integer, ACreator> creator : fCreators.entrySet()) {
+                creator.getValue().clear();
+            }
         }
         redraw();
     }
@@ -567,6 +578,21 @@ public class DrawManager implements View.OnTouchListener {
         public void computeBounds(RectF aBoundSFCT) {
             fDelegate.computeBounds(aBoundSFCT);
         }
+
+        @Override
+        public void undo() {
+            fDelegate.undo();
+        }
+
+        @Override
+        public void redo() {
+            fDelegate.redo();
+        }
+
+        @Override
+        public void complete() {
+            fDelegate.complete();
+        }
     }
 
     private class GradientOp implements IDrawingOperation {
@@ -605,36 +631,20 @@ public class DrawManager implements View.OnTouchListener {
                     this.fMainColor,
                     this.fSubColor, Shader.TileMode.CLAMP);
         }
-    }
 
-    public class PictureOp implements IDrawingOperation {
-
-        private IDrawingOperation fDelegate;
-        private Picture fPicture = null;
-
-        public PictureOp(IDrawingOperation aDelegate) {
-            fDelegate = aDelegate;
+        @Override
+        public void undo() {
+            fDelegate.undo();
         }
 
         @Override
-        public void draw(Canvas aCanvas) {
-            if (fPicture == null) {
-                fPicture = new Picture();
-                Canvas c = fPicture.beginRecording(getWidth(), getHeight());
-                fDelegate.draw(c);
-                fPicture.endRecording();
-                fDelegate = null;
-            }
-            aCanvas.drawPicture(fPicture);
+        public void redo() {
+            fDelegate.redo();
         }
 
         @Override
-        public Paint getPaint() {
-            return null;
-        }
-
-        @Override
-        public void computeBounds(RectF aBoundSFCT) {
+        public void complete() {
+            fDelegate.complete();
         }
     }
 
