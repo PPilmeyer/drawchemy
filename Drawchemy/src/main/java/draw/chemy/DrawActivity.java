@@ -94,6 +94,7 @@ public class DrawActivity extends Activity {
     private ImageButton fGradientButton;
     private ImageButton fHorizontalButton;
     private ImageButton fVerticalButton;
+    private ImageButton fKaleidoscopeButton;
 
     private MenuItem fZoomItem;
 
@@ -193,6 +194,7 @@ public class DrawActivity extends Activity {
         findViewById(R.id.i_flip_h).setOnClickListener(clickListener);
         findViewById(R.id.i_flip_gradient).setOnClickListener(clickListener);
         findViewById(R.id.i_flip_style).setOnClickListener(clickListener);
+        findViewById(R.id.i_kaleidoscope).setOnClickListener(clickListener);
 
         fFragmentManager = getFragmentManager();
         fFragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
@@ -213,6 +215,13 @@ public class DrawActivity extends Activity {
         fColorSettings = new ColorUIFragment();
         fColorSettings.setColor(fManager.getMainColor(), false);
         fManager.setNewColorUsedListener(fColorSettings);
+        fManager.setPipetteListener(fColorSettings);
+        fColorSettings.addPipetteActiveListener(new ColorUIFragment.PipetteActivateListener() {
+            @Override
+            public void activate() {
+                fDrawingView.activatePipette();
+            }
+        });
 
         fColorSettings.addHueSwitchListener(new ColorUIFragment.HueSwitchListener() {
             @Override
@@ -235,6 +244,8 @@ public class DrawActivity extends Activity {
         fHorizontalButton = (ImageButton) findViewById(R.id.i_flip_h);
         fVerticalButton = (ImageButton) findViewById(R.id.i_flip_v);
 
+        fKaleidoscopeButton = (ImageButton) findViewById(R.id.i_kaleidoscope);
+
         View.OnLongClickListener descriptionClick = new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -250,9 +261,11 @@ public class DrawActivity extends Activity {
         fGradientButton.setOnLongClickListener(descriptionClick);
         fHorizontalButton.setOnLongClickListener(descriptionClick);
         fVerticalButton.setOnLongClickListener(descriptionClick);
+        fKaleidoscopeButton.setOnLongClickListener(descriptionClick);
 
         fHorizontalButton.setAlpha(sAlphaHide);
         fVerticalButton.setAlpha(sAlphaHide);
+        fKaleidoscopeButton.setAlpha(sAlphaHide);
 
         fActionBar = getActionBar();
         if (fActionBar != null) {
@@ -464,6 +477,8 @@ public class DrawActivity extends Activity {
                 fManager.setMirrorHorizontal(!fManager.getMirrorHorizontal());
                 if (fManager.getMirrorHorizontal()) {
                     fHorizontalButton.setAlpha(1.f);
+                    fKaleidoscopeButton.setAlpha(sAlphaHide);
+                    fManager.setKaleidoscopeFlag(false);
                 } else {
                     fHorizontalButton.setAlpha(sAlphaHide);
                 }
@@ -473,11 +488,28 @@ public class DrawActivity extends Activity {
                 fManager.setMirrorVertical(!fManager.getMirrorVertical());
                 if (fManager.getMirrorVertical()) {
                     fVerticalButton.setAlpha(1.f);
+                    fKaleidoscopeButton.setAlpha(sAlphaHide);
+                    fManager.setKaleidoscopeFlag(false);
                 } else {
                     fVerticalButton.setAlpha(sAlphaHide);
                 }
                 break;
             }
+            case R.id.i_kaleidoscope: {
+                fManager.setKaleidoscopeFlag(!fManager.getKaleidoscopeFlag());
+                if (fManager.getKaleidoscopeFlag()) {
+                    fKaleidoscopeButton.setAlpha(1.f);
+                    fManager.setMirrorVertical(false);
+                    fManager.setMirrorHorizontal(false);
+                    fVerticalButton.setAlpha(sAlphaHide);
+                    fHorizontalButton.setAlpha(sAlphaHide);
+
+                } else {
+                    fKaleidoscopeButton.setAlpha(sAlphaHide);
+                }
+                break;
+            }
+
             case R.id.i_flip_gradient: {
                 if (fManager.isGradientActive()) {
                     fManager.setGradientActive(false);

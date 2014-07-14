@@ -53,6 +53,8 @@ public class DrawManager implements View.OnTouchListener {
     private float fColorVariation;
     private DrawListener fDrawListener;
     private Matrix fInputMatrix = new Matrix();
+    private PipetteListener fPipetteListener;
+    private boolean fKaleidoscopeFlag = false;
 
     public enum MIRROR {
         None,
@@ -132,6 +134,14 @@ public class DrawManager implements View.OnTouchListener {
 
     public boolean getMirrorVertical() {
         return fMirrorState == MIRROR.Vertical || fMirrorState == MIRROR.Both;
+    }
+
+    public void setKaleidoscopeFlag(Boolean aFlag) {
+        fKaleidoscopeFlag = aFlag;
+    }
+
+    public boolean getKaleidoscopeFlag() {
+        return fKaleidoscopeFlag;
     }
 
     public void setMirrorVertical(boolean checked) {
@@ -367,6 +377,11 @@ public class DrawManager implements View.OnTouchListener {
         if (fMirrorState != MIRROR.None) {
             op = new MirrorOp(op, fMirrorState);
         }
+
+        if (fKaleidoscopeFlag) {
+            op = new KaleidoscopeOp(op);
+        }
+
         synchronized (fBackgroundCanvas) {
             fCurrentOperation = op;
             fOperations.addLast(fCurrentOperation);
@@ -415,6 +430,13 @@ public class DrawManager implements View.OnTouchListener {
         Bitmap result = Bitmap.createBitmap(fBackgroundImage.getWidth(), fBackgroundImage.getHeight(), Bitmap.Config.RGB_565);
         draw(new Canvas(result));
         return result;
+    }
+
+    public void usePipette(float x, float y) {
+        int color = fBackgroundImage.getPixel((int) Math.floor(x), (int) Math.floor(y));
+        if (fPipetteListener != null) {
+            fPipetteListener.newPipetteUsed(color);
+        }
     }
 
     public Paint getPaint() {
@@ -656,9 +678,72 @@ public class DrawManager implements View.OnTouchListener {
         void newColorUsed(int aNewColor);
     }
 
+    public interface PipetteListener {
+        void newPipetteUsed(int aNewColor);
+    }
+
+    public void setPipetteListener(PipetteListener aPipetteListener) {
+        fPipetteListener = aPipetteListener;
+    }
+
     public void close() {
         fNewColorUsedListener = null;
         fDrawListener = null;
     }
 
+    private class KaleidoscopeOp implements IDrawingOperation {
+
+        IDrawingOperation fDelegate;
+        private Matrix[] KaleidoscopeMatrix;
+
+
+        @Override
+        public void draw(Canvas aCanvas) {
+            fDelegate.draw(aCanvas);
+            for (Matrix m : KaleidoscopeMatrix) {
+                aCanvas.save();
+                aCanvas.concat(m);
+                fDelegate.draw(aCanvas);
+                aCanvas.restore();
+            }
+        }
+
+        @Override
+        public Paint getPaint() {
+            return fDelegate.getPaint();
+        }
+
+        @Override
+        public void computeBounds(RectF aBoundSFCT) {
+            fDelegate.computeBounds(aBoundSFCT);
+        }
+
+        @Override
+        public void undo() {
+            fDelegate.undo();
+        }
+
+        @Override
+        public void redo() {
+            fDelegate.redo();
+        }
+
+        @Override
+        public void complete() {
+            fDelegate.complete();
+        }
+
+        public KaleidoscopeOp(IDrawingOperation op) {
+            fDelegate = op;
+            KaleidoscopeMatrix = new Matrix[5];
+            float angle = 360.f / (1.f + KaleidoscopeMatrix.length);
+            for (int i = 0; i < KaleidoscopeMatrix.length; i++) {
+                Matrix m = new Matrix();
+                m.setTranslate(-getWidth() / 2, -getHeight() / 2);
+                m.postRotate((i + 1) * angle);
+                m.postTranslate(getWidth() / 2, getHeight() / 2);
+                KaleidoscopeMatrix[i] = m;
+            }
+        }
+    }
 }

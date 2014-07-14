@@ -219,6 +219,10 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
         fZoomManager.setEnabled(check);
     }
 
+    public void activatePipette() {
+        fZoomManager.activatePipette();
+    }
+
     public boolean isEnable() {
         return fZoomManager.isEnable();
     }
@@ -254,7 +258,8 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
     public class ZoomPanTouchListener implements OnTouchListener {
 
         private OnTouchListener fDelegate;
-        public boolean fEnabled = false;
+        public boolean fZoomPanEnabled = false;
+        public boolean fColorEnabled = false;
 
         private float fScale = 1.0f;
         private float fPreviousScale = 1.0f;
@@ -289,21 +294,28 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
         }
 
         public void setEnabled(boolean check) {
-            fEnabled = check;
+            fZoomPanEnabled = check;
             change();
         }
 
+        public void activatePipette() {
+            fZoomPanEnabled = false;
+            fColorEnabled = true;
+            change();
+
+        }
+
         public boolean isEnable() {
-            return fEnabled;
+            return fZoomPanEnabled;
         }
 
         public void switchEnabled() {
-            fEnabled = !fEnabled;
+            fZoomPanEnabled = !fZoomPanEnabled;
             change();
         }
 
         private void change() {
-            if (!fEnabled) {
+            if (!fZoomPanEnabled) {
                 setInputMatrix(fInputMatrix);
                 fCanvasManager.setInputMatrix(fInputMatrix);
             }
@@ -311,7 +323,7 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
 
         @Override
         public boolean onTouch(View view, MotionEvent event) {
-            if (fEnabled) {
+            if (fZoomPanEnabled) {
                 switch (event.getAction() & MotionEvent.ACTION_MASK) {
                     case MotionEvent.ACTION_DOWN:
                         setActionMode(MODE.DRAG);
@@ -342,8 +354,31 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
                         break;
                 }
                 return true;
-            } else
-                return fDelegate.onTouch(view, event);
+            } else if (fColorEnabled) {
+                float points[] = new float[]{event.getX(), event.getY()};
+                fInputMatrix.mapPoints(points);
+                switch (event.getAction() & MotionEvent.ACTION_MASK) {
+
+                    case MotionEvent.ACTION_DOWN:
+                        fCanvasManager.usePipette(points[0], points[1]);
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        fCanvasManager.usePipette(points[0], points[1]);
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+
+                        fColorEnabled = false;
+                        break;
+                    default:
+                        fColorEnabled = false;
+                        break;
+
+                }
+                return true;
+            }
+            return fDelegate.onTouch(view, event);
+
         }
 
         private void closeAction() {

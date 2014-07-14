@@ -39,6 +39,7 @@
     <string name="action_help">Help</string>
     <string name="horizontal">Horizontal mirror</string>
     <string name="vertical">Vertical mirror</string>
+    <string name="kaleidoscope">Kaleidoscope</string>
 
     <!-- UI Texts-->
     <string name="hue_switch_enabled">Hue noise enabled</string>
@@ -90,5 +91,6 @@
     The intensity of the noise is settable by the slidebar bellow the hue noise checkbox.</string>
     <string name="straight_line">Straight Line</string>
     <string name="nearest_points">web brush</string>
+    <string name="pipette">Pipette</string>
 
 </resources>

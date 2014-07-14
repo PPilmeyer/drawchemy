@@ -42,7 +42,7 @@ import java.util.List;
 
 import draw.chemy.DrawManager;
 
-public class ColorUIFragment extends Fragment implements DrawManager.NewColorUsedListener {
+public class ColorUIFragment extends Fragment implements DrawManager.NewColorUsedListener, DrawManager.PipetteListener {
 
     private SeekBar fHueBar;
     private SeekBar fSaturationBar;
@@ -55,6 +55,7 @@ public class ColorUIFragment extends Fragment implements DrawManager.NewColorUse
     private int fColor;
     private List<ColorChangeListener> fColorListeners;
     private List<HueSwitchListener> fHueSwitchListeners;
+    private List<PipetteActivateListener> fPipetteListeners;
 
     private int fHue;
     private int fSaturation;
@@ -76,6 +77,7 @@ public class ColorUIFragment extends Fragment implements DrawManager.NewColorUse
     public ColorUIFragment() {
         fColorListeners = new ArrayList<ColorChangeListener>();
         fHueSwitchListeners = new ArrayList<HueSwitchListener>();
+        fPipetteListeners = new ArrayList<PipetteActivateListener>();
         temp = new float[3];
         fHueDrawable = new ShapeDrawable(new RectShape());
         fSaturationDrawable = new ShapeDrawable(new RectShape());
@@ -93,7 +95,6 @@ public class ColorUIFragment extends Fragment implements DrawManager.NewColorUse
         fPalette[5] = new ColorElem(Color.YELLOW,5);
         fPalette[6] = new ColorElem(Color.MAGENTA,6);
         fPalette[7] = new ColorElem(Color.CYAN,7);
-
     }
 
 
@@ -174,6 +175,15 @@ public class ColorUIFragment extends Fragment implements DrawManager.NewColorUse
             }
         });
 
+        Button pipette = (Button) view.findViewById(R.id.pipette_button);
+        pipette.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                for (PipetteActivateListener listener : fPipetteListeners) {
+                    listener.activate();
+                }
+            }
+        });
 
         Button fFinishButton = (Button) view.findViewById(R.id.finishButton);
         fFinishButton.setOnClickListener(new View.OnClickListener() {
@@ -302,6 +312,11 @@ public class ColorUIFragment extends Fragment implements DrawManager.NewColorUse
         updateColor(aNewColor);
     }
 
+    @Override
+    public void newPipetteUsed(int aNewColor) {
+        setColor(aNewColor, true);
+    }
+
     private class MyOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
         @Override
         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -327,12 +342,15 @@ public class ColorUIFragment extends Fragment implements DrawManager.NewColorUse
         fHueSwitchListeners.add(aListener);
     }
 
+    public void addPipetteActiveListener(PipetteActivateListener aListener) {
+        fPipetteListeners.add(aListener);
+    }
 
-    public interface ColorChangeListener {
+    public static interface ColorChangeListener {
         public void colorChange(int aColor);
     }
 
-    public interface HueSwitchListener {
+    public static interface HueSwitchListener {
 
         public void stateChanged(boolean isEnabled);
 
@@ -421,5 +439,9 @@ public class ColorUIFragment extends Fragment implements DrawManager.NewColorUse
         public int compareTo(Object o) {
             return priority - ((ColorElem) o).priority;
         }
+    }
+
+    public static interface PipetteActivateListener {
+        public void activate();
     }
 }
