@@ -38,7 +38,7 @@ import static draw.chemy.creator.BallCreator.MIN_RADIUS;
 import static draw.chemy.creator.BallCreator.MIN_SIZE;
 
 
-public class BallUI extends AbstractCreatorUI {
+public class BallUI extends ASettingsGroupUI {
 
     private BallCreator fBallCreator;
     private View fView;

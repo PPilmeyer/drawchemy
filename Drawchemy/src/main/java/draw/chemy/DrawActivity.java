@@ -47,26 +47,29 @@ import android.widget.Toast;
 
 import org.al.chemy.R;
 
-import draw.chemy.UI.AbstractCreatorUI;
+import draw.chemy.UI.ASettingsGroupUI;
 import draw.chemy.UI.BallUI;
-import draw.chemy.UI.CreatorSettingsFragment;
 import draw.chemy.UI.CreatorWithoutUI;
+import draw.chemy.UI.ExtraSettingsUI;
 import draw.chemy.UI.PaintBrushUI;
 import draw.chemy.UI.RibbonUI;
 import draw.chemy.UI.ScrawUI;
+import draw.chemy.UI.SettingFragment;
 import draw.chemy.UI.SplatterUI;
 import draw.chemy.UI.XShapeUI;
 import draw.chemy.color.ColorUIFragment;
 import draw.chemy.color.RoundIconGenerator;
 import draw.chemy.creator.BallCreator;
-import draw.chemy.creator.BoxCreator;
+import draw.chemy.creator.BasicShapesCreator;
 import draw.chemy.creator.LineCreator;
 import draw.chemy.creator.NearestPointLineCreator;
 import draw.chemy.creator.PaintBrushCreator;
 import draw.chemy.creator.RibbonCreator;
 import draw.chemy.creator.ScrawCreator;
+import draw.chemy.creator.SketchCreator;
 import draw.chemy.creator.SplatterCreator;
 import draw.chemy.creator.StraightlineCreator;
+import draw.chemy.creator.XShape2Creator;
 import draw.chemy.creator.XShapeCreator;
 
 public class DrawActivity extends Activity {
@@ -77,10 +80,10 @@ public class DrawActivity extends Activity {
     private FragmentManager fFragmentManager;
     private LinearLayout fSettingContainer;
 
-    CreatorSettingsFragment fCreatorSettings;
+    SettingFragment fSettingsFragment;
     ColorUIFragment fColorSettings;
 
-    private AbstractCreatorUI fEmptySettings;
+    private ASettingsGroupUI fEmptySettings;
     private ActionBar fActionBar;
     private Fragment fSecondaryFragment;
 
@@ -135,9 +138,12 @@ public class DrawActivity extends Activity {
         fManager.addTool(4, new XShapeCreator(fManager));
         fManager.addTool(5, new PaintBrushCreator(fManager));
         fManager.addTool(6, new BallCreator(fManager));
-        fManager.addTool(7, new BoxCreator(fManager));
+        fManager.addTool(7, new BasicShapesCreator(fManager));
         fManager.addTool(8, new StraightlineCreator(fManager));
         fManager.addTool(9, new NearestPointLineCreator(fManager));
+        fManager.addTool(10, new SketchCreator(fManager));
+        fManager.addTool(11, new XShape2Creator(fManager));
+        fManager.addTool(11, new XShape2Creator(fManager));
 
         fManager.setCurrentTool(0);
 
@@ -209,8 +215,8 @@ public class DrawActivity extends Activity {
         fBottomBar = findViewById(R.id.bottom_bar);
         fBottomBar.setOnTouchListener(dummyTouchListener);
 
-        fCreatorSettings = new CreatorSettingsFragment();
-        fCreatorSettings.getNewCreator(fEmptySettings);
+        fSettingsFragment = new SettingFragment();
+        fSettingsFragment.getNewCreator(fEmptySettings);
 
         fColorSettings = new ColorUIFragment();
         fColorSettings.setColor(fManager.getMainColor(), false);
@@ -302,6 +308,10 @@ public class DrawActivity extends Activity {
         fDrawingView.close();
         fDrawingView = null;
         fManager = null;
+        fColorSettings = null;
+        fSecondaryFragment = null;
+        fSettingsFragment.close();
+        fSettingsFragment = null;
     }
 
     private void addFragment(Fragment aFragment) {
@@ -425,52 +435,62 @@ public class DrawActivity extends Activity {
             }
             case R.id.i_line: {
                 fManager.setCurrentTool(0);
-                fCreatorSettings.getNewCreator(fEmptySettings);
+                fSettingsFragment.getNewCreator(fEmptySettings);
                 break;
             }
             case R.id.i_scraw: {
                 fManager.setCurrentTool(1);
-                fCreatorSettings.getNewCreator(new ScrawUI((ScrawCreator) fManager.getCurrentCreator()));
+                fSettingsFragment.getNewCreator(new ScrawUI((ScrawCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_splatter: {
                 fManager.setCurrentTool(2);
-                fCreatorSettings.getNewCreator(new SplatterUI((SplatterCreator) fManager.getCurrentCreator()));
+                fSettingsFragment.getNewCreator(new SplatterUI((SplatterCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_ribbon: {
                 fManager.setCurrentTool(3);
-                fCreatorSettings.getNewCreator(new RibbonUI((RibbonCreator) fManager.getCurrentCreator()));
+                fSettingsFragment.getNewCreator(new RibbonUI((RibbonCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_xshape: {
                 fManager.setCurrentTool(4);
-                fCreatorSettings.getNewCreator(new XShapeUI((XShapeCreator) fManager.getCurrentCreator()));
+                fSettingsFragment.getNewCreator(new XShapeUI((XShapeCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_paintbrush: {
                 fManager.setCurrentTool(5);
-                fCreatorSettings.getNewCreator(new PaintBrushUI((PaintBrushCreator) fManager.getCurrentCreator()));
+                fSettingsFragment.getNewCreator(new PaintBrushUI((PaintBrushCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_ball: {
                 fManager.setCurrentTool(6);
-                fCreatorSettings.getNewCreator(new BallUI((BallCreator) fManager.getCurrentCreator()));
+                fSettingsFragment.getNewCreator(new BallUI((BallCreator) fManager.getCurrentCreator()));
                 break;
             }
-            case R.id.i_box: {
+            case R.id.i_basic_shapes: {
                 fManager.setCurrentTool(7);
-                fCreatorSettings.getNewCreator(fEmptySettings);
+                fSettingsFragment.getNewCreator(fEmptySettings);
                 break;
             }
             case R.id.i_straigtline: {
                 fManager.setCurrentTool(8);
-                fCreatorSettings.getNewCreator(fEmptySettings);
+                fSettingsFragment.getNewCreator(fEmptySettings);
                 break;
             }
-            case R.id.i_nearestpoints: {
+            case R.id.i_web: {
                 fManager.setCurrentTool(9);
-                fCreatorSettings.getNewCreator(fEmptySettings);
+                fSettingsFragment.getNewCreator(fEmptySettings);
+                break;
+            }
+            case R.id.i_sketch: {
+                fManager.setCurrentTool(10);
+                fSettingsFragment.getNewCreator(fEmptySettings);
+                break;
+            }
+            case R.id.i_xshape2: {
+                fManager.setCurrentTool(11);
+                fSettingsFragment.getNewCreator(fEmptySettings);
                 break;
             }
             case R.id.i_flip_h: {
@@ -535,7 +555,12 @@ public class DrawActivity extends Activity {
                 break;
             }
             case R.id.i_settings: {
-                addFragment(fCreatorSettings);
+                addFragment(fSettingsFragment);
+                break;
+            }
+            case R.id.i_extra_setting: {
+                fSettingsFragment.getNewCreator(new ExtraSettingsUI(fManager));
+                addFragment(fSettingsFragment);
                 break;
             }
             case R.id.i_save: {
@@ -584,7 +609,7 @@ public class DrawActivity extends Activity {
                 translation.start();
 
                 fShowUI.setVisibility(View.VISIBLE);
-                if (fColorSettings.isAdded() || fCreatorSettings.isAdded()) {
+                if (fColorSettings.isAdded() || fSettingsFragment.isAdded()) {
                     fFragmentManager.popBackStack();
                 }
                 break;

@@ -27,11 +27,17 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import org.al.chemy.R;
+
 import draw.chemy.creator.ScrawCreator;
 
-import static draw.chemy.creator.ScrawCreator.*;
+import static draw.chemy.creator.ScrawCreator.MAX_DETAIL;
+import static draw.chemy.creator.ScrawCreator.MAX_FLOW;
+import static draw.chemy.creator.ScrawCreator.MAX_NOISE;
+import static draw.chemy.creator.ScrawCreator.MIN_DETAIL;
+import static draw.chemy.creator.ScrawCreator.MIN_FLOW;
+import static draw.chemy.creator.ScrawCreator.MIN_NOISE;
 
-public class ScrawUI extends AbstractCreatorUI {
+public class ScrawUI extends ASettingsGroupUI {
 
     private ScrawCreator fScrawCreator;
     private View fView;
@@ -53,21 +59,21 @@ public class ScrawUI extends AbstractCreatorUI {
 
     @Override
     public void fillView(LayoutInflater aInflater, ViewGroup aViewGroup, Context aContext) {
-        fView = aInflater.inflate(R.layout.scraw_ui,aViewGroup);
+        fView = aInflater.inflate(R.layout.scraw_ui, aViewGroup);
         fNoiseBar = (SeekBar) fView.findViewById(R.id.scraw_noise_seekbar);
         fDetailBar = (SeekBar) fView.findViewById(R.id.scraw_detail_seekbar);
         fFlowBar = (SeekBar) fView.findViewById(R.id.scraw_flow_seekbar);
 
         fNoiseBar.setMax(100);
-        fDetailBar.setMax(MAX_DETAIL-MIN_DETAIL);
-        fFlowBar.setMax(MAX_FLOW-MIN_FLOW);
+        fDetailBar.setMax(MAX_DETAIL - MIN_DETAIL);
+        fFlowBar.setMax(MAX_FLOW - MIN_FLOW);
 
-        fFlowBar.setProgress(fScrawCreator.getFlow()-MIN_FLOW);
+        fFlowBar.setProgress(fScrawCreator.getFlow() - MIN_FLOW);
 
-        float noise = (fScrawCreator.getNoise()-MIN_NOISE)*(100.f)/(MAX_NOISE-MIN_NOISE);
+        float noise = (fScrawCreator.getNoise() - MIN_NOISE) * (100.f) / (MAX_NOISE - MIN_NOISE);
         fNoiseBar.setProgress((int) noise);
 
-        fDetailBar.setProgress(fScrawCreator.getDetail()-MIN_DETAIL);
+        fDetailBar.setProgress(fScrawCreator.getDetail() - MIN_DETAIL);
 
 
         fNoiseLabel = (TextView) fView.findViewById(R.id.scraw_noise_text);
@@ -78,9 +84,9 @@ public class ScrawUI extends AbstractCreatorUI {
         fDetailTxt = aContext.getResources().getString(R.string.detail);
         fFlowTxt = aContext.getResources().getString(R.string.flow);
 
-        setLabel(fNoiseLabel,fNoiseTxt,fScrawCreator.getNoise());
-        setLabel(fDetailLabel,fDetailTxt,fScrawCreator.getDetail());
-        setLabel(fFlowLabel,fFlowTxt,fScrawCreator.getFlow());
+        setLabel(fNoiseLabel, fNoiseTxt, fScrawCreator.getNoise());
+        setLabel(fDetailLabel, fDetailTxt, fScrawCreator.getDetail());
+        setLabel(fFlowLabel, fFlowTxt, fScrawCreator.getFlow());
 
         Listener listener = new Listener();
         fNoiseBar.setOnSeekBarChangeListener(listener);
@@ -93,16 +99,16 @@ public class ScrawUI extends AbstractCreatorUI {
         @Override
         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
             int noise = fNoiseBar.getProgress();
-            fScrawCreator.setNoise(MIN_NOISE + (MAX_NOISE-MIN_NOISE)*(((float)noise)/100.f));
-            setLabel(fNoiseLabel,fNoiseTxt,fScrawCreator.getNoise());
+            fScrawCreator.setNoise(MIN_NOISE + (MAX_NOISE - MIN_NOISE) * (((float) noise) / 100.f));
+            setLabel(fNoiseLabel, fNoiseTxt, fScrawCreator.getNoise());
 
             int detail = fDetailBar.getProgress();
             fScrawCreator.setDetail(MIN_DETAIL + detail);
-            setLabel(fDetailLabel,fDetailTxt,fScrawCreator.getDetail());
+            setLabel(fDetailLabel, fDetailTxt, fScrawCreator.getDetail());
 
             int flow = fFlowBar.getProgress();
             fScrawCreator.setFlow(MIN_FLOW + flow);
-            setLabel(fFlowLabel,fFlowTxt,fScrawCreator.getFlow());
+            setLabel(fFlowLabel, fFlowTxt, fScrawCreator.getFlow());
 
             fView.invalidate();
         }

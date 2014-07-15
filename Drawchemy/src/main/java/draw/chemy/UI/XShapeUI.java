@@ -27,11 +27,17 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import org.al.chemy.R;
+
 import draw.chemy.creator.XShapeCreator;
 
-import static draw.chemy.creator.XShapeCreator.*;
+import static draw.chemy.creator.XShapeCreator.MAX_DETAIL;
+import static draw.chemy.creator.XShapeCreator.MAX_FLOW;
+import static draw.chemy.creator.XShapeCreator.MAX_NOISE;
+import static draw.chemy.creator.XShapeCreator.MIN_DETAIL;
+import static draw.chemy.creator.XShapeCreator.MIN_FLOW;
+import static draw.chemy.creator.XShapeCreator.MIN_NOISE;
 
-public class XShapeUI extends AbstractCreatorUI {
+public class XShapeUI extends ASettingsGroupUI {
 
     private final XShapeCreator fXShapeCreator;
     private View fView;
@@ -46,7 +52,7 @@ public class XShapeUI extends AbstractCreatorUI {
     private String fNoiseTxt;
     private String fDetailTxt;
     private String fFlowTxt;
-    
+
     public XShapeUI(XShapeCreator aXShapeCreator) {
         fXShapeCreator = aXShapeCreator;
     }
@@ -59,15 +65,15 @@ public class XShapeUI extends AbstractCreatorUI {
         fFlowBar = (SeekBar) fView.findViewById(R.id.xshape_flow_seekbar);
 
         fNoiseBar.setMax(100);
-        fDetailBar.setMax(MAX_DETAIL-MIN_DETAIL);
-        fFlowBar.setMax(MAX_FLOW-MIN_FLOW);
+        fDetailBar.setMax(MAX_DETAIL - MIN_DETAIL);
+        fFlowBar.setMax(MAX_FLOW - MIN_FLOW);
 
-        fFlowBar.setProgress(fXShapeCreator.getFlow()-MIN_FLOW);
+        fFlowBar.setProgress(fXShapeCreator.getFlow() - MIN_FLOW);
 
-        float noise = (fXShapeCreator.getNoise()-MIN_NOISE)*(100.f)/(MAX_NOISE-MIN_NOISE);
+        float noise = (fXShapeCreator.getNoise() - MIN_NOISE) * (100.f) / (MAX_NOISE - MIN_NOISE);
         fNoiseBar.setProgress((int) noise);
 
-        fDetailBar.setProgress(fXShapeCreator.getDetail()-MIN_DETAIL);
+        fDetailBar.setProgress(fXShapeCreator.getDetail() - MIN_DETAIL);
 
         fNoiseLabel = (TextView) fView.findViewById(R.id.xshape_noise_text);
         fDetailLabel = (TextView) fView.findViewById(R.id.xshape_detail_text);
@@ -77,9 +83,9 @@ public class XShapeUI extends AbstractCreatorUI {
         fDetailTxt = aContext.getResources().getString(R.string.detail);
         fFlowTxt = aContext.getResources().getString(R.string.flow);
 
-        setLabel(fNoiseLabel,fNoiseTxt,fXShapeCreator.getNoise());
-        setLabel(fDetailLabel,fDetailTxt,fXShapeCreator.getDetail());
-        setLabel(fFlowLabel,fFlowTxt,fXShapeCreator.getFlow());
+        setLabel(fNoiseLabel, fNoiseTxt, fXShapeCreator.getNoise());
+        setLabel(fDetailLabel, fDetailTxt, fXShapeCreator.getDetail());
+        setLabel(fFlowLabel, fFlowTxt, fXShapeCreator.getFlow());
 
         Listener listener = new Listener();
         fNoiseBar.setOnSeekBarChangeListener(listener);
@@ -92,16 +98,16 @@ public class XShapeUI extends AbstractCreatorUI {
         @Override
         public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
             int noise = fNoiseBar.getProgress();
-            fXShapeCreator.setNoise(MIN_NOISE + (MAX_NOISE-MIN_NOISE)*(((float)noise)/100.f));
-            setLabel(fNoiseLabel,fNoiseTxt,fXShapeCreator.getNoise());
+            fXShapeCreator.setNoise(MIN_NOISE + (MAX_NOISE - MIN_NOISE) * (((float) noise) / 100.f));
+            setLabel(fNoiseLabel, fNoiseTxt, fXShapeCreator.getNoise());
 
             int detail = fDetailBar.getProgress();
             fXShapeCreator.setDetail(MIN_DETAIL + detail);
-            setLabel(fDetailLabel,fDetailTxt,fXShapeCreator.getDetail());
+            setLabel(fDetailLabel, fDetailTxt, fXShapeCreator.getDetail());
 
             int flow = fFlowBar.getProgress();
             fXShapeCreator.setFlow(MIN_FLOW + flow);
-            setLabel(fFlowLabel,fFlowTxt,fXShapeCreator.getFlow());
+            setLabel(fFlowLabel, fFlowTxt, fXShapeCreator.getFlow());
 
             fView.invalidate();
         }

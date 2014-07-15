@@ -30,9 +30,14 @@ import org.al.chemy.R;
 
 import draw.chemy.creator.RibbonCreator;
 
-import static draw.chemy.creator.RibbonCreator.*;
+import static draw.chemy.creator.RibbonCreator.MAX_FRICTION;
+import static draw.chemy.creator.RibbonCreator.MAX_GRAVITY;
+import static draw.chemy.creator.RibbonCreator.MAX_SPACING;
+import static draw.chemy.creator.RibbonCreator.MIN_FRICTION;
+import static draw.chemy.creator.RibbonCreator.MIN_GRAVITY;
+import static draw.chemy.creator.RibbonCreator.MIN_SPACING;
 
-public class RibbonUI extends AbstractCreatorUI {
+public class RibbonUI extends ASettingsGroupUI {
 
     private RibbonCreator fRibbonCreator;
     private View fView;
@@ -65,13 +70,13 @@ public class RibbonUI extends AbstractCreatorUI {
         fFrictionBar.setMax(100);
         fSpacingBar.setMax(MAX_SPACING - MIN_SPACING);
 
-        float gravity = (fRibbonCreator.getGravity()-MIN_GRAVITY)*(100.f)/(MAX_GRAVITY-MIN_GRAVITY);
+        float gravity = (fRibbonCreator.getGravity() - MIN_GRAVITY) * (100.f) / (MAX_GRAVITY - MIN_GRAVITY);
         fGravityBar.setProgress((int) gravity);
 
-        float friction = (fRibbonCreator.getFriction()-MIN_FRICTION)*(100.f)/(MAX_FRICTION-MIN_FRICTION);
+        float friction = (fRibbonCreator.getFriction() - MIN_FRICTION) * (100.f) / (MAX_FRICTION - MIN_FRICTION);
         fFrictionBar.setProgress((int) friction);
 
-        fSpacingBar.setProgress(fRibbonCreator.getSpacing()-MIN_SPACING);
+        fSpacingBar.setProgress(fRibbonCreator.getSpacing() - MIN_SPACING);
 
         fGravityLabel = (TextView) fView.findViewById(R.id.ribbon_gravity__text);
         fFrictionLabel = (TextView) fView.findViewById(R.id.ribbon_friction_text);

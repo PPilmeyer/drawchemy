@@ -33,7 +33,7 @@ import draw.chemy.creator.PaintBrushCreator;
 import static draw.chemy.creator.PaintBrushCreator.MAX_BRISLTES_NUM;
 import static draw.chemy.creator.PaintBrushCreator.MIN_BRISLTES_NUM;
 
-public class PaintBrushUI extends AbstractCreatorUI {
+public class PaintBrushUI extends ASettingsGroupUI {
 
     private PaintBrushCreator fCreator;
     private View fView;

@@ -30,9 +30,12 @@ import org.al.chemy.R;
 
 import draw.chemy.creator.SplatterCreator;
 
-import static draw.chemy.creator.SplatterCreator.*;
+import static draw.chemy.creator.SplatterCreator.MAX_DRIPS;
+import static draw.chemy.creator.SplatterCreator.MAX_SIZE;
+import static draw.chemy.creator.SplatterCreator.MIN_DRIPS;
+import static draw.chemy.creator.SplatterCreator.MIN_SIZE;
 
-public class SplatterUI extends AbstractCreatorUI {
+public class SplatterUI extends ASettingsGroupUI {
 
     private SplatterCreator fSplatterCreator;
     private View fView;
@@ -59,9 +62,9 @@ public class SplatterUI extends AbstractCreatorUI {
         fsizeBar.setMax(100);
         fdripsBar.setMax(MAX_DRIPS - MIN_DRIPS);
 
-        fdripsBar.setProgress(fSplatterCreator.getDrips()-MIN_DRIPS);
+        fdripsBar.setProgress(fSplatterCreator.getDrips() - MIN_DRIPS);
 
-        float size = (fSplatterCreator.getSize()-MIN_SIZE)*(100.f)/(MAX_SIZE-MIN_SIZE);
+        float size = (fSplatterCreator.getSize() - MIN_SIZE) * (100.f) / (MAX_SIZE - MIN_SIZE);
         fsizeBar.setProgress((int) size);
 
         fsizeLabel = (TextView) fView.findViewById(R.id.splatter_size_text);

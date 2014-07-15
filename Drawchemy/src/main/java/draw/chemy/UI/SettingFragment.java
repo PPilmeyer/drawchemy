@@ -28,13 +28,14 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import org.al.chemy.R;
-public class CreatorSettingsFragment extends Fragment {
+
+public class SettingFragment extends Fragment {
 
     private RelativeLayout fLayout;
     private LayoutInflater fLayoutInflater = null;
-    private AbstractCreatorUI fCreator;
+    private ASettingsGroupUI fSettingsGroupUI;
 
-    public CreatorSettingsFragment() {
+    public SettingFragment() {
     }
 
     @Override
@@ -50,23 +51,36 @@ public class CreatorSettingsFragment extends Fragment {
         });
         fLayoutInflater = inflater;
 
-        fCreator.fillView(fLayoutInflater,fLayout,getActivity());
+        fSettingsGroupUI.fillView(fLayoutInflater, fLayout, getActivity());
         view.invalidate();
 
         return view;
     }
 
-    public void getNewCreator(AbstractCreatorUI aAlcCreator) {
-        fCreator = aAlcCreator;
+    public void getNewCreator(ASettingsGroupUI aAlcCreator) {
+        if (fSettingsGroupUI != null) {
+            fSettingsGroupUI.close();
+        }
+        fSettingsGroupUI = aAlcCreator;
         if(getView() != null) {
             fLayout.removeAllViewsInLayout();
-            fCreator.fillView(fLayoutInflater,fLayout,getActivity());
+            fSettingsGroupUI.fillView(fLayoutInflater, fLayout, getActivity());
             getView().invalidate();
         }
     }
 
     @Override
     public void onDestroyView() {
+        if (getView() != null) {
+            fLayout.removeAllViewsInLayout();
+        }
         super.onDestroyView();
+    }
+
+    public void close() {
+        if (fSettingsGroupUI != null) {
+            fSettingsGroupUI.close();
+        }
+        fSettingsGroupUI = null;
     }
 }

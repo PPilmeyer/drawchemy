@@ -124,13 +124,14 @@ public class FileUtils {
         }
 
         protected void addFileToMedia(File aFile) {
-            MediaScannerConnection.scanFile(fContext,
+            MediaScannerConnection.scanFile(fContext.getApplicationContext(),
                     new String[]{aFile.toString()}, new String[]{"image/png"},
                     new MediaScannerConnection.OnScanCompletedListener() {
                         public void onScanCompleted(String path, Uri uri) {
                         }
                     }
             );
+
         }
     }
 

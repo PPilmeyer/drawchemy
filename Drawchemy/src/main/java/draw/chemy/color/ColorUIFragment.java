@@ -87,14 +87,14 @@ public class ColorUIFragment extends Fragment implements DrawManager.NewColorUse
 
     private void initPalette() {
         fPalette = new ColorElem[8];
-        fPalette[0] = new ColorElem(Color.BLACK,0);
-        fPalette[1] = new ColorElem(Color.WHITE,1);
-        fPalette[2] = new ColorElem(Color.RED,2);
-        fPalette[3] = new ColorElem(Color.GREEN,3);
-        fPalette[4] = new ColorElem(Color.BLUE,4);
-        fPalette[5] = new ColorElem(Color.YELLOW,5);
-        fPalette[6] = new ColorElem(Color.MAGENTA,6);
-        fPalette[7] = new ColorElem(Color.CYAN,7);
+        fPalette[0] = new ColorElem(Color.BLACK, 0);
+        fPalette[1] = new ColorElem(Color.WHITE, 1);
+        fPalette[2] = new ColorElem(Color.RED, 2);
+        fPalette[3] = new ColorElem(Color.GREEN, 3);
+        fPalette[4] = new ColorElem(Color.BLUE, 4);
+        fPalette[5] = new ColorElem(Color.YELLOW, 5);
+        fPalette[6] = new ColorElem(Color.MAGENTA, 6);
+        fPalette[7] = new ColorElem(Color.CYAN, 7);
     }
 
 
@@ -213,14 +213,14 @@ public class ColorUIFragment extends Fragment implements DrawManager.NewColorUse
             @Override
             public void onClick(View view) {
 
-                for(int i = 0; i < fPaletteButton.length; i++) {
-                    if(fPaletteButton[i].getId()==view.getId()) {
+                for (int i = 0; i < fPaletteButton.length; i++) {
+                    if (fPaletteButton[i].getId() == view.getId()) {
                         setColor(fPalette[i].color, true);
                     }
                 }
             }
         };
-        for(int i = 0; i < fPaletteButton.length; i++) {
+        for (int i = 0; i < fPaletteButton.length; i++) {
             GradientDrawable drawable = (GradientDrawable) fPaletteButton[i].getBackground();
             drawable.setColor(fPalette[i].color);
             fPaletteButton[i].setOnClickListener(onClickListener);
@@ -228,24 +228,24 @@ public class ColorUIFragment extends Fragment implements DrawManager.NewColorUse
     }
 
     private void updateColor(int aNewColor) {
-        for(int i = 0; i < fPalette.length; i++ ) {
+        for (int i = 0; i < fPalette.length; i++) {
             fPalette[i].priority++;
         }
         int idx = 0;
         int priority = -1;
-        for(int i = 0; i < fPalette.length; i++ ) {
-            if(fPalette[i].color == aNewColor) {
+        for (int i = 0; i < fPalette.length; i++) {
+            if (fPalette[i].color == aNewColor) {
                 fPalette[i].priority = 0;
                 return;
-            } else if(priority < fPalette[i].priority) {
+            } else if (priority < fPalette[i].priority) {
                 priority = fPalette[i].priority;
                 idx = i;
             }
         }
         fPalette[idx].priority = 0;
         fPalette[idx].color = aNewColor;
-        if(fPaletteButton != null) {
-            ((GradientDrawable)fPaletteButton[idx].getBackground()).setColor(aNewColor);
+        if (fPaletteButton != null) {
+            ((GradientDrawable) fPaletteButton[idx].getBackground()).setColor(aNewColor);
         }
 
     }
@@ -443,5 +443,13 @@ public class ColorUIFragment extends Fragment implements DrawManager.NewColorUse
 
     public static interface PipetteActivateListener {
         public void activate();
+    }
+
+    @Override
+    public void onDestroy() {
+        fColorListeners.clear();
+        fHueSwitchListeners.clear();
+        fPipetteListeners.clear();
+        super.onDestroy();
     }
 }

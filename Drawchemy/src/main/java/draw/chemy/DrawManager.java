@@ -41,7 +41,17 @@ import draw.chemy.creator.IDrawingOperation;
 public class DrawManager implements View.OnTouchListener {
 
     // Number of Operations possibles which can be cancelled
-    private static final int MAX_OP = 5;
+    public static final int MaxAllowedUndos = 10;
+    public static final int MinAllowedUndos = 2;
+
+    private int fAllowedUndos = 5;
+
+    public static final int MaxKaleidoscopeSec = 8;
+    public static final int MinKaleidoscopeSec = 2;
+
+    private int fKaleidoscopeSec = 6;
+
+
     LinkedList<IDrawingOperation> fOperations;
     LinkedList<IDrawingOperation> fUndo;
     IDrawingOperation fCurrentOperation = null;
@@ -142,6 +152,23 @@ public class DrawManager implements View.OnTouchListener {
 
     public boolean getKaleidoscopeFlag() {
         return fKaleidoscopeFlag;
+    }
+
+
+    public int getKaleidoscopeSec() {
+        return fKaleidoscopeSec;
+    }
+
+    public void setKaleidoscopeSec(int aKaleidoscopeSec) {
+        fKaleidoscopeSec = aKaleidoscopeSec;
+    }
+
+    public int getAllowedUndos() {
+        return fAllowedUndos;
+    }
+
+    public void setAllowedUndos(int aAllowedUndos) {
+        fAllowedUndos = aAllowedUndos;
     }
 
     public void setMirrorVertical(boolean checked) {
@@ -385,7 +412,7 @@ public class DrawManager implements View.OnTouchListener {
         synchronized (fBackgroundCanvas) {
             fCurrentOperation = op;
             fOperations.addLast(fCurrentOperation);
-            while (fOperations.size() > MAX_OP) {
+            while (fOperations.size() > fAllowedUndos) {
                 op = fOperations.removeFirst();
                 op.complete();
                 op.draw(fBackgroundCanvasBackUP);
@@ -689,6 +716,7 @@ public class DrawManager implements View.OnTouchListener {
     public void close() {
         fNewColorUsedListener = null;
         fDrawListener = null;
+        fPipetteListener = null;
     }
 
     private class KaleidoscopeOp implements IDrawingOperation {
@@ -735,7 +763,7 @@ public class DrawManager implements View.OnTouchListener {
 
         public KaleidoscopeOp(IDrawingOperation op) {
             fDelegate = op;
-            KaleidoscopeMatrix = new Matrix[5];
+            KaleidoscopeMatrix = new Matrix[fKaleidoscopeSec - 1];
             float angle = 360.f / (1.f + KaleidoscopeMatrix.length);
             for (int i = 0; i < KaleidoscopeMatrix.length; i++) {
                 Matrix m = new Matrix();

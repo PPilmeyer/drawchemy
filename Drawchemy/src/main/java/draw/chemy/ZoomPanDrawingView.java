@@ -130,6 +130,10 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         setOnTouchListener(fZoomManager);
+        if (fThread != null) {
+            fThread.stopThread();
+            fThread.fInstance = null;
+        }
         fThread = new ViewThread(this);
         fThread.start();
 
@@ -164,7 +168,7 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
 
         public void stopThread() {
             fRun = false;
-            if (fInstance.fDrawListener != null) {
+            if (fInstance != null && fInstance.fDrawListener != null) {
                 fInstance.fDrawListener.redraw();
             }
         }
@@ -213,6 +217,10 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
         fCanvasManager = null;
         fZoomManager.fDelegate = null;
         fZoomManager = null;
+        if (fThread != null) {
+            fThread.stopThread();
+            fThread.fInstance = null;
+        }
     }
 
     public void setEnabled(boolean check) {

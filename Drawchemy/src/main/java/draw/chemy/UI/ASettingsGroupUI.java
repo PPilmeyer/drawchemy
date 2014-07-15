@@ -19,16 +19,26 @@
 
 package draw.chemy.UI;
 
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
-import org.al.chemy.R;
+public abstract class ASettingsGroupUI {
 
-public class CreatorWithoutUI extends ASettingsGroupUI {
-    @Override
-    public void fillView(LayoutInflater aInflater, ViewGroup aViewGroup, Context aContext) {
-        aInflater.inflate(R.layout.empty_settings, aViewGroup);
+    public abstract void fillView(LayoutInflater aInflater, ViewGroup aViewGroup, Context aContext);
+
+    protected void setLabel(TextView aTextView, String aMessage, float aValue) {
+        aTextView.setText(aMessage + " : " + String.format("%.1f", aValue));
+        aTextView.invalidate();
+    }
+
+    protected void setLabel(TextView aTextView, String aMessage, int aValue) {
+        aTextView.setText(aMessage + " : " + aValue);
+        aTextView.invalidate();
+    }
+
+    public void close() {
+
     }
 }

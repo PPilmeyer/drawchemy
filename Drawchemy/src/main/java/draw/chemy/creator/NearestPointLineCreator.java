@@ -37,10 +37,11 @@ public class NearestPointLineCreator extends ACreator {
 
     private PointF fPrevious;
 
+    private static final float limit = 35.f;
+
     public NearestPointLineCreator(DrawManager aManager) {
         super(aManager);
         fPreviousOps = new LinkedList<NearestPointLineOperation>();
-
     }
 
     @Override
@@ -56,15 +57,15 @@ public class NearestPointLineCreator extends ACreator {
         fCurrentOperation.addLine(fPrevious, next);
         for (NearestPointLineOperation previousOp : fPreviousOps) {
             for (PointF p : previousOp.fPreviousPoints) {
-                if (Math.hypot(p.x - x, p.y - y) < 25.f) {
-                    fCurrentOperation.addLine(p, next);
+                if (Math.hypot(p.x - x, p.y - y) < limit) {
+                    addLine(p, next);
                 }
             }
         }
         synchronized (fCurrentOperation) {
             for (PointF p : fCurrentOperation.fPreviousPoints) {
-                if (Math.hypot(p.x - x, p.y - y) < 25.f) {
-                    fCurrentOperation.addLine(p, next);
+                if (Math.hypot(p.x - x, p.y - y) < limit) {
+                    addLine(p, next);
                 }
             }
         }
@@ -72,6 +73,10 @@ public class NearestPointLineCreator extends ACreator {
         fCurrentOperation.addPoint(next);
         fPrevious = next;
         fManager.redraw();
+    }
+
+    void addLine(PointF a, PointF b) {
+        fCurrentOperation.addLine(a, b);
     }
 
     @Override

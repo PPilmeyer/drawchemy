@@ -17,64 +17,61 @@
  * along with Drawchemy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 package draw.chemy.creator;
 
 import android.graphics.Paint;
-import android.graphics.Path;
 
 import draw.chemy.DrawManager;
+import draw.chemy.DrawUtils;
 
-public class BoxCreator extends ACreator {
+public class XShape2Creator extends ACreator {
 
-    private float fX;
-    private float fY;
-    private MultiPathOperation fCurrentOperation;
+    private SimpleLineOperation fCurrentOperation;
 
-    private static final float COS_HALF_PI = 0.f;
-    private static final float SIN_HALF_PI = 1.f;
+    private float fPreviousX, fPreviousY;
 
-    public BoxCreator(DrawManager aManager) {
+    public XShape2Creator(DrawManager aManager) {
         super(aManager);
     }
 
     @Override
     public IDrawingOperation startDrawingOperation(float x, float y) {
-        fX = x;
-        fY = y;
 
-        Paint refPaint = fManager.getPaint();
+        Paint p = fManager.getPaint();
 
         Paint paint = new Paint();
-        paint.setColor(refPaint.getColor());
-        paint.setStrokeWidth(refPaint.getStrokeWidth());
-        paint.setStyle(refPaint.getStyle());
+        paint.setColor(p.getColor());
+        paint.setStrokeWidth(p.getStrokeWidth());
+        paint.setStyle(p.getStyle());
         paint.setAntiAlias(true);
         paint.setStrokeJoin(Paint.Join.MITER);
         paint.setStrokeCap(Paint.Cap.SQUARE);
-        fCurrentOperation = new MultiPathOperation(paint);
+
+        fCurrentOperation = new SimpleLineOperation(x, y, paint);
+        fPreviousX = x;
+        fPreviousY = y;
         return fCurrentOperation;
     }
 
     @Override
     public void updateDrawingOperation(float x, float y) {
-        float dx = x - fX;
-        float dy = y - fY;
 
-        float ax = COS_HALF_PI * dx - SIN_HALF_PI * dy;
-        float ay = SIN_HALF_PI * dx + COS_HALF_PI * dy;
+        float vX = x - fPreviousX;
+        float vY = y - fPreviousY;
 
-        fCurrentOperation.addPath();
 
-        Path p = new Path();
-        p.moveTo(fX - ax, fY - ay);
-        p.lineTo(fX + ax, fY + ay);
-        p.lineTo(x + ax, y + ay);
-        p.lineTo(x - ax, y - ay);
-        p.close();
-        fCurrentOperation.setTop(p);
+        float aX = x - vX * (1 + DrawUtils.getProbability(0.5f));
+        float aY = y - vY * (1 + DrawUtils.getProbability(0.5f));
 
-        fX = x;
-        fY = y;
+        float bX = fPreviousX + vX * (1 + DrawUtils.getProbability(0.5f));
+        float bY = fPreviousY + vY * (1 + DrawUtils.getProbability(0.5f));
+
+        fCurrentOperation.addPoint(aX, aY);
+        fCurrentOperation.addPoint(bX, bY);
+
+        fPreviousX = x;
+        fPreviousY = y;
         fManager.redraw();
     }
 
@@ -82,5 +79,4 @@ public class BoxCreator extends ACreator {
     public void endDrawingOperation() {
         fCurrentOperation = null;
     }
-
 }

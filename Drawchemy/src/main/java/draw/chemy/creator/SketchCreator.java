@@ -17,24 +17,30 @@
  * along with Drawchemy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package draw.chemy.UI;
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.TextView;
+package draw.chemy.creator;
 
-public abstract class AbstractCreatorUI {
+import android.graphics.PointF;
 
-    public abstract void fillView(LayoutInflater aInflater, ViewGroup aViewGroup, Context aContext);
+import draw.chemy.DrawManager;
 
-    protected void setLabel(TextView aTextView, String aMessage, float aValue) {
-        aTextView.setText(aMessage + " : " + String.format("%.1f", aValue));
-        aTextView.invalidate();
+public class SketchCreator extends NearestPointLineCreator {
+
+    public static final float alpha = 0.3f;
+
+    public static final float beta = 1.f - alpha;
+
+    public SketchCreator(DrawManager aManager) {
+        super(aManager);
     }
 
-    protected void setLabel(TextView aTextView, String aMessage, int aValue) {
-        aTextView.setText(aMessage + " : " + aValue);
-        aTextView.invalidate();
+    @Override
+    void addLine(PointF a, PointF b) {
+
+        PointF a2 = new PointF(a.x * beta + b.x * alpha, a.y * beta + b.y * alpha);
+
+        PointF b2 = new PointF(a.x * alpha + b.x * beta, a.y * alpha + b.y * beta);
+
+        super.addLine(a2, b2);
     }
 }
