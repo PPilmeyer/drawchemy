@@ -49,14 +49,18 @@ import org.al.chemy.R;
 
 import draw.chemy.UI.ASettingsGroupUI;
 import draw.chemy.UI.BallUI;
+import draw.chemy.UI.BasicShapeUI;
 import draw.chemy.UI.CreatorWithoutUI;
 import draw.chemy.UI.ExtraSettingsUI;
+import draw.chemy.UI.NearestPointUI;
 import draw.chemy.UI.PaintBrushUI;
 import draw.chemy.UI.RibbonUI;
 import draw.chemy.UI.ScrawUI;
 import draw.chemy.UI.SettingFragment;
 import draw.chemy.UI.SplatterUI;
+import draw.chemy.UI.StraightLineUI;
 import draw.chemy.UI.XShapeUI;
+import draw.chemy.UI.XShapeV2UI;
 import draw.chemy.color.ColorUIFragment;
 import draw.chemy.color.RoundIconGenerator;
 import draw.chemy.creator.BallCreator;
@@ -69,8 +73,8 @@ import draw.chemy.creator.ScrawCreator;
 import draw.chemy.creator.SketchCreator;
 import draw.chemy.creator.SplatterCreator;
 import draw.chemy.creator.StraightlineCreator;
-import draw.chemy.creator.XShape2Creator;
 import draw.chemy.creator.XShapeCreator;
+import draw.chemy.creator.XShapeV2Creator;
 
 public class DrawActivity extends Activity {
 
@@ -142,8 +146,8 @@ public class DrawActivity extends Activity {
         fManager.addTool(8, new StraightlineCreator(fManager));
         fManager.addTool(9, new NearestPointLineCreator(fManager));
         fManager.addTool(10, new SketchCreator(fManager));
-        fManager.addTool(11, new XShape2Creator(fManager));
-        fManager.addTool(11, new XShape2Creator(fManager));
+        fManager.addTool(11, new XShapeV2Creator(fManager));
+        fManager.addTool(11, new XShapeV2Creator(fManager));
 
         fManager.setCurrentTool(0);
 
@@ -470,27 +474,27 @@ public class DrawActivity extends Activity {
             }
             case R.id.i_basic_shapes: {
                 fManager.setCurrentTool(7);
-                fSettingsFragment.getNewCreator(fEmptySettings);
+                fSettingsFragment.getNewCreator(new BasicShapeUI((BasicShapesCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_straigtline: {
                 fManager.setCurrentTool(8);
-                fSettingsFragment.getNewCreator(fEmptySettings);
+                fSettingsFragment.getNewCreator(new StraightLineUI((StraightlineCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_web: {
                 fManager.setCurrentTool(9);
-                fSettingsFragment.getNewCreator(fEmptySettings);
+                fSettingsFragment.getNewCreator(new NearestPointUI((NearestPointLineCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_sketch: {
                 fManager.setCurrentTool(10);
-                fSettingsFragment.getNewCreator(fEmptySettings);
+                fSettingsFragment.getNewCreator(new NearestPointUI((NearestPointLineCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_xshape2: {
                 fManager.setCurrentTool(11);
-                fSettingsFragment.getNewCreator(fEmptySettings);
+                fSettingsFragment.getNewCreator(new XShapeV2UI((XShapeV2Creator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_flip_h: {
@@ -576,7 +580,9 @@ public class DrawActivity extends Activity {
                 break;
             }
             case R.id.i_help: {
-                createHelpDialog();
+                Intent intent = new Intent(this, HelpActivity.class);
+
+                startActivity(intent);
                 break;
             }
             case android.R.id.home: {

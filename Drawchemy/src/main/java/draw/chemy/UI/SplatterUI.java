@@ -19,90 +19,82 @@
 
 package draw.chemy.UI;
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.SeekBar;
-import android.widget.TextView;
-
 import org.al.chemy.R;
 
 import draw.chemy.creator.SplatterCreator;
 
-import static draw.chemy.creator.SplatterCreator.MAX_DRIPS;
-import static draw.chemy.creator.SplatterCreator.MAX_SIZE;
-import static draw.chemy.creator.SplatterCreator.MIN_DRIPS;
-import static draw.chemy.creator.SplatterCreator.MIN_SIZE;
-
-public class SplatterUI extends ASettingsGroupUI {
-
-    private SplatterCreator fSplatterCreator;
-    private View fView;
-
-    private SeekBar fsizeBar;
-    private SeekBar fdripsBar;
-
-    private TextView fsizeLabel;
-    private TextView fdripsLabel;
-
-    private String fsizeTxt;
-    private String fdripsTxt;
+public class SplatterUI extends ASettingsGroupUIWithSeekBar {
 
     public SplatterUI(SplatterCreator aSplatterCreator) {
-        fSplatterCreator = aSplatterCreator;
+        super(createSettings(aSplatterCreator));
     }
 
-    @Override
-    public void fillView(LayoutInflater aInflater, ViewGroup aViewGroup, Context aContext) {
-        fView = aInflater.inflate(R.layout.splatter_ui, aViewGroup);
-        fsizeBar = (SeekBar) fView.findViewById(R.id.splatter_size_seekbar);
-        fdripsBar = (SeekBar) fView.findViewById(R.id.splatter_drips_seekbar);
 
-        fsizeBar.setMax(100);
-        fdripsBar.setMax(MAX_DRIPS - MIN_DRIPS);
+    private static SeekBarSettings[] createSettings(final SplatterCreator aSplatterCreator) {
 
-        fdripsBar.setProgress(fSplatterCreator.getDrips() - MIN_DRIPS);
+        SeekBarSettings size = new SeekBarSettings() {
+            @Override
+            public boolean isPercent() {
+                return true;
+            }
 
-        float size = (fSplatterCreator.getSize() - MIN_SIZE) * (100.f) / (MAX_SIZE - MIN_SIZE);
-        fsizeBar.setProgress((int) size);
+            @Override
+            public float getMax() {
+                return SplatterCreator.MAX_SIZE;
+            }
 
-        fsizeLabel = (TextView) fView.findViewById(R.id.splatter_size_text);
-        fdripsLabel = (TextView) fView.findViewById(R.id.splatter_drips_text);
+            @Override
+            public float getMin() {
+                return SplatterCreator.MIN_SIZE;
+            }
 
-        fsizeTxt = aContext.getResources().getString(R.string.size);
-        fdripsTxt = aContext.getResources().getString(R.string.drips);
+            @Override
+            public float getCurrent() {
+                return aSplatterCreator.getSize();
+            }
 
-        setLabel(fsizeLabel, fsizeTxt, fSplatterCreator.getSize());
-        setLabel(fdripsLabel, fdripsTxt, fSplatterCreator.getDrips());
+            @Override
+            public void setCurrent(float aValue) {
+                aSplatterCreator.setSize(aValue);
+            }
 
-        Listener listener = new Listener();
-        fsizeBar.setOnSeekBarChangeListener(listener);
-        fdripsBar.setOnSeekBarChangeListener(listener);
+            @Override
+            public int getTextId() {
+                return R.string.size;
+            }
+        };
+        SeekBarSettings drips = new SeekBarSettings() {
+            @Override
+            public boolean isPercent() {
+                return false;
+            }
 
-    }
+            @Override
+            public float getMax() {
+                return SplatterCreator.MAX_DRIPS;
+            }
 
-    private class Listener implements SeekBar.OnSeekBarChangeListener {
+            @Override
+            public float getMin() {
+                return SplatterCreator.MIN_DRIPS;
+            }
 
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-            int size = fsizeBar.getProgress();
-            fSplatterCreator.setSize(MIN_SIZE + (MAX_SIZE - MIN_SIZE) * (((float) size) / 100.f));
-            setLabel(fsizeLabel, fsizeTxt, fSplatterCreator.getSize());
+            @Override
+            public float getCurrent() {
+                return aSplatterCreator.getDrips();
+            }
 
-            int drips = fdripsBar.getProgress();
-            fSplatterCreator.setDrips((MIN_DRIPS + drips));
-            setLabel(fdripsLabel, fdripsTxt, fSplatterCreator.getDrips());
+            @Override
+            public void setCurrent(float aValue) {
+                aSplatterCreator.setDrips((int) aValue);
+            }
 
-            fView.invalidate();
-        }
+            @Override
+            public int getTextId() {
+                return R.string.drips;
+            }
+        };
 
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-        }
+        return new SeekBarSettings[]{size, drips};
     }
 }

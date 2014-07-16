@@ -19,111 +19,115 @@
 
 package draw.chemy.UI;
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.SeekBar;
-import android.widget.TextView;
-
 import org.al.chemy.R;
 
 import draw.chemy.creator.BallCreator;
 
-import static draw.chemy.creator.BallCreator.MAX_FLOW;
-import static draw.chemy.creator.BallCreator.MAX_RADIUS;
-import static draw.chemy.creator.BallCreator.MAX_SIZE;
-import static draw.chemy.creator.BallCreator.MIN_FLOW;
-import static draw.chemy.creator.BallCreator.MIN_RADIUS;
-import static draw.chemy.creator.BallCreator.MIN_SIZE;
 
-
-public class BallUI extends ASettingsGroupUI {
-
-    private BallCreator fBallCreator;
-    private View fView;
-
-    private SeekBar fSizeBar;
-    private SeekBar fFlowBar;
-    private SeekBar fRadiusBar;
-
-    private TextView fSizeLabel;
-    private TextView fFlowLabel;
-    private TextView fRadiusLabel;
-
-    private String fSizeTxt;
-    private String fFlowTxt;
-    private String fRadiusTxt;
+public class BallUI extends ASettingsGroupUIWithSeekBar {
 
     public BallUI(BallCreator aBallCreator) {
-        fBallCreator = aBallCreator;
+        super(createSettings(aBallCreator));
     }
 
+    private static SeekBarSettings[] createSettings(final BallCreator aBallCreator) {
 
-    @Override
-    public void fillView(LayoutInflater aInflater, ViewGroup aViewGroup, Context aContext) {
-        fView = aInflater.inflate(R.layout.ball_ui, aViewGroup);
-        fSizeBar = (SeekBar) fView.findViewById(R.id.ball_size_seekbar);
-        fFlowBar = (SeekBar) fView.findViewById(R.id.ball_flow_seekbar);
-        fRadiusBar = (SeekBar) fView.findViewById(R.id.ball_radius_seekbar);
+        SeekBarSettings size = new SeekBarSettings() {
+            @Override
+            public boolean isPercent() {
+                return true;
+            }
 
-        fSizeBar.setMax(100);
-        fFlowBar.setMax(MAX_FLOW - MIN_FLOW);
-        fRadiusBar.setMax(MAX_RADIUS - MIN_RADIUS);
+            @Override
+            public float getMax() {
+                return BallCreator.MAX_SIZE;
+            }
 
-        float size = (fBallCreator.getSize() - MIN_SIZE) * (100.f) / (MAX_SIZE - MIN_SIZE);
-        fSizeBar.setProgress((int) size);
+            @Override
+            public float getMin() {
+                return BallCreator.MIN_SIZE;
+            }
 
-        fFlowBar.setProgress(fBallCreator.getFlow() - MIN_FLOW);
+            @Override
+            public float getCurrent() {
+                return aBallCreator.getSize();
+            }
 
-        fRadiusBar.setProgress(fBallCreator.getRadius() - MIN_RADIUS);
+            @Override
+            public void setCurrent(float aValue) {
+                aBallCreator.setSize(aValue);
+            }
 
-        fSizeLabel = (TextView) fView.findViewById(R.id.ball_size_text);
-        fFlowLabel = (TextView) fView.findViewById(R.id.ball_flow_text);
-        fRadiusLabel = (TextView) fView.findViewById(R.id.ball_radius_text);
+            @Override
+            public int getTextId() {
+                return R.string.size;
+            }
+        };
+        SeekBarSettings radius = new SeekBarSettings() {
 
-        fSizeTxt = aContext.getResources().getString(R.string.size);
-        fFlowTxt = aContext.getResources().getString(R.string.flow);
-        fRadiusTxt = aContext.getResources().getString(R.string.radius);
+            @Override
+            public boolean isPercent() {
+                return false;
+            }
 
-        setLabel(fSizeLabel, fSizeTxt, fBallCreator.getSize());
-        setLabel(fFlowLabel, fFlowTxt, fBallCreator.getFlow());
-        setLabel(fRadiusLabel, fRadiusTxt, fBallCreator.getRadius());
+            @Override
+            public float getMax() {
+                return BallCreator.MAX_RADIUS;
+            }
 
-        Listener listener = new Listener();
-        fSizeBar.setOnSeekBarChangeListener(listener);
-        fFlowBar.setOnSeekBarChangeListener(listener);
-        fRadiusBar.setOnSeekBarChangeListener(listener);
+            @Override
+            public float getMin() {
+                return BallCreator.MIN_RADIUS;
+            }
 
-    }
+            @Override
+            public float getCurrent() {
+                return aBallCreator.getRadius();
+            }
 
-    private class Listener implements SeekBar.OnSeekBarChangeListener {
+            @Override
+            public void setCurrent(float aValue) {
+                aBallCreator.setRadius((int) aValue);
+            }
 
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-            int size = fSizeBar.getProgress();
-            fBallCreator.setSize(MIN_SIZE + (MAX_SIZE - MIN_SIZE) * (((float) size) / 100.f));
-            setLabel(fSizeLabel, fSizeTxt, fBallCreator.getSize());
+            @Override
+            public int getTextId() {
+                return R.string.radius;
+            }
+        };
 
-            int flow = fFlowBar.getProgress();
-            fBallCreator.setFlow(MIN_FLOW + flow);
-            setLabel(fFlowLabel, fFlowTxt, fBallCreator.getFlow());
+        SeekBarSettings flow = new SeekBarSettings() {
+            @Override
+            public boolean isPercent() {
+                return false;
+            }
 
-            int radius = fRadiusBar.getProgress();
-            fBallCreator.setRadius((MIN_RADIUS + radius));
-            setLabel(fRadiusLabel, fRadiusTxt, fBallCreator.getRadius());
+            @Override
+            public float getMax() {
+                return BallCreator.MAX_FLOW;
+            }
 
-            fView.invalidate();
-        }
+            @Override
+            public float getMin() {
+                return BallCreator.MIN_FLOW;
+            }
 
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
+            @Override
+            public float getCurrent() {
+                return aBallCreator.getFlow();
+            }
 
-        }
+            @Override
+            public void setCurrent(float aValue) {
+                aBallCreator.setFlow((int) aValue);
+            }
 
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
+            @Override
+            public int getTextId() {
+                return R.string.flow;
+            }
+        };
 
-        }
+        return new SeekBarSettings[]{size, radius, flow};
     }
 }

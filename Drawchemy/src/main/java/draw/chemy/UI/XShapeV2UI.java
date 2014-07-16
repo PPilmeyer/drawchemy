@@ -21,48 +21,48 @@ package draw.chemy.UI;
 
 import org.al.chemy.R;
 
-import draw.chemy.creator.PaintBrushCreator;
+import draw.chemy.creator.XShapeV2Creator;
 
-public class PaintBrushUI extends ASettingsGroupUIWithSeekBar {
+public class XShapeV2UI extends ASettingsGroupUIWithSeekBar {
 
 
-    public PaintBrushUI(PaintBrushCreator aPaintBrushCreator) {
-        super(createSettings(aPaintBrushCreator));
+    public XShapeV2UI(XShapeV2Creator aXShapeV2Creator) {
+        super(createSettings(aXShapeV2Creator));
     }
 
-    private static SeekBarSettings[] createSettings(final PaintBrushCreator aPaintBrushCreator) {
-        SeekBarSettings bristles = new SeekBarSettings() {
+    private static SeekBarSettings[] createSettings(final XShapeV2Creator aXShapeV2Creator) {
+        SeekBarSettings noise = new SeekBarSettings() {
             @Override
             public boolean isPercent() {
-                return false;
+                return true;
             }
 
             @Override
             public float getMax() {
-                return PaintBrushCreator.MAX_BRISLTES_NUM;
+                return XShapeV2Creator.MAX_NOISE;
             }
 
             @Override
             public float getMin() {
-                return PaintBrushCreator.MIN_BRISLTES_NUM;
+                return XShapeV2Creator.MIN_NOISE;
             }
 
             @Override
             public float getCurrent() {
-                return aPaintBrushCreator.getBristlesNumber();
+                return aXShapeV2Creator.getNoise();
             }
 
             @Override
             public void setCurrent(float aValue) {
-                aPaintBrushCreator.setBristlesNumber((int) aValue);
+                aXShapeV2Creator.setNoise(aValue);
             }
 
             @Override
             public int getTextId() {
-                return R.string.bristles;
+                return R.string.noise;
             }
         };
-        return new SeekBarSettings[]{bristles};
+        return new SeekBarSettings[]{noise};
 
     }
 }

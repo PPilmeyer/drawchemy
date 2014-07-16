@@ -97,4 +97,19 @@
     You can access to the color settings in the menu.
     These settings allow you to change the main color and activate the hue noise. The hue noise will change randomly the hue of your lines and shapes.
     The intensity of the noise is settable by the slidebar bellow the hue noise checkbox.</string>
+    <string name="brushes">Brushes</string>
+    <string name="help_others">Others</string>
+    <string name="effects">Effects</string>
+    <string name="help_settings">Settings</string>
+    <string name="help_mirrors">Mirrors</string>
+    <string name="help_fill">fill</string>
+    <string name="help_stroke">stroke</string>
+    <string name="help_unicolor">unicolor</string>
+    <string name="help_logo">hide UI</string>
+    <string name="maxDist">Max Dist.</string>
+    <string name="box">Box</string>
+    <string name="circle">Circle</string>
+    <string name="triangle">Triangle</string>
+    <string name="random">Random</string>
+    <string name="snapping">Spanning</string>
 </resources>

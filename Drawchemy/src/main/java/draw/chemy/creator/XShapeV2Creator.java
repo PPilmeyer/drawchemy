@@ -25,15 +25,28 @@ import android.graphics.Paint;
 import draw.chemy.DrawManager;
 import draw.chemy.DrawUtils;
 
-public class XShape2Creator extends ACreator {
+public class XShapeV2Creator extends ACreator {
 
     private SimpleLineOperation fCurrentOperation;
 
     private float fPreviousX, fPreviousY;
 
-    public XShape2Creator(DrawManager aManager) {
+    public XShapeV2Creator(DrawManager aManager) {
         super(aManager);
     }
+
+    public static final float MAX_NOISE = 1.0f;
+    public static final float MIN_NOISE = 0.1f;
+
+    public float getNoise() {
+        return fNoise;
+    }
+
+    public void setNoise(float aNoise) {
+        fNoise = aNoise;
+    }
+
+    private float fNoise = 0.5f;
 
     @Override
     public IDrawingOperation startDrawingOperation(float x, float y) {
@@ -61,11 +74,11 @@ public class XShape2Creator extends ACreator {
         float vY = y - fPreviousY;
 
 
-        float aX = x - vX * (1 + DrawUtils.getProbability(0.5f));
-        float aY = y - vY * (1 + DrawUtils.getProbability(0.5f));
+        float aX = x - vX * (1 + DrawUtils.getProbability(fNoise));
+        float aY = y - vY * (1 + DrawUtils.getProbability(fNoise));
 
-        float bX = fPreviousX + vX * (1 + DrawUtils.getProbability(0.5f));
-        float bY = fPreviousY + vY * (1 + DrawUtils.getProbability(0.5f));
+        float bX = fPreviousX + vX * (1 + DrawUtils.getProbability(fNoise));
+        float bY = fPreviousY + vY * (1 + DrawUtils.getProbability(fNoise));
 
         fCurrentOperation.addPoint(aX, aY);
         fCurrentOperation.addPoint(bX, bY);

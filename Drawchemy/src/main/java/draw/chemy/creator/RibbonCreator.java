@@ -152,13 +152,13 @@ public class RibbonCreator extends ACreator {
                     fCurrentPath.quadTo(p.controlLeftX, p.controlLeftY, p.leftSecondX, p.leftSecondY);
                 }
                 Particle lastp = fParticles[(first + particlesAssigned - 2) % fNbOfParticles];
-                fCurrentPath.quadTo(last.fX,last.fY,lastp.rightFirstX,lastp.rightFirstY);
+                fCurrentPath.quadTo(last.fX, last.fY, lastp.rightFirstX, lastp.rightFirstY);
 
                 for (int i = particlesAssigned - 2; i >= 1; i--) {
                     Particle p = fParticles[(first + i) % fNbOfParticles];
                     fCurrentPath.quadTo(p.controlRightX, p.controlRightY, p.rightSecondX, p.rightSecondY);
                 }
-                fCurrentPath.quadTo(p0.fX,p0.fY,p1.leftFirstX,p1.leftFirstY);
+                fCurrentPath.quadTo(p0.fX, p0.fY, p1.leftFirstX, p1.leftFirstY);
                 fCurrentOperation.setTop(fCurrentPath);
             }
 
@@ -253,15 +253,15 @@ public class RibbonCreator extends ACreator {
 
 
         public void updatePoint(Particle previous, Particle next) {
-            leftFirstX = (previous.controlLeftX+controlLeftX)/2.f;
-            leftFirstY = (previous.controlLeftY+controlLeftY)/2.f;
-            leftSecondX = (next.controlLeftX+controlLeftX)/2.f;
-            leftSecondY = (next.controlLeftY+controlLeftY)/2.f;
+            leftFirstX = (previous.controlLeftX + controlLeftX) / 2.f;
+            leftFirstY = (previous.controlLeftY + controlLeftY) / 2.f;
+            leftSecondX = (next.controlLeftX + controlLeftX) / 2.f;
+            leftSecondY = (next.controlLeftY + controlLeftY) / 2.f;
 
-            rightFirstX = (next.controlRightX+controlRightX)/2.f;
-            rightFirstY = (next.controlRightY+controlRightY)/2.f;
-            rightSecondX = (previous.controlRightX+controlRightX)/2.f;
-            rightSecondY = (previous.controlRightY+controlRightY)/2.f;
+            rightFirstX = (next.controlRightX + controlRightX) / 2.f;
+            rightFirstY = (next.controlRightY + controlRightY) / 2.f;
+            rightSecondX = (previous.controlRightX + controlRightX) / 2.f;
+            rightSecondY = (previous.controlRightY + controlRightY) / 2.f;
         }
 
         public void updateExtremity() {
@@ -290,8 +290,8 @@ public class RibbonCreator extends ACreator {
         this.fGravity = fGravity;
     }
 
-    public void setFriction(float fFriction) {
-        this.fFriction = fFriction;
+    public void setFriction(float aFriction) {
+        fFriction = aFriction;
     }
 
 }

@@ -21,48 +21,51 @@ package draw.chemy.UI;
 
 import org.al.chemy.R;
 
-import draw.chemy.creator.PaintBrushCreator;
+import draw.chemy.creator.NearestPointLineCreator;
 
-public class PaintBrushUI extends ASettingsGroupUIWithSeekBar {
+public class NearestPointUI extends ASettingsGroupUIWithSeekBar {
 
-
-    public PaintBrushUI(PaintBrushCreator aPaintBrushCreator) {
-        super(createSettings(aPaintBrushCreator));
+    public NearestPointUI(NearestPointLineCreator aNearestPointLineCreator) {
+        super(createSettings(aNearestPointLineCreator));
     }
 
-    private static SeekBarSettings[] createSettings(final PaintBrushCreator aPaintBrushCreator) {
-        SeekBarSettings bristles = new SeekBarSettings() {
+    private static SeekBarSettings[] createSettings(final NearestPointLineCreator aNearestPointLineCreator) {
+
+        SeekBarSettings dist = new SeekBarSettings() {
+
             @Override
             public boolean isPercent() {
-                return false;
+                return true;
             }
 
             @Override
             public float getMax() {
-                return PaintBrushCreator.MAX_BRISLTES_NUM;
+                return NearestPointLineCreator.MAX_DIST_LIM;
             }
 
             @Override
             public float getMin() {
-                return PaintBrushCreator.MIN_BRISLTES_NUM;
+                return NearestPointLineCreator.MIN_DIST_LIM;
             }
 
             @Override
             public float getCurrent() {
-                return aPaintBrushCreator.getBristlesNumber();
+                return aNearestPointLineCreator.getDistLim();
             }
 
             @Override
             public void setCurrent(float aValue) {
-                aPaintBrushCreator.setBristlesNumber((int) aValue);
+                aNearestPointLineCreator.setDistLim(aValue);
             }
 
             @Override
             public int getTextId() {
-                return R.string.bristles;
+                return R.string.maxDist;
             }
         };
-        return new SeekBarSettings[]{bristles};
 
+
+        return new SeekBarSettings[]{dist};
     }
+
 }

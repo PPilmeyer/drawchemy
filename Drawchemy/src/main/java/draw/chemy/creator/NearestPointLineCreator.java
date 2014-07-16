@@ -37,7 +37,11 @@ public class NearestPointLineCreator extends ACreator {
 
     private PointF fPrevious;
 
-    private static final float limit = 35.f;
+
+    public static final float MAX_DIST_LIM = 55.f;
+    public static final float MIN_DIST_LIM = 15.f;
+
+    private float fDistLim = 35.f;
 
     public NearestPointLineCreator(DrawManager aManager) {
         super(aManager);
@@ -57,14 +61,14 @@ public class NearestPointLineCreator extends ACreator {
         fCurrentOperation.addLine(fPrevious, next);
         for (NearestPointLineOperation previousOp : fPreviousOps) {
             for (PointF p : previousOp.fPreviousPoints) {
-                if (Math.hypot(p.x - x, p.y - y) < limit) {
+                if (Math.hypot(p.x - x, p.y - y) < fDistLim) {
                     addLine(p, next);
                 }
             }
         }
         synchronized (fCurrentOperation) {
             for (PointF p : fCurrentOperation.fPreviousPoints) {
-                if (Math.hypot(p.x - x, p.y - y) < limit) {
+                if (Math.hypot(p.x - x, p.y - y) < fDistLim) {
                     addLine(p, next);
                 }
             }
@@ -89,6 +93,14 @@ public class NearestPointLineCreator extends ACreator {
     public void clear() {
         super.clear();
         fPreviousOps.clear();
+    }
+
+    public float getDistLim() {
+        return fDistLim;
+    }
+
+    public void setDistLim(float aDistLim) {
+        fDistLim = aDistLim;
     }
 
     private class NearestPointLineOperation implements IDrawingOperation {

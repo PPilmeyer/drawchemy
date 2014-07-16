@@ -19,112 +19,113 @@
 
 package draw.chemy.UI;
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.SeekBar;
-import android.widget.TextView;
-
 import org.al.chemy.R;
 
 import draw.chemy.creator.RibbonCreator;
 
-import static draw.chemy.creator.RibbonCreator.MAX_FRICTION;
-import static draw.chemy.creator.RibbonCreator.MAX_GRAVITY;
-import static draw.chemy.creator.RibbonCreator.MAX_SPACING;
-import static draw.chemy.creator.RibbonCreator.MIN_FRICTION;
-import static draw.chemy.creator.RibbonCreator.MIN_GRAVITY;
-import static draw.chemy.creator.RibbonCreator.MIN_SPACING;
-
-public class RibbonUI extends ASettingsGroupUI {
-
-    private RibbonCreator fRibbonCreator;
-    private View fView;
-
-    private SeekBar fGravityBar;
-    private SeekBar fFrictionBar;
-    private SeekBar fSpacingBar;
-
-    private TextView fGravityLabel;
-    private TextView fFrictionLabel;
-    private TextView fSpacingLabel;
-
-    private String fGravityTxt;
-    private String fFrictionTxt;
-    private String fSpacingTxt;
-
+public class RibbonUI extends ASettingsGroupUIWithSeekBar {
     public RibbonUI(RibbonCreator aRibbonCreator) {
-        fRibbonCreator = aRibbonCreator;
+        super(createSettings(aRibbonCreator));
     }
 
+    static SeekBarSettings[] createSettings(final RibbonCreator aRibbonCreator) {
+        SeekBarSettings gravity = new SeekBarSettings() {
+            @Override
+            public boolean isPercent() {
+                return true;
+            }
 
-    @Override
-    public void fillView(LayoutInflater aInflater, ViewGroup aViewGroup, Context aContext) {
-        fView = aInflater.inflate(R.layout.ribbon_ui, aViewGroup);
-        fGravityBar = (SeekBar) fView.findViewById(R.id.ribbon_gravity_seekbar);
-        fFrictionBar = (SeekBar) fView.findViewById(R.id.ribbon_friction_seekbar);
-        fSpacingBar = (SeekBar) fView.findViewById(R.id.ribbon_spacing_seekbar);
+            @Override
+            public float getMax() {
+                return RibbonCreator.MAX_GRAVITY;
+            }
 
-        fGravityBar.setMax(100);
-        fFrictionBar.setMax(100);
-        fSpacingBar.setMax(MAX_SPACING - MIN_SPACING);
+            @Override
+            public float getMin() {
+                return RibbonCreator.MIN_GRAVITY;
+            }
 
-        float gravity = (fRibbonCreator.getGravity() - MIN_GRAVITY) * (100.f) / (MAX_GRAVITY - MIN_GRAVITY);
-        fGravityBar.setProgress((int) gravity);
+            @Override
+            public float getCurrent() {
+                return aRibbonCreator.getGravity();
+            }
 
-        float friction = (fRibbonCreator.getFriction() - MIN_FRICTION) * (100.f) / (MAX_FRICTION - MIN_FRICTION);
-        fFrictionBar.setProgress((int) friction);
+            @Override
+            public void setCurrent(float aValue) {
+                aRibbonCreator.setGravity(aValue);
+            }
 
-        fSpacingBar.setProgress(fRibbonCreator.getSpacing() - MIN_SPACING);
+            @Override
+            public int getTextId() {
+                return R.string.gravity;
+            }
+        };
 
-        fGravityLabel = (TextView) fView.findViewById(R.id.ribbon_gravity__text);
-        fFrictionLabel = (TextView) fView.findViewById(R.id.ribbon_friction_text);
-        fSpacingLabel = (TextView) fView.findViewById(R.id.ribbon_spacing__text);
+        SeekBarSettings friction = new SeekBarSettings() {
+            @Override
+            public boolean isPercent() {
+                return true;
+            }
 
-        fGravityTxt = aContext.getResources().getString(R.string.gravity);
-        fFrictionTxt = aContext.getResources().getString(R.string.friction);
-        fSpacingTxt = aContext.getResources().getString(R.string.spacing);
+            @Override
+            public float getMax() {
+                return RibbonCreator.MAX_FRICTION;
+            }
 
-        setLabel(fGravityLabel, fGravityTxt, fRibbonCreator.getGravity());
-        setLabel(fFrictionLabel, fFrictionTxt, fRibbonCreator.getFriction());
-        setLabel(fSpacingLabel, fSpacingTxt, fRibbonCreator.getSpacing());
+            @Override
+            public float getMin() {
+                return RibbonCreator.MIN_FRICTION;
+            }
 
-        Listener listener = new Listener();
-        fGravityBar.setOnSeekBarChangeListener(listener);
-        fFrictionBar.setOnSeekBarChangeListener(listener);
-        fSpacingBar.setOnSeekBarChangeListener(listener);
+            @Override
+            public float getCurrent() {
+                return aRibbonCreator.getFriction();
+            }
 
+            @Override
+            public void setCurrent(float aValue) {
+                aRibbonCreator.setFriction(aValue);
+            }
+
+            @Override
+            public int getTextId() {
+                return R.string.friction;
+            }
+        };
+
+        SeekBarSettings spacing = new SeekBarSettings() {
+            @Override
+            public boolean isPercent() {
+                return false;
+            }
+
+            @Override
+            public float getMax() {
+                return RibbonCreator.MAX_SPACING;
+            }
+
+            @Override
+            public float getMin() {
+                return RibbonCreator.MIN_SPACING;
+            }
+
+            @Override
+            public float getCurrent() {
+                return aRibbonCreator.getSpacing();
+            }
+
+            @Override
+            public void setCurrent(float aValue) {
+                aRibbonCreator.setSpacing((int) aValue);
+            }
+
+            @Override
+            public int getTextId() {
+                return R.string.spacing;
+            }
+        };
+
+
+        return new SeekBarSettings[]{gravity, friction, spacing};
     }
-
-    private class Listener implements SeekBar.OnSeekBarChangeListener {
-
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-            int gravity = fGravityBar.getProgress();
-            fRibbonCreator.setGravity(MIN_GRAVITY + (MAX_GRAVITY - MIN_GRAVITY) * (((float) gravity) / 100.f));
-            setLabel(fGravityLabel, fGravityTxt, fRibbonCreator.getGravity());
-
-            int friction = fFrictionBar.getProgress();
-            fRibbonCreator.setFriction(MIN_FRICTION + (MAX_FRICTION - MIN_FRICTION) * (((float) friction) / 100.f));
-            setLabel(fFrictionLabel, fFrictionTxt, fRibbonCreator.getFriction());
-
-            int Spacing = fSpacingBar.getProgress();
-            fRibbonCreator.setSpacing((MIN_SPACING + Spacing));
-            setLabel(fSpacingLabel, fSpacingTxt, fRibbonCreator.getSpacing());
-
-            fView.invalidate();
-        }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-
-        }
-    }
-
 }

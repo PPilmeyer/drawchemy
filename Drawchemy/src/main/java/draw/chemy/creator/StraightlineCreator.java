@@ -44,6 +44,15 @@ public class StraightlineCreator extends ACreator {
         fPreviousPRedo = new LinkedList<PointF>();
     }
 
+
+    public boolean isSpanningFlag() {
+        return fSpanningFlag;
+    }
+
+    public void setSpanningFlag(boolean aSpanningFlag) {
+        fSpanningFlag = aSpanningFlag;
+    }
+
     @Override
     public IDrawingOperation startDrawingOperation(float x, float y) {
         float finalX = x;

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/help_brushes"
+        android:icon="@drawable/ic_action_edit"
+
+        android:showAsAction="always|withText"
+        android:title="@string/brushes">
+        <menu></menu>
+    </item>
+
+    <item
+        android:id="@+id/help_faqs"
+        android:showAsAction="always|withText"
+        android:title="FAQS"></item>
+
+    <item
+        android:id="@+id/help_colors"
+        android:icon="@drawable/color"
+        android:showAsAction="always|withText"
+        android:title="@string/action_color">
+        <menu>
+
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/help_settings"
+        android:icon="@drawable/ic_action_settings"
+        android:showAsAction="always|withText"
+        android:title="@string/help_settings"></item>
+
+    <item
+        android:id="@+id/help_effects"
+        android:showAsAction="always|withText"
+        android:title="@string/effects">
+        <menu>
+            <item
+                android:id="@+id/help_mirror"
+                android:icon="@drawable/flip_vertical"
+                android:showAsAction="always|withText"
+                android:title="@string/help_mirrors" />
+            <item
+                android:id="@+id/help_kaleidoscope"
+                android:icon="@drawable/kaleidoscope"
+                android:showAsAction="always|withText"
+                android:title="@string/kaleidoscope" />
+            <item
+                android:id="@+id/help_fill"
+                android:icon="@drawable/fill"
+                android:showAsAction="always|withText"
+                android:title="@string/help_fill" />
+            <item
+                android:id="@+id/help_stroke"
+                android:icon="@drawable/stroke"
+                android:showAsAction="always|withText"
+                android:title="@string/help_stroke" />
+            <item
+                android:id="@+id/help_unicolor"
+                android:icon="@drawable/unicolor"
+                android:showAsAction="always|withText"
+                android:title="@string/help_unicolor" />
+            <item
+                android:id="@+id/help_gradient"
+                android:icon="@drawable/gradient"
+                android:showAsAction="always|withText"
+                android:title="@string/gradient" />
+
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/help_others"
+        android:showAsAction="always|withText"
+        android:title="@string/help_others">
+        <menu>
+            <item
+                android:id="@+id/help_load"
+                android:icon="@drawable/ic_action_picture"
+                android:showAsAction="always|withText"
+                android:title="@string/action_load" />
+            <item
+                android:id="@+id/help_save"
+                android:icon="@drawable/ic_action_save"
+                android:showAsAction="always|withText"
+                android:title="@string/action_save" />
+            <item
+                android:id="@+id/help_share"
+                android:icon="@drawable/ic_action_share"
+                android:showAsAction="always|withText"
+                android:title="@string/action_share" />
+            <item
+                android:id="@+id/help_clear"
+                android:icon="@drawable/ic_action_discard"
+                android:showAsAction="always|withText"
+                android:title="@string/action_clear" />
+            <item
+                android:id="@+id/help_undo"
+                android:icon="@drawable/ic_action_undo"
+                android:showAsAction="always|withText"
+                android:title="@string/undo" />
+            <item
+                android:id="@+id/help_zoom"
+                android:icon="@drawable/ic_action_search"
+                android:showAsAction="always|withText"
+                android:title="@string/pan_zoom" />
+            <item
+                android:id="@+id/help_one"
+                android:icon="@drawable/reset_view"
+                android:showAsAction="always|withText"
+                android:title="@string/reset_view" />
+            <item
+                android:id="@+id/help_logo"
+                android:icon="@drawable/drawchemy"
+                android:showAsAction="always|withText"
+                android:title="@string/help_logo" />
+        </menu>
+    </item>
+
+</menu>

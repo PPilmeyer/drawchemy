@@ -19,106 +19,115 @@
 
 package draw.chemy.UI;
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.SeekBar;
-import android.widget.TextView;
-
 import org.al.chemy.R;
 
 import draw.chemy.creator.ScrawCreator;
 
-import static draw.chemy.creator.ScrawCreator.MAX_DETAIL;
-import static draw.chemy.creator.ScrawCreator.MAX_FLOW;
-import static draw.chemy.creator.ScrawCreator.MAX_NOISE;
-import static draw.chemy.creator.ScrawCreator.MIN_DETAIL;
-import static draw.chemy.creator.ScrawCreator.MIN_FLOW;
-import static draw.chemy.creator.ScrawCreator.MIN_NOISE;
+public class ScrawUI extends ASettingsGroupUIWithSeekBar {
 
-public class ScrawUI extends ASettingsGroupUI {
-
-    private ScrawCreator fScrawCreator;
-    private View fView;
-    private SeekBar fNoiseBar;
-    private SeekBar fDetailBar;
-    private SeekBar fFlowBar;
-
-    private TextView fNoiseLabel;
-    private TextView fDetailLabel;
-    private TextView fFlowLabel;
-
-    private String fNoiseTxt;
-    private String fDetailTxt;
-    private String fFlowTxt;
 
     public ScrawUI(ScrawCreator aScrawCreator) {
-        fScrawCreator = aScrawCreator;
+        super(createSettings(aScrawCreator));
     }
 
-    @Override
-    public void fillView(LayoutInflater aInflater, ViewGroup aViewGroup, Context aContext) {
-        fView = aInflater.inflate(R.layout.scraw_ui, aViewGroup);
-        fNoiseBar = (SeekBar) fView.findViewById(R.id.scraw_noise_seekbar);
-        fDetailBar = (SeekBar) fView.findViewById(R.id.scraw_detail_seekbar);
-        fFlowBar = (SeekBar) fView.findViewById(R.id.scraw_flow_seekbar);
+    public static SeekBarSettings[] createSettings(final ScrawCreator aScrawCreator) {
+        SeekBarSettings flow = new SeekBarSettings() {
+            @Override
+            public boolean isPercent() {
+                return false;
+            }
 
-        fNoiseBar.setMax(100);
-        fDetailBar.setMax(MAX_DETAIL - MIN_DETAIL);
-        fFlowBar.setMax(MAX_FLOW - MIN_FLOW);
+            @Override
+            public float getMax() {
+                return ScrawCreator.MAX_FLOW;
+            }
 
-        fFlowBar.setProgress(fScrawCreator.getFlow() - MIN_FLOW);
+            @Override
+            public float getMin() {
+                return ScrawCreator.MIN_FLOW;
+            }
 
-        float noise = (fScrawCreator.getNoise() - MIN_NOISE) * (100.f) / (MAX_NOISE - MIN_NOISE);
-        fNoiseBar.setProgress((int) noise);
+            @Override
+            public float getCurrent() {
+                return aScrawCreator.getFlow();
+            }
 
-        fDetailBar.setProgress(fScrawCreator.getDetail() - MIN_DETAIL);
+            @Override
+            public void setCurrent(float aValue) {
+                aScrawCreator.setFlow((int) aValue);
+            }
+
+            @Override
+            public int getTextId() {
+                return R.string.flow;
+            }
+        };
+
+        SeekBarSettings noise = new SeekBarSettings() {
+            @Override
+            public boolean isPercent() {
+                return true;
+            }
+
+            @Override
+            public float getMax() {
+                return ScrawCreator.MAX_NOISE;
+            }
+
+            @Override
+            public float getMin() {
+                return ScrawCreator.MIN_NOISE;
+            }
+
+            @Override
+            public float getCurrent() {
+                return aScrawCreator.getNoise();
+            }
+
+            @Override
+            public void setCurrent(float aValue) {
+                aScrawCreator.setNoise(aValue);
+            }
+
+            @Override
+            public int getTextId() {
+                return R.string.noise;
+            }
+        };
+
+        SeekBarSettings details = new SeekBarSettings() {
+            @Override
+            public boolean isPercent() {
+                return false;
+            }
+
+            @Override
+            public float getMax() {
+                return ScrawCreator.MAX_DETAIL;
+            }
+
+            @Override
+            public float getMin() {
+                return ScrawCreator.MIN_DETAIL;
+            }
+
+            @Override
+            public float getCurrent() {
+                return aScrawCreator.getDetail();
+            }
+
+            @Override
+            public void setCurrent(float aValue) {
+                aScrawCreator.setDetail((int) aValue);
+            }
+
+            @Override
+            public int getTextId() {
+                return R.string.detail;
+            }
+        };
 
 
-        fNoiseLabel = (TextView) fView.findViewById(R.id.scraw_noise_text);
-        fDetailLabel = (TextView) fView.findViewById(R.id.scraw_detail_text);
-        fFlowLabel = (TextView) fView.findViewById(R.id.scraw_flow_text);
-
-        fNoiseTxt = aContext.getResources().getString(R.string.noise);
-        fDetailTxt = aContext.getResources().getString(R.string.detail);
-        fFlowTxt = aContext.getResources().getString(R.string.flow);
-
-        setLabel(fNoiseLabel, fNoiseTxt, fScrawCreator.getNoise());
-        setLabel(fDetailLabel, fDetailTxt, fScrawCreator.getDetail());
-        setLabel(fFlowLabel, fFlowTxt, fScrawCreator.getFlow());
-
-        Listener listener = new Listener();
-        fNoiseBar.setOnSeekBarChangeListener(listener);
-        fDetailBar.setOnSeekBarChangeListener(listener);
-        fFlowBar.setOnSeekBarChangeListener(listener);
-    }
-
-    private class Listener implements SeekBar.OnSeekBarChangeListener {
-
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-            int noise = fNoiseBar.getProgress();
-            fScrawCreator.setNoise(MIN_NOISE + (MAX_NOISE - MIN_NOISE) * (((float) noise) / 100.f));
-            setLabel(fNoiseLabel, fNoiseTxt, fScrawCreator.getNoise());
-
-            int detail = fDetailBar.getProgress();
-            fScrawCreator.setDetail(MIN_DETAIL + detail);
-            setLabel(fDetailLabel, fDetailTxt, fScrawCreator.getDetail());
-
-            int flow = fFlowBar.getProgress();
-            fScrawCreator.setFlow(MIN_FLOW + flow);
-            setLabel(fFlowLabel, fFlowTxt, fScrawCreator.getFlow());
-
-            fView.invalidate();
-        }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-        }
+        return new SeekBarSettings[]{noise, details, flow};
     }
 }
