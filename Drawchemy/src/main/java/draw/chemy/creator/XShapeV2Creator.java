@@ -27,16 +27,17 @@ import draw.chemy.DrawUtils;
 
 public class XShapeV2Creator extends ACreator {
 
-    private SimpleLineOperation fCurrentOperation;
+    public static final float MAX_NOISE = 1.0f;
+    public static final float MIN_NOISE = 0.1f;
 
+    private SimpleLineOperation fCurrentOperation;
+    private float fNoise = 0.5f;
     private float fPreviousX, fPreviousY;
+
 
     public XShapeV2Creator(DrawManager aManager) {
         super(aManager);
     }
-
-    public static final float MAX_NOISE = 1.0f;
-    public static final float MIN_NOISE = 0.1f;
 
     public float getNoise() {
         return fNoise;
@@ -45,8 +46,6 @@ public class XShapeV2Creator extends ACreator {
     public void setNoise(float aNoise) {
         fNoise = aNoise;
     }
-
-    private float fNoise = 0.5f;
 
     @Override
     public IDrawingOperation startDrawingOperation(float x, float y) {
@@ -72,7 +71,6 @@ public class XShapeV2Creator extends ACreator {
 
         float vX = x - fPreviousX;
         float vY = y - fPreviousY;
-
 
         float aX = x - vX * (1 + DrawUtils.getProbability(fNoise));
         float aY = y - vY * (1 + DrawUtils.getProbability(fNoise));

@@ -28,13 +28,6 @@ import static draw.chemy.DrawUtils.RANDOM;
 
 public class BasicShapesCreator extends ACreator {
 
-    private float fX;
-    private float fY;
-    private MultiPathOperation fCurrentOperation;
-
-    private static final float COS_HALF_PI = 0.f;
-    private static final float SIN_HALF_PI = 1.f;
-
     public enum SHAPE {
         Box,
         Circle,
@@ -42,7 +35,13 @@ public class BasicShapesCreator extends ACreator {
         Random
     }
 
+    private static final float COS_HALF_PI = 0.f;
+    private static final float SIN_HALF_PI = 1.f;
+
     private SHAPE fCurrentShape = SHAPE.Random;
+    private float fX;
+    private float fY;
+    private MultiPathOperation fCurrentOperation;
 
     public BasicShapesCreator(DrawManager aManager) {
         super(aManager);
@@ -54,7 +53,6 @@ public class BasicShapesCreator extends ACreator {
         fY = y;
 
         Paint refPaint = fManager.getPaint();
-
         Paint paint = new Paint();
         paint.setColor(refPaint.getColor());
         paint.setStrokeWidth(refPaint.getStrokeWidth());
@@ -62,6 +60,7 @@ public class BasicShapesCreator extends ACreator {
         paint.setAntiAlias(true);
         paint.setStrokeJoin(Paint.Join.MITER);
         paint.setStrokeCap(Paint.Cap.SQUARE);
+
         fCurrentOperation = new MultiPathOperation(paint);
         return fCurrentOperation;
     }
@@ -91,15 +90,6 @@ public class BasicShapesCreator extends ACreator {
         fManager.redraw();
     }
 
-    private Path createRandomShape(float x, float y) {
-        int i = RANDOM.nextInt(3);
-        if (i == 0)
-            return createBox(x, y);
-        if (i == 1)
-            return createCircle(x, y);
-        return createTriangle(x, y);
-    }
-
     public void setShape(SHAPE aShape) {
         fCurrentShape = aShape;
     }
@@ -117,6 +107,7 @@ public class BasicShapesCreator extends ACreator {
         float dx = x - fX;
         float dy = y - fY;
 
+        // rotate by 90°
         float ax = COS_HALF_PI * dx - SIN_HALF_PI * dy;
         float ay = SIN_HALF_PI * dx + COS_HALF_PI * dy;
 
@@ -143,6 +134,7 @@ public class BasicShapesCreator extends ACreator {
         float dx = x - fX;
         float dy = y - fY;
 
+        // rotate by 90°
         float ax = (COS_HALF_PI * dx - SIN_HALF_PI * dy) * 0.33f;
         float ay = (SIN_HALF_PI * dx + COS_HALF_PI * dy) * 0.33f;
 
@@ -154,4 +146,12 @@ public class BasicShapesCreator extends ACreator {
         return p;
     }
 
+    private Path createRandomShape(float x, float y) {
+        int i = RANDOM.nextInt(3);
+        if (i == 0)
+            return createBox(x, y);
+        if (i == 1)
+            return createCircle(x, y);
+        return createTriangle(x, y);
+    }
 }

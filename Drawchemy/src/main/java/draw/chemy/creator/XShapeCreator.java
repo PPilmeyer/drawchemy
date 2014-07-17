@@ -28,14 +28,6 @@ import static draw.chemy.DrawUtils.getProbability;
 
 public class XShapeCreator extends ACreator {
 
-    private SimpleLineOperation fCurrentOperation = null;
-
-    // Parameters
-    private float fNoise = 12;
-    private int fDetail = 5;
-    private int fFlow = 3;
-
-
     public static final float MIN_NOISE = 5.f;
     public static final float MAX_NOISE = 30.f;
 
@@ -45,8 +37,14 @@ public class XShapeCreator extends ACreator {
     public static final int MIN_FLOW = 1;
     public static final int MAX_FLOW = 10;
 
+    // Parameters
+    private float fNoise = 12;
+    private int fDetail = 5;
+    private int fFlow = 3;
+
     private PointF fPreviousPoint;
     private int fCount = 0;
+    private SimpleLineOperation fCurrentOperation = null;
 
     public XShapeCreator(DrawManager aManager) {
         super(aManager);
@@ -79,7 +77,6 @@ public class XShapeCreator extends ACreator {
 
     @Override
     public IDrawingOperation startDrawingOperation(float x, float y) {
-
         Paint p = fManager.getPaint();
 
         Paint paint = new Paint();
@@ -90,8 +87,7 @@ public class XShapeCreator extends ACreator {
         paint.setStrokeJoin(Paint.Join.MITER);
         paint.setStrokeCap(Paint.Cap.SQUARE);
 
-        fCurrentOperation = new SimpleLineOperation(x,y, paint);
-
+        fCurrentOperation = new SimpleLineOperation(x, y, paint);
         fPreviousPoint.x = x;
         fPreviousPoint.y = y;
 
@@ -120,18 +116,15 @@ public class XShapeCreator extends ACreator {
         float y_s = y;
 
         for (int i = 1; i < fDetail; i++) {
-            x_s = fPreviousPoint.x + i*dirX + pDirX * getProbability(fNoise);
-            y_s = fPreviousPoint.y + i*dirY + pDirY * getProbability(fNoise);
+            x_s = fPreviousPoint.x + i * dirX + pDirX * getProbability(fNoise);
+            y_s = fPreviousPoint.y + i * dirY + pDirY * getProbability(fNoise);
 
             fCurrentOperation.addPoint(x_s, y_s);
         }
 
-        //fCurrentOperation.addPoint(x, y);
-
         fPreviousPoint.x = x_s;
         fPreviousPoint.y = y_s;
     }
-
 
     @Override
     public void endDrawingOperation() {

@@ -44,13 +44,15 @@ public class DrawManager implements View.OnTouchListener {
     public static final int MaxAllowedUndos = 10;
     public static final int MinAllowedUndos = 2;
 
-    private int fAllowedUndos = 5;
-
     public static final int MaxKaleidoscopeSec = 8;
     public static final int MinKaleidoscopeSec = 2;
 
-    private int fKaleidoscopeSec = 6;
-
+    public enum MIRROR {
+        None,
+        Horizontal,
+        Vertical,
+        Both
+    }
 
     LinkedList<IDrawingOperation> fOperations;
     LinkedList<IDrawingOperation> fUndo;
@@ -65,13 +67,6 @@ public class DrawManager implements View.OnTouchListener {
     private Matrix fInputMatrix = new Matrix();
     private PipetteListener fPipetteListener;
     private boolean fKaleidoscopeFlag = false;
-
-    public enum MIRROR {
-        None,
-        Horizontal,
-        Vertical,
-        Both
-    }
 
     private final Matrix fMirrorHorizontal;
     private final Matrix fMirrorVertical;
@@ -93,12 +88,15 @@ public class DrawManager implements View.OnTouchListener {
     private Paint.Style fStyle = Paint.Style.STROKE;
     private float fStrokeWeight = 1.5f;
 
+    private int fKaleidoscopeSec = 6;
+    private int fAllowedUndos = 5;
+
     private MIRROR fMirrorState = MIRROR.None;
     private boolean fGradientActive = false;
 
     private boolean fNewColorUsageFlag = false;
 
-    private NewColorUsedListener fNewColorUsedListener;
+    private ColorUsageListener fColorUsageListener;
 
     public DrawManager(int aWidth, int aHeight) {
         fBackgroundImage = Bitmap.createBitmap(aWidth, aHeight, Bitmap.Config.RGB_565);
@@ -134,8 +132,8 @@ public class DrawManager implements View.OnTouchListener {
 
     }
 
-    public void setNewColorUsedListener(NewColorUsedListener aListener) {
-        fNewColorUsedListener = aListener;
+    public void setNewColorUsedListener(ColorUsageListener aListener) {
+        fColorUsageListener = aListener;
     }
 
     public boolean getMirrorHorizontal() {
@@ -153,7 +151,6 @@ public class DrawManager implements View.OnTouchListener {
     public boolean getKaleidoscopeFlag() {
         return fKaleidoscopeFlag;
     }
-
 
     public int getKaleidoscopeSec() {
         return fKaleidoscopeSec;
@@ -223,7 +220,6 @@ public class DrawManager implements View.OnTouchListener {
             fUndo.clear();
             for (Map.Entry<Integer, ACreator> creator : fCreators.entrySet()) {
                 creator.getValue().clear();
-                ;
             }
         }
         redraw();
@@ -324,7 +320,6 @@ public class DrawManager implements View.OnTouchListener {
         fNewColorUsageFlag = true;
     }
 
-
     public Paint.Style getStyle() {
         return fStyle;
     }
@@ -386,8 +381,8 @@ public class DrawManager implements View.OnTouchListener {
     }
 
     private void newColorUsed() {
-        if (fNewColorUsedListener != null) {
-            fNewColorUsedListener.newColorUsed(fMainColor);
+        if (fColorUsageListener != null) {
+            fColorUsageListener.colorUsed(fMainColor);
         }
     }
 
@@ -459,10 +454,10 @@ public class DrawManager implements View.OnTouchListener {
         return result;
     }
 
-    public void usePipette(float x, float y) {
+    public void triggerPipetteEvent(float x, float y) {
         int color = fBackgroundImage.getPixel((int) Math.floor(x), (int) Math.floor(y));
         if (fPipetteListener != null) {
-            fPipetteListener.newPipetteUsed(color);
+            fPipetteListener.newColorSelectedByThePipette(color);
         }
     }
 
@@ -565,6 +560,7 @@ public class DrawManager implements View.OnTouchListener {
         redraw();
     }
 
+    //Effect Operations;
 
     private class MirrorOp implements IDrawingOperation {
 
@@ -697,28 +693,6 @@ public class DrawManager implements View.OnTouchListener {
         }
     }
 
-    public interface DrawListener {
-        public void redraw();
-    }
-
-    public interface NewColorUsedListener {
-        void newColorUsed(int aNewColor);
-    }
-
-    public interface PipetteListener {
-        void newPipetteUsed(int aNewColor);
-    }
-
-    public void setPipetteListener(PipetteListener aPipetteListener) {
-        fPipetteListener = aPipetteListener;
-    }
-
-    public void close() {
-        fNewColorUsedListener = null;
-        fDrawListener = null;
-        fPipetteListener = null;
-    }
-
     private class KaleidoscopeOp implements IDrawingOperation {
 
         IDrawingOperation fDelegate;
@@ -773,5 +747,28 @@ public class DrawManager implements View.OnTouchListener {
                 KaleidoscopeMatrix[i] = m;
             }
         }
+    }
+
+    //Listener Interface
+    public interface DrawListener {
+        public void redraw();
+    }
+
+    public interface ColorUsageListener {
+        void colorUsed(int aColor);
+    }
+
+    public interface PipetteListener {
+        void newColorSelectedByThePipette(int aNewColor);
+    }
+
+    public void setPipetteListener(PipetteListener aPipetteListener) {
+        fPipetteListener = aPipetteListener;
+    }
+
+    public void removeListeners() {
+        fColorUsageListener = null;
+        fDrawListener = null;
+        fPipetteListener = null;
     }
 }

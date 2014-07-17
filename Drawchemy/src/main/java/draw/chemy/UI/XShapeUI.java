@@ -30,7 +30,7 @@ public class XShapeUI extends ASettingsGroupUIWithSeekBar {
         super(createSettings(aXShapeCreator));
     }
 
-    public static SeekBarSettings[] createSettings(final XShapeCreator aXShapeCreator) {
+    private static SeekBarSettings[] createSettings(final XShapeCreator aXShapeCreator) {
         SeekBarSettings flow = new SeekBarSettings() {
             @Override
             public boolean isPercent() {

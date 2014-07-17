@@ -37,8 +37,4 @@ public abstract class ASettingsGroupUI {
         aTextView.setText(aMessage + " : " + aValue);
         aTextView.invalidate();
     }
-
-    public void close() {
-
-    }
 }

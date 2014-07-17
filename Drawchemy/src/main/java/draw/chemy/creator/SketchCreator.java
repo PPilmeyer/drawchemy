@@ -17,7 +17,6 @@
  * along with Drawchemy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package draw.chemy.creator;
 
 import android.graphics.PointF;
@@ -27,7 +26,6 @@ import draw.chemy.DrawManager;
 public class SketchCreator extends NearestPointLineCreator {
 
     public static final float alpha = 0.3f;
-
     public static final float beta = 1.f - alpha;
 
     public SketchCreator(DrawManager aManager) {
@@ -36,11 +34,8 @@ public class SketchCreator extends NearestPointLineCreator {
 
     @Override
     void addLine(PointF a, PointF b) {
-
         PointF a2 = new PointF(a.x * beta + b.x * alpha, a.y * beta + b.y * alpha);
-
         PointF b2 = new PointF(a.x * alpha + b.x * beta, a.y * alpha + b.y * beta);
-
         super.addLine(a2, b2);
     }
 }

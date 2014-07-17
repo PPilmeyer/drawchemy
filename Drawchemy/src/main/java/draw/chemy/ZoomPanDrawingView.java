@@ -34,14 +34,13 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-
 public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Callback {
 
     private DrawManager fCanvasManager;
     private SurfaceHolder fHolder;
     private ViewThread fThread;
 
-    private MyDrawListener fDrawListener;
+    private ViewDrawListener fDrawListener;
     public ZoomPanTouchListener fZoomManager;
 
     private Matrix fViewMatrix;
@@ -72,7 +71,7 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
         int height = ((Activity) context).getWindowManager().getDefaultDisplay().getHeight();
         fCanvasManager = new DrawManager(width, height);
 
-        fDrawListener = new MyDrawListener();
+        fDrawListener = new ViewDrawListener();
         fCanvasManager.setDrawListener(fDrawListener);
         fZoomManager = new ZoomPanTouchListener(fCanvasManager);
 
@@ -104,7 +103,7 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
         fHolder = getHolder();
         fHolder.addCallback(this);
         fCanvasManager = aCanvasManager;
-        fDrawListener = new MyDrawListener();
+        fDrawListener = new ViewDrawListener();
         fCanvasManager.setDrawListener(fDrawListener);
         fZoomManager = new ZoomPanTouchListener(fCanvasManager);
 
@@ -142,12 +141,10 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
 
     @Override
     public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
-
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-
         fThread.stopThread();
     }
 
@@ -243,9 +240,9 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
         fZoomManager.resetZoomPan();
     }
 
-    private class MyDrawListener implements DrawManager.DrawListener {
+    private class ViewDrawListener implements DrawManager.DrawListener {
 
-        public MyDrawListener() {
+        public ViewDrawListener() {
         }
 
         @Override
@@ -267,7 +264,7 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
 
         private OnTouchListener fDelegate;
         public boolean fZoomPanEnabled = false;
-        public boolean fColorEnabled = false;
+        public boolean fPipetteEnabled = false;
 
         private float fScale = 1.0f;
         private float fPreviousScale = 1.0f;
@@ -296,7 +293,6 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
             inputMatrix.postScale(1.f / fScale, 1.f / fScale);
         }
 
-
         public ZoomPanTouchListener(OnTouchListener aDelegate) {
             fDelegate = aDelegate;
         }
@@ -308,9 +304,8 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
 
         public void activatePipette() {
             fZoomPanEnabled = false;
-            fColorEnabled = true;
+            fPipetteEnabled = true;
             change();
-
         }
 
         public boolean isEnable() {
@@ -362,31 +357,24 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
                         break;
                 }
                 return true;
-            } else if (fColorEnabled) {
+            } else if (fPipetteEnabled) {
                 float points[] = new float[]{event.getX(), event.getY()};
                 fInputMatrix.mapPoints(points);
                 switch (event.getAction() & MotionEvent.ACTION_MASK) {
-
                     case MotionEvent.ACTION_DOWN:
-                        fCanvasManager.usePipette(points[0], points[1]);
+                        fCanvasManager.triggerPipetteEvent(points[0], points[1]);
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        fCanvasManager.usePipette(points[0], points[1]);
+                        fCanvasManager.triggerPipetteEvent(points[0], points[1]);
                         break;
-
                     case MotionEvent.ACTION_UP:
-
-                        fColorEnabled = false;
-                        break;
                     default:
-                        fColorEnabled = false;
+                        fPipetteEnabled = false;
                         break;
-
                 }
                 return true;
             }
             return fDelegate.onTouch(view, event);
-
         }
 
         private void closeAction() {

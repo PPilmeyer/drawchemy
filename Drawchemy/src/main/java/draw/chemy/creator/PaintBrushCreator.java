@@ -29,17 +29,14 @@ import draw.chemy.DrawUtils;
 
 public class PaintBrushCreator extends ACreator {
 
-    private static float DIV = 0.85f;
-
-    private int fBristlesNumber = 10;
     public static int MIN_BRISLTES_NUM = 7;
     public static int MAX_BRISLTES_NUM = 25;
-
+    private static float DIV = 0.85f;
 
     private MultiLineOperation fCurrentOperation = null;
-
     Painter fPainters[];
 
+    private int fBristlesNumber = 10;
     private float fX;
     private float fY;
 
@@ -61,7 +58,6 @@ public class PaintBrushCreator extends ACreator {
 
     @Override
     public IDrawingOperation startDrawingOperation(float x, float y) {
-
         for (int i = 0; i < fBristlesNumber; i++) {
             fPainters[i].start(x, y);
         }
@@ -176,17 +172,14 @@ public class PaintBrushCreator extends ACreator {
 
         @Override
         public void undo() {
-
         }
 
         @Override
         public void redo() {
-
         }
 
         @Override
         public void complete() {
-
         }
     }
 }

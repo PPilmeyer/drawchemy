@@ -19,7 +19,6 @@
 
 package draw.chemy.creator;
 
-
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
@@ -31,7 +30,6 @@ import draw.chemy.DrawUtils;
 
 public class BallCreator extends ACreator {
 
-
     public static final int MIN_FLOW = 1;
     public static final int MAX_FLOW = 10;
 
@@ -41,7 +39,7 @@ public class BallCreator extends ACreator {
     public static final int MIN_RADIUS = 1;
     public static final int MAX_RADIUS = 10;
 
-    int fCount;
+    private int fCount;
 
     private int fFlow = 3;
     private float fSize = 18;
@@ -154,17 +152,14 @@ public class BallCreator extends ACreator {
 
         @Override
         public void undo() {
-
         }
 
         @Override
         public void redo() {
-
         }
 
         @Override
         public void complete() {
-
         }
 
         @Override

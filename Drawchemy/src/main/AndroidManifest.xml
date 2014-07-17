@@ -20,7 +20,7 @@
         </activity>
         <activity
             android:name="draw.chemy.HelpActivity"
-            android:label="@string/action_help"
+            android:label="@string/help"
             android:screenOrientation="landscape"></activity>
     </application>
 

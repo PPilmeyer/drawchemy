@@ -28,7 +28,7 @@ public class RibbonUI extends ASettingsGroupUIWithSeekBar {
         super(createSettings(aRibbonCreator));
     }
 
-    static SeekBarSettings[] createSettings(final RibbonCreator aRibbonCreator) {
+    private static SeekBarSettings[] createSettings(final RibbonCreator aRibbonCreator) {
         SeekBarSettings gravity = new SeekBarSettings() {
             @Override
             public boolean isPercent() {

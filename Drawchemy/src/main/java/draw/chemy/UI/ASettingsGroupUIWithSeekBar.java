@@ -19,7 +19,6 @@
 
 package draw.chemy.UI;
 
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,10 +40,8 @@ public abstract class ASettingsGroupUIWithSeekBar extends ASettingsGroupUI {
     private int[] SeekBarIDs = {R.id.first_seekbar, R.id.second_seekbar, R.id.third_seekbar};
     private int[] LabelIDs = {R.id.first_label, R.id.second_label, R.id.third_label};
 
-
     private int fSize;
     private static int MAX_SIZE = 3;
-
 
     public ASettingsGroupUIWithSeekBar(SeekBarSettings... aSeekBarSettings) {
         fSeekBarsSettings = aSeekBarSettings;
@@ -132,12 +129,10 @@ public abstract class ASettingsGroupUIWithSeekBar extends ASettingsGroupUI {
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
-
         }
 
         @Override
         public void onStopTrackingTouch(SeekBar seekBar) {
-
         }
     }
 }

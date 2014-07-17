@@ -2,19 +2,17 @@
 <resources>
 
     <string name="app_name">Drawchemy</string>
-    <string name="action_color">Colors</string>
-    <string name="action_settings">Extra settings</string>
-    <string name="action_create">Creators</string>
-    <string name="action_create_settings">Creator settings</string>
+    <string name="colors">Colors</string>
+    <string name="settings">Settings</string>
     <string name="action_style">Switch Style</string>
-    <string name="action_save">Save</string>
-    <string name="action_load">Load</string>
-    <string name="action_share">Share</string>
-    <string name="action_clear">Clear</string>
-    <string name="agree">Yes</string>
+    <string name="save">Save</string>
+    <string name="load">Load</string>
+    <string name="share">Share</string>
+    <string name="clear">Clear</string>
+    <string name="yes">Yes</string>
     <string name="cancel">Cancel</string>
     <string name="finish">Finish</string>
-    <string name="save">Canvas saved.</string>
+    <string name="canvas_saved">Canvas saved.</string>
     <string name="gradient">Gradient</string>
     <string name="about">About</string>
     <string name="close">Close</string>
@@ -36,7 +34,7 @@
     <string name="brightness">Brightness</string>
     <string name="alpha">Opacity</string>
     <string name="show_ui">Show UI</string>
-    <string name="action_help">Help</string>
+    <string name="help">Help</string>
     <string name="extra_settings">Extra settings</string>
     <string name="horizontal">Horizontal mirror</string>
     <string name="vertical">Vertical mirror</string>
@@ -44,8 +42,17 @@
     <string name="sketch_brush">Sketch brush</string>
     <string name="xshape2">XShape V2</string>
     <string name="straight_line">Straight Line</string>
-    <string name="nearest_points">Web brush</string>
+    <string name="web_brush">Web brush</string>
     <string name="pipette">Pipette</string>
+    <string name="brushes">Brushes</string>
+    <string name="others">Others</string>
+    <string name="effects">Effects</string>
+    <string name="mirrors">Mirrors</string>
+    <string name="fill">fill</string>
+    <string name="stroke">stroke</string>
+    <string name="unicolor">unicolor</string>
+    <string name="hide_ui">hide UI</string>
+
     <!-- UI Texts-->
     <string name="hue_switch_enabled">Hue noise enabled</string>
     <string name="hue_switch_disabled">Hue noise disabled</string>
@@ -63,8 +70,12 @@
     <string name="size">Size</string>
     <string name="drips">Drips</string>
     <string name="allowed_undos">Max Undos</string>
-    <string name="kaleidoscope_option">Kaleidoscope</string>
-
+    <string name="maxDist">Max Dist.</string>
+    <string name="box">Box</string>
+    <string name="circle">Circle</string>
+    <string name="triangle">Triangle</string>
+    <string name="random">Random</string>
+    <string name="snapping">Spanning</string>
 
     <!-- About Texts-->
     <string name="about_drawchemy">Drachemy is a Open Source project under the License GPLv3. You can
@@ -97,19 +108,4 @@
     You can access to the color settings in the menu.
     These settings allow you to change the main color and activate the hue noise. The hue noise will change randomly the hue of your lines and shapes.
     The intensity of the noise is settable by the slidebar bellow the hue noise checkbox.</string>
-    <string name="brushes">Brushes</string>
-    <string name="help_others">Others</string>
-    <string name="effects">Effects</string>
-    <string name="help_settings">Settings</string>
-    <string name="help_mirrors">Mirrors</string>
-    <string name="help_fill">fill</string>
-    <string name="help_stroke">stroke</string>
-    <string name="help_unicolor">unicolor</string>
-    <string name="help_logo">hide UI</string>
-    <string name="maxDist">Max Dist.</string>
-    <string name="box">Box</string>
-    <string name="circle">Circle</string>
-    <string name="triangle">Triangle</string>
-    <string name="random">Random</string>
-    <string name="snapping">Spanning</string>
 </resources>

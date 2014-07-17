@@ -72,21 +72,17 @@ class MultiPathOperation implements IDrawingOperation {
         if (fPaths.size() > 1) {
             aBoundSFCT.union(fBounds);
         }
-
     }
 
     @Override
     public void undo() {
-
     }
 
     @Override
     public void redo() {
-
     }
 
     @Override
     public void complete() {
-
     }
 }

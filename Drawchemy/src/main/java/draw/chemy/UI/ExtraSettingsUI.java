@@ -29,12 +29,7 @@ public class ExtraSettingsUI extends ASettingsGroupUIWithSeekBar {
         super(createSeekSetting(aDrawManager));
     }
 
-    @Override
-    public void close() {
-        super.close();
-    }
-
-    public static SeekBarSettings[] createSeekSetting(final DrawManager aDrawManager) {
+    private static SeekBarSettings[] createSeekSetting(final DrawManager aDrawManager) {
 
         SeekBarSettings kaleidoscopeSettings = new SeekBarSettings() {
             @Override
@@ -64,7 +59,7 @@ public class ExtraSettingsUI extends ASettingsGroupUIWithSeekBar {
 
             @Override
             public int getTextId() {
-                return R.string.kaleidoscope_option;
+                return R.string.kaleidoscope;
             }
         };
 

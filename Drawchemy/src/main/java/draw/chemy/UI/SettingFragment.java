@@ -57,12 +57,9 @@ public class SettingFragment extends Fragment {
         return view;
     }
 
-    public void getNewCreator(ASettingsGroupUI aAlcCreator) {
-        if (fSettingsGroupUI != null) {
-            fSettingsGroupUI.close();
-        }
-        fSettingsGroupUI = aAlcCreator;
-        if(getView() != null) {
+    public void getNewCreator(ASettingsGroupUI aSettingsGroupUI) {
+        fSettingsGroupUI = aSettingsGroupUI;
+        if (getView() != null) {
             fLayout.removeAllViewsInLayout();
             fSettingsGroupUI.fillView(fLayoutInflater, fLayout, getActivity());
             getView().invalidate();
@@ -78,9 +75,6 @@ public class SettingFragment extends Fragment {
     }
 
     public void close() {
-        if (fSettingsGroupUI != null) {
-            fSettingsGroupUI.close();
-        }
         fSettingsGroupUI = null;
     }
 }

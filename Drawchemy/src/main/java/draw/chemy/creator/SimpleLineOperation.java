@@ -59,16 +59,13 @@ class SimpleLineOperation implements IDrawingOperation {
 
     @Override
     public void undo() {
-
     }
 
     @Override
     public void redo() {
-
     }
 
     @Override
     public void complete() {
-
     }
 }

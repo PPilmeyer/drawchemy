@@ -35,24 +35,22 @@ import static draw.chemy.DrawUtils.getProbability;
 
 public class SplatterCreator extends ACreator {
 
-    private static final float push = 0.5f;
-
-    private static final float newSizeInfluence = 0.7f;
-
-    // Parameters;
-    private float fMaxLineWidth = 120.f;
-    private int fDrips = 12;
-
     public static final float MIN_SIZE = 5.f;
     public static final float MAX_SIZE = 30.f;
 
     public static final int MIN_DRIPS = 1;
     public static final int MAX_DRIPS = 15;
 
+    private static final float push = 0.5f;
+    private static final float newSizeInfluence = 0.7f;
+
+    // Parameters;
+    private float fMaxLineWidth = 120.f;
+    private int fDrips = 12;
+
     private float fSize;
     private float startX, startY;
     private float endX, endY;
-
     private SplatterDrawOp fCurrentOperation;
 
     public SplatterCreator(DrawManager aManager) {
@@ -90,7 +88,7 @@ public class SplatterCreator extends ACreator {
             dst = 1.5f;
         }
 
-        float newSize = fMaxLineWidth /(dst);
+        float newSize = fMaxLineWidth / (dst);
         fSize = newSize * (1.f - newSizeInfluence) + fSize * newSizeInfluence;
 
         splat(new PointF(startX, startY), new PointF(endX, endY), new PointF(mX, mY), fSize);
@@ -142,11 +140,11 @@ public class SplatterCreator extends ACreator {
         }
 
         public synchronized void addPath(Path aPath, float aStrokeWidth) {
-            if(fBounds == null) {
+            if (fBounds == null) {
                 fBounds = new RectF();
-                aPath.computeBounds(fBounds,true);
+                aPath.computeBounds(fBounds, true);
             } else {
-                aPath.computeBounds(fBoundsTemp,true);
+                aPath.computeBounds(fBoundsTemp, true);
                 fBounds.union(fBoundsTemp);
             }
             fPaths.add(new Pair<Path, Float>(aPath, aStrokeWidth));
@@ -166,17 +164,14 @@ public class SplatterCreator extends ACreator {
 
         @Override
         public void undo() {
-
         }
 
         @Override
         public void redo() {
-
         }
 
         @Override
         public void complete() {
-
         }
     }
 
@@ -205,7 +200,7 @@ public class SplatterCreator extends ACreator {
             float x5 = getProbability(0.5f);
             float y5 = getProbability(0.5f);
 
-            float dd = Math.min(d * (RANDOM.nextFloat()+0.4f),d);
+            float dd = Math.min(d * (RANDOM.nextFloat() + 0.4f), d);
             Path subPath = new Path();
             subPath.moveTo(start.x + x4, start.y + y4);
             subPath.lineTo(start.x + x4 + x5, start.y + y4 + y5);

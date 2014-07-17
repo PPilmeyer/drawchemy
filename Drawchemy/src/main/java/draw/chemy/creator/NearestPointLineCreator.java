@@ -31,15 +31,12 @@ import draw.chemy.DrawManager;
 
 public class NearestPointLineCreator extends ACreator {
 
-    private NearestPointLineOperation fCurrentOperation;
-
-    private LinkedList<NearestPointLineOperation> fPreviousOps;
-
-    private PointF fPrevious;
-
-
     public static final float MAX_DIST_LIM = 55.f;
     public static final float MIN_DIST_LIM = 15.f;
+
+    private NearestPointLineOperation fCurrentOperation;
+    private LinkedList<NearestPointLineOperation> fPreviousOps;
+    private PointF fPrevious;
 
     private float fDistLim = 35.f;
 
@@ -59,6 +56,7 @@ public class NearestPointLineCreator extends ACreator {
     public void updateDrawingOperation(float x, float y) {
         PointF next = new PointF(x, y);
         fCurrentOperation.addLine(fPrevious, next);
+        // find removeListeners points from previous operations
         for (NearestPointLineOperation previousOp : fPreviousOps) {
             for (PointF p : previousOp.fPreviousPoints) {
                 if (Math.hypot(p.x - x, p.y - y) < fDistLim) {
@@ -66,6 +64,8 @@ public class NearestPointLineCreator extends ACreator {
                 }
             }
         }
+
+        // find removeListeners points from current operations
         synchronized (fCurrentOperation) {
             for (PointF p : fCurrentOperation.fPreviousPoints) {
                 if (Math.hypot(p.x - x, p.y - y) < fDistLim) {
@@ -109,7 +109,6 @@ public class NearestPointLineCreator extends ACreator {
         Paint fPaint;
         LinkedList<Pair<PointF, PointF>> fLines;
         LinkedList<PointF> fPreviousPoints;
-
 
         public NearestPointLineOperation(Paint aPaint, float x, float y) {
             fBounds = new RectF(x, y, x, y);

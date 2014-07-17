@@ -30,7 +30,7 @@ public class ScrawUI extends ASettingsGroupUIWithSeekBar {
         super(createSettings(aScrawCreator));
     }
 
-    public static SeekBarSettings[] createSettings(final ScrawCreator aScrawCreator) {
+    private static SeekBarSettings[] createSettings(final ScrawCreator aScrawCreator) {
         SeekBarSettings flow = new SeekBarSettings() {
             @Override
             public boolean isPercent() {

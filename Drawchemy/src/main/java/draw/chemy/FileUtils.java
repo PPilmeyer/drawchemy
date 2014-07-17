@@ -110,7 +110,7 @@ public class FileUtils {
 
             addFileToMedia(fFile);
             if (aBoolean) {
-                Toast.makeText(fContext, fContext.getResources().getString(R.string.save), Toast.LENGTH_SHORT).show();
+                Toast.makeText(fContext, fContext.getResources().getString(R.string.canvas_saved), Toast.LENGTH_SHORT).show();
                 if (fShare) {
                     Intent intent = new Intent(Intent.ACTION_SEND);
                     intent.setDataAndType(Uri.fromFile(fFile), "image/png");

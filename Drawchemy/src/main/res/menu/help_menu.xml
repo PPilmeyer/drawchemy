@@ -19,8 +19,8 @@
         android:id="@+id/help_colors"
         android:icon="@drawable/color"
         android:showAsAction="always|withText"
-        android:title="@string/action_color">
-        <menu>
+        android:title="@string/colors">
+    <menu>
 
         </menu>
     </item>
@@ -29,7 +29,7 @@
         android:id="@+id/help_settings"
         android:icon="@drawable/ic_action_settings"
         android:showAsAction="always|withText"
-        android:title="@string/help_settings"></item>
+        android:title="@string/settings"></item>
 
     <item
         android:id="@+id/help_effects"
@@ -40,7 +40,7 @@
                 android:id="@+id/help_mirror"
                 android:icon="@drawable/flip_vertical"
                 android:showAsAction="always|withText"
-                android:title="@string/help_mirrors" />
+                android:title="@string/mirrors" />
             <item
                 android:id="@+id/help_kaleidoscope"
                 android:icon="@drawable/kaleidoscope"
@@ -50,17 +50,17 @@
                 android:id="@+id/help_fill"
                 android:icon="@drawable/fill"
                 android:showAsAction="always|withText"
-                android:title="@string/help_fill" />
+                android:title="@string/fill" />
             <item
                 android:id="@+id/help_stroke"
                 android:icon="@drawable/stroke"
                 android:showAsAction="always|withText"
-                android:title="@string/help_stroke" />
+                android:title="@string/stroke" />
             <item
                 android:id="@+id/help_unicolor"
                 android:icon="@drawable/unicolor"
                 android:showAsAction="always|withText"
-                android:title="@string/help_unicolor" />
+                android:title="@string/unicolor" />
             <item
                 android:id="@+id/help_gradient"
                 android:icon="@drawable/gradient"
@@ -73,28 +73,28 @@
     <item
         android:id="@+id/help_others"
         android:showAsAction="always|withText"
-        android:title="@string/help_others">
+        android:title="@string/others">
         <menu>
             <item
                 android:id="@+id/help_load"
                 android:icon="@drawable/ic_action_picture"
                 android:showAsAction="always|withText"
-                android:title="@string/action_load" />
+                android:title="@string/load" />
             <item
                 android:id="@+id/help_save"
                 android:icon="@drawable/ic_action_save"
                 android:showAsAction="always|withText"
-                android:title="@string/action_save" />
+                android:title="@string/save" />
             <item
                 android:id="@+id/help_share"
                 android:icon="@drawable/ic_action_share"
                 android:showAsAction="always|withText"
-                android:title="@string/action_share" />
+                android:title="@string/share" />
             <item
                 android:id="@+id/help_clear"
                 android:icon="@drawable/ic_action_discard"
                 android:showAsAction="always|withText"
-                android:title="@string/action_clear" />
+                android:title="@string/clear" />
             <item
                 android:id="@+id/help_undo"
                 android:icon="@drawable/ic_action_undo"
@@ -114,7 +114,7 @@
                 android:id="@+id/help_logo"
                 android:icon="@drawable/drawchemy"
                 android:showAsAction="always|withText"
-                android:title="@string/help_logo" />
+                android:title="@string/hide_ui" />
         </menu>
     </item>
 

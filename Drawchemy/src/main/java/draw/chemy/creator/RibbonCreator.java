@@ -27,16 +27,8 @@ import static draw.chemy.DrawUtils.getProbability;
 
 public class RibbonCreator extends ACreator {
 
-    private MultiPathOperation fCurrentOperation;
-    private Path fCurrentPath;
-
     private static final float PI = (float) Math.PI * 0.5f;
     private static final float PI3 = (float) Math.PI * 1.5f;
-
-    //Parameters
-    private int fSpacing;
-    private float fGravity;
-    private float fFriction;
 
     public static final float MIN_GRAVITY = 0.f;
     public static final float MAX_GRAVITY = 1.f;
@@ -47,9 +39,17 @@ public class RibbonCreator extends ACreator {
     public static final int MIN_SPACING = 5;
     public static final int MAX_SPACING = 20;
 
+    //Parameters
+    private int fSpacing;
+    private float fGravity;
+    private float fFriction;
+
+    private MultiPathOperation fCurrentOperation;
+    private Path fCurrentPath;
 
     private Ribbon fRibbon;
     private long fTimestamp;
+
 
     public RibbonCreator(DrawManager aManager) {
         super(aManager);
@@ -102,7 +102,6 @@ public class RibbonCreator extends ACreator {
         public float drag = 2.f;
         public float dragFlare = 0.015f;
 
-
         public Ribbon(int aNbOfParticles, float aRandomness) {
             fNbOfParticles = aNbOfParticles;
             fRandomness = aRandomness;
@@ -124,7 +123,6 @@ public class RibbonCreator extends ACreator {
         }
 
         private void drawCurve() {
-
             int particlesAssigned = last - first;
             for (int i = 1; i < particlesAssigned - 1; i++) {
                 Particle p = fParticles[(first + i) % fNbOfParticles];
@@ -161,7 +159,6 @@ public class RibbonCreator extends ACreator {
                 fCurrentPath.quadTo(p0.fX, p0.fY, p1.leftFirstX, p1.leftFirstY);
                 fCurrentOperation.setTop(fCurrentPath);
             }
-
         }
 
         public void update(float x, float y) {
@@ -169,7 +166,6 @@ public class RibbonCreator extends ACreator {
             drawCurve();
         }
     }
-
 
     private class Particle {
 
@@ -248,9 +244,7 @@ public class RibbonCreator extends ACreator {
             controlLeftY = (float) (fY + Math.sin(pRadians + PI3) * radius);
             controlRightX = (float) (fX + Math.cos(pRadians + PI) * radius);
             controlRightY = (float) (fY + Math.sin(pRadians + PI) * radius);
-
         }
-
 
         public void updatePoint(Particle previous, Particle next) {
             leftFirstX = (previous.controlLeftX + controlLeftX) / 2.f;
@@ -293,5 +287,4 @@ public class RibbonCreator extends ACreator {
     public void setFriction(float aFriction) {
         fFriction = aFriction;
     }
-
 }

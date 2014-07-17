@@ -42,7 +42,7 @@ import java.util.List;
 
 import draw.chemy.DrawManager;
 
-public class ColorUIFragment extends Fragment implements DrawManager.NewColorUsedListener, DrawManager.PipetteListener {
+public class ColorUIFragment extends Fragment implements DrawManager.ColorUsageListener, DrawManager.PipetteListener {
 
     private SeekBar fHueBar;
     private SeekBar fSaturationBar;
@@ -254,15 +254,18 @@ public class ColorUIFragment extends Fragment implements DrawManager.NewColorUse
         fHue = fHueBar.getProgress();
         fSaturation = fSaturationBar.getProgress();
         fBrightness = fBrightnessBar.getProgress();
+        fAlpha = fAlphaSeekBar.getProgress();
+
         temp[0] = fHue;
         temp[1] = fSaturation / 100.f;
         temp[2] = fBrightness / 100.f;
-        fAlpha = fAlphaSeekBar.getProgress();
+
 
         fColor = Color.HSVToColor(fAlpha, temp);
 
         setBrightnessDrawable();
         setSaturationDrawable();
+
 
         for (ColorChangeListener listener : fColorListeners) {
             listener.colorChange(fColor);
@@ -308,12 +311,12 @@ public class ColorUIFragment extends Fragment implements DrawManager.NewColorUse
     }
 
     @Override
-    public void newColorUsed(int aNewColor) {
+    public void colorUsed(int aNewColor) {
         updateColor(aNewColor);
     }
 
     @Override
-    public void newPipetteUsed(int aNewColor) {
+    public void newColorSelectedByThePipette(int aNewColor) {
         setColor(aNewColor, true);
     }
 
@@ -445,11 +448,9 @@ public class ColorUIFragment extends Fragment implements DrawManager.NewColorUse
         public void activate();
     }
 
-    @Override
-    public void onDestroy() {
+    public void removeListeners() {
         fColorListeners.clear();
         fHueSwitchListeners.clear();
         fPipetteListeners.clear();
-        super.onDestroy();
     }
 }

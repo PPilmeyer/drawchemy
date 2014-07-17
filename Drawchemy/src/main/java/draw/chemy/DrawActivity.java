@@ -308,10 +308,11 @@ public class DrawActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        fManager.close();
+        fManager.removeListeners();
         fDrawingView.close();
         fDrawingView = null;
         fManager = null;
+        fColorSettings.removeListeners();
         fColorSettings = null;
         fSecondaryFragment = null;
         fSettingsFragment.close();
@@ -656,7 +657,7 @@ public class DrawActivity extends Activity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getResources().getString(R.string.clear_dialog));
         builder.setCancelable(true);
-        builder.setPositiveButton(getResources().getString(R.string.agree), new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 fManager.clear();
@@ -725,7 +726,7 @@ public class DrawActivity extends Activity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         LayoutInflater inflater = getLayoutInflater();
-        builder.setTitle(getResources().getString(R.string.action_help));
+        builder.setTitle(getResources().getString(R.string.help));
 
         builder.setView(inflater.inflate(R.layout.help,null));
         builder.setCancelable(false);

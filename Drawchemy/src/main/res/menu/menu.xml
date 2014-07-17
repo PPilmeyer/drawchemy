@@ -30,15 +30,15 @@
         android:id="@+id/i_creators"
         android:icon="@drawable/ic_action_edit"
         android:showAsAction="always"
-        android:title="@string/action_create">
-        <menu></menu>
+        android:title="@string/brushes">
+    <menu></menu>
     </item>
 
     <item
         android:id="@+id/i_settings"
         android:icon="@drawable/ic_action_settings"
         android:showAsAction="always"
-        android:title="@string/action_settings" />
+        android:title="@string/extra_settings" />
 
     <item
         android:id="@+id/i_overflow"

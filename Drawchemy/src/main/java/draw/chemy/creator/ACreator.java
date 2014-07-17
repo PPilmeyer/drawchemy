@@ -35,8 +35,7 @@ public abstract class ACreator {
 
     public abstract void endDrawingOperation();
 
+    // Clear the creator state (used when clearing the canvas)
     public void clear() {
     }
-
-    ;
 }

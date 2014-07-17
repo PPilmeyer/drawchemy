@@ -27,14 +27,6 @@ import static draw.chemy.DrawUtils.getProbability;
 
 public class ScrawCreator extends ACreator {
 
-    private SimpleLineOperation fCurrentOperation = null;
-
-    // Parameters
-    private float fNoise = 5.0f;
-    private int fDetail = 7;
-    private int fFlow = 5;
-
-
     public static final float MIN_NOISE = 1.f;
     public static final float MAX_NOISE = 20.f;
 
@@ -44,8 +36,14 @@ public class ScrawCreator extends ACreator {
     public static final int MIN_FLOW = 1;
     public static final int MAX_FLOW = 10;
 
+    // Parameters
+    private float fNoise = 5.0f;
+    private int fDetail = 7;
+    private int fFlow = 5;
+
     private PointF fPreviousPoint;
     private int fCount = 0;
+    private SimpleLineOperation fCurrentOperation = null;
 
     public ScrawCreator(DrawManager aManager) {
         super(aManager);
@@ -79,7 +77,7 @@ public class ScrawCreator extends ACreator {
     @Override
     public IDrawingOperation startDrawingOperation(float x, float y) {
 
-        fCurrentOperation = new SimpleLineOperation(x,y,fManager.getPaint());
+        fCurrentOperation = new SimpleLineOperation(x, y, fManager.getPaint());
 
         fPreviousPoint.x = x;
         fPreviousPoint.y = y;
