@@ -26,6 +26,7 @@
 <h3> Description </h3>
 <p>
     Your stroke will produce filled shape and not line anymore. Click again on the icon to go back in the stroke mode.
+    Some brush doesn't support the fill mode.
 </p>
 ]]></string>
 <string name="descr_stroke">

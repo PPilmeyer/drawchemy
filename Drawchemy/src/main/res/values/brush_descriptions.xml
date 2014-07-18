@@ -180,16 +180,16 @@ there will be an extra line between these two extremities.
 <string name="descr_sketch_brush">
 <![CDATA[
 <h1>Sketch brush</h1>
-<h3> Description</h3>
+<h3>Description</h3>
 <p>
 Variation of the web brush (see web brush), where the extra line is shorter and doesn\'t
-touch the extremities and its extremities aren\'t used by the brush.
+touch the extremities. The extremities of these extra lines aren\'t used by the brush.
 </p>
 ]]></string>
 <string name="descr_xshape_v2">
 <![CDATA[
 <h1>XShape V2</h1>
-<h3> Description </h3>
+<h3>Description</h3>
 <p>
 This is an other randomly broken lines stroke with a different algorithm than XShape.
 </p>

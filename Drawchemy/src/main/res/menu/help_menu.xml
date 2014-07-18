@@ -81,15 +81,15 @@
                 android:showAsAction="always|withText"
                 android:title="@string/hide_ui" />
             <item
-                android:id="@+id/help_extra"
-                android:icon="@drawable/ic_action_extra_settings"
-                android:showAsAction="always|withText"
-                android:title="@string/extra_settings" />
-            <item
                 android:id="@+id/help_settings"
                 android:icon="@drawable/ic_action_settings"
                 android:showAsAction="always"
                 android:title="@string/settings"></item>
+            <item
+                android:id="@+id/help_extra"
+                android:icon="@drawable/ic_action_extra_settings"
+                android:showAsAction="always|withText"
+                android:title="@string/extra_settings" />
         </menu>
     </item>
     <item
