@@ -736,25 +736,6 @@ public class DrawActivity extends Activity {
         dialog.show();
     }
 
-    private void createHelpDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        LayoutInflater inflater = getLayoutInflater();
-        builder.setTitle(getResources().getString(R.string.help));
-
-        builder.setView(inflater.inflate(R.layout.help, null));
-        builder.setCancelable(false);
-        builder.setPositiveButton(getResources().getString(R.string.close), new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
     private class ColorOnTabListener implements ActionBar.TabListener, ColorUIFragment.ColorChangeListener {
 
         private boolean isFirst = true;
