@@ -39,10 +39,10 @@
         android:title="@string/straight_line" />
 
     <item
-        android:id="@+id/i_web"
+        android:id="@+id/i_web_brush"
         android:title="@string/web_brush" />
     <item
-        android:id="@+id/i_sketch"
+        android:id="@+id/i_sketch_brush"
         android:title="@string/sketch_brush" />
     <item
         android:id="@+id/i_xshape2"

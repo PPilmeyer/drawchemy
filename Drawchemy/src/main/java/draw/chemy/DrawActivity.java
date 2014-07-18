@@ -113,12 +113,12 @@ public class DrawActivity extends Activity {
 
     private static float sAlphaHide = 0.3f;
     private static int sDurationAnimation = 600;
-    private boolean fFirstResume;
+
+    private int fCurrentCreatorID;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         fContext = this;
-        fFirstResume = true;
         setContentView(R.layout.main);
 
         fShowUI = (ImageButton) findViewById(R.id.i_show_ui);
@@ -150,6 +150,7 @@ public class DrawActivity extends Activity {
         fManager.addTool(11, new XShapeV2Creator(fManager));
 
         fManager.setCurrentTool(0);
+        fCurrentCreatorID = R.id.i_line;
 
         ViewGroup drawingContainer = (ViewGroup) findViewById(R.id.drawingContainer);
         drawingContainer.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
@@ -440,61 +441,73 @@ public class DrawActivity extends Activity {
             }
             case R.id.i_line: {
                 fManager.setCurrentTool(0);
+                fCurrentCreatorID = id;
                 fSettingsFragment.getNewCreator(fEmptySettings);
                 break;
             }
             case R.id.i_scraw: {
                 fManager.setCurrentTool(1);
+                fCurrentCreatorID = id;
                 fSettingsFragment.getNewCreator(new ScrawUI((ScrawCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_splatter: {
                 fManager.setCurrentTool(2);
+                fCurrentCreatorID = id;
                 fSettingsFragment.getNewCreator(new SplatterUI((SplatterCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_ribbon: {
                 fManager.setCurrentTool(3);
+                fCurrentCreatorID = id;
                 fSettingsFragment.getNewCreator(new RibbonUI((RibbonCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_xshape: {
                 fManager.setCurrentTool(4);
+                fCurrentCreatorID = id;
                 fSettingsFragment.getNewCreator(new XShapeUI((XShapeCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_paintbrush: {
                 fManager.setCurrentTool(5);
+                fCurrentCreatorID = id;
                 fSettingsFragment.getNewCreator(new PaintBrushUI((PaintBrushCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_ball: {
                 fManager.setCurrentTool(6);
+                fCurrentCreatorID = id;
                 fSettingsFragment.getNewCreator(new BallUI((BallCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_basic_shapes: {
                 fManager.setCurrentTool(7);
+                fCurrentCreatorID = id;
                 fSettingsFragment.getNewCreator(new BasicShapeUI((BasicShapesCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_straigtline: {
                 fManager.setCurrentTool(8);
+                fCurrentCreatorID = id;
                 fSettingsFragment.getNewCreator(new StraightLineUI((StraightlineCreator) fManager.getCurrentCreator()));
                 break;
             }
-            case R.id.i_web: {
+            case R.id.i_web_brush: {
                 fManager.setCurrentTool(9);
+                fCurrentCreatorID = id;
                 fSettingsFragment.getNewCreator(new NearestPointUI((NearestPointLineCreator) fManager.getCurrentCreator()));
                 break;
             }
-            case R.id.i_sketch: {
+            case R.id.i_sketch_brush: {
                 fManager.setCurrentTool(10);
+                fCurrentCreatorID = id;
                 fSettingsFragment.getNewCreator(new NearestPointUI((NearestPointLineCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_xshape2: {
                 fManager.setCurrentTool(11);
+                fCurrentCreatorID = id;
                 fSettingsFragment.getNewCreator(new XShapeV2UI((XShapeV2Creator) fManager.getCurrentCreator()));
                 break;
             }
@@ -561,6 +574,7 @@ public class DrawActivity extends Activity {
             }
             case R.id.i_settings: {
                 addFragment(fSettingsFragment);
+                getClick(fCurrentCreatorID);
                 break;
             }
             case R.id.i_extra_setting: {

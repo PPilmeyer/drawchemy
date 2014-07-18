@@ -23,7 +23,7 @@
     <string name="ribbon">Ribbon</string>
     <string name="splatter">Splatter</string>
     <string name="xshape">XShape</string>
-    <string name="paintbrush">PainBrush</string>
+    <string name="paintbrush">Painbrush</string>
     <string name="ball">Ball</string>
     <string name="basic_shapes">Basic Shapes</string>
     <string name="overflow">Overflow</string>
@@ -48,10 +48,10 @@
     <string name="others">Others</string>
     <string name="effects">Effects</string>
     <string name="mirrors">Mirrors</string>
-    <string name="fill">fill</string>
-    <string name="stroke">stroke</string>
-    <string name="unicolor">unicolor</string>
-    <string name="hide_ui">hide UI</string>
+    <string name="fill">Fill</string>
+    <string name="stroke">Stroke</string>
+    <string name="unicolor">Unicolor</string>
+    <string name="hide_ui">Hide/Show UI</string>
 
     <!-- UI Texts-->
     <string name="hue_switch_enabled">Hue noise enabled</string>
@@ -108,4 +108,6 @@
     You can access to the color settings in the menu.
     These settings allow you to change the main color and activate the hue noise. The hue noise will change randomly the hue of your lines and shapes.
     The intensity of the noise is settable by the slidebar bellow the hue noise checkbox.</string>
+
+
 </resources>

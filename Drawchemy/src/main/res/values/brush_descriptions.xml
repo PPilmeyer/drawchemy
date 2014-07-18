@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brush descriptions-->
+<string name="descr_line"><![CDATA[
+<h1> Line </h1>
+
+<h3> Description </h3>
+<p>
+This is a classic stroke without any modifications.
+</p>
+<em>Fill mode</em> : Yes.
+]]></string>
+<string name="descr_scraw"><![CDATA[
+<h1>Scraw</h1>
+
+<h3> Description </h3>
+<p>
+This is a random stroke. Your stroke is decomposed in different segments and each one are deformed randomly.
+</p>
+<h3> Options </h3>
+
+<p>
+<em>Noise</em> : amplitude of a deformation in a segment.
+</p>
+<p>
+<em>Details</em> : number of deformations for one segment.
+</p>
+<p>
+<em>Flow</em> : segment frequency.
+Short flow means a short and more deformed segments for the same details value.
+</p>
+
+<em>Fill mode</em> : Yes.
+]]></string>
+
+<string name="descr_splatter"><![CDATA[
+<h1>Splatter</h1>
+<h3>Description</h3>
+<p>
+This is a dripping stroke. This is composed of a main stroke and some drips. They are both
+with
+a size inversely proportional to the speed.
+</p>
+<h3>Options</h3>
+
+<p>
+<em>Size</em>
+: size parameters of the drips and the main stroke.
+</p>
+<p>
+<em>Drips</em>
+: number of drips.
+</p>
+
+<em>Fill mode</em>
+: No.
+]]></string>
+<string name="descr_ribbon"><![CDATA[
+<h1>Ribbon</h1>
+<h3>Description</h3>
+<p>
+This stroke is composed of several ribbons. Caution : a very long stroke (without remove your finger) can reduce the performances.
+</p>
+<h3>Options</h3>
+
+<p>
+<em>Gravity</em>
+: attraction to the bottom parameter.
+</p>
+<p>
+<em>Friction</em>
+: black magic parameter.
+</p>
+<p>
+<em>Spacing</em>
+: the frequency at which a ribbon is added
+</p>
+
+<em>Fill mode</em> : Yes.
+
+]]></string>
+<string name="descr_xshape"><![CDATA[
+<h1>XSphape</h1>
+
+<h3> Description </h3>
+<p>
+This is a randomly broken line stroke. Your stroke is decomposed in different segments and each one is composed of random straight lines.
+</p>
+<h3> Options </h3>
+
+<p>
+<em>Noise</em> : length parameter of the straight lines.
+</p>
+<p>
+<em>Details</em> : number of straight lines for one segment.
+</p>
+<p>
+<em>Flow</em> : segment frequency.
+Short flow means  a short and more deformed segment for the same details value.
+</p>
+
+<em>Fill mode</em> : Yes.
+]]></string>
+<string name="descr_paint_brush"><![CDATA[
+<h1> Paintbrush </h1>
+
+<h3> Description </h3>
+<p>
+This is emulation of a "real brush" with few bristles.
+</p>
+<h3> Options </h3>
+
+<p>
+<em>Bristles</em> : number of bristles. Caution : a high number can reduce the performances without specially looking better.
+</p>
+
+<em>Fill mode</em> : No.
+]]></string>
+<string name="descr_basic_shapes"><![CDATA[
+<h1> Basic shape </h1>
+<h3> Description </h3>
+<p>
+Your stroke is composed of different basic shapes : Box, Circle or Triangle.
+The stroke can be composed of one kind or all three randomly chosen.
+The size of a shape is proportional to the stroke speed.
+</p>
+<em>Fill mode</em> : Yes.
+]]></string>
+
+<string name="descr_ball"><![CDATA[
+<h1> Ball </h1>
+
+<h3> Description </h3>
+<p>
+This brush create "balls". One ball is a group of concentric circles.
+</p>
+<h3> Options </h3>
+
+<p>
+<em>Size</em> : radius size parameter.
+</p>
+<p>
+<em>Radius</em> : number of concentric circles for one ball.
+</p>
+<p>
+<em>Flow</em> : frequency of balls.
+</p>
+
+<em>Fill mode</em> : Yes.
+]]></string>
+<string name="descr_straight_line"><![CDATA[
+<h2> Straight Line </h2>
+<h3> Description </h3>
+<p>
+One stroke will be an only straight line.
+If snapping is enabled, the beginning of the line will be the closest extremity of previous lines if it is not too far.
+</p>
+<em>Fill mode</em> : Yes.
+]]></string>
+<string name="descr_web_brush"><![CDATA[
+<h1>Web brush</h1>
+<h3>Description</h3>
+<p>
+This stroke is composed of small straight lines.
+If an extremity of one line is close enough to the extremity of an other line (from this
+stroke
+or previous ones),
+there will be an extra line between these two extremities.
+</p>
+<h3>Options</h3>
+
+<p>
+<em>Max Dist</em>
+: Maximal distance between two extremities to have an extra line.
+</p>
+
+<em>Fill mode</em>
+: No.
+]]></string>
+<string name="descr_sketch_brush">
+<![CDATA[
+<h1>Sketch brush</h1>
+<h3> Description</h3>
+<p>
+Variation of the web brush (see web brush), where the extra line is shorter and doesn\'t
+touch the extremities and its extremities aren\'t used by the brush.
+</p>
+]]></string>
+<string name="descr_xshape_v2">
+<![CDATA[
+<h1>XShape V2</h1>
+<h3> Description </h3>
+<p>
+This is an other randomly broken lines stroke with a different algorithm than XShape.
+</p>
+<h3>Options</h3>
+
+<p>
+<em>Noise</em>
+: randomness of the broken lines.
+</p>
+
+<em>Fill mode</em>
+: Yes.
+]]></string>
+</resources>

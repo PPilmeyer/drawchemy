@@ -124,14 +124,15 @@ public class FileUtils {
         }
 
         protected void addFileToMedia(File aFile) {
-            MediaScannerConnection.scanFile(fContext.getApplicationContext(),
-                    new String[]{aFile.toString()}, new String[]{"image/png"},
-                    new MediaScannerConnection.OnScanCompletedListener() {
-                        public void onScanCompleted(String path, Uri uri) {
+            if (aFile != null && fContext != null && fContext.getApplicationContext() != null) {
+                MediaScannerConnection.scanFile(fContext.getApplicationContext(),
+                        new String[]{aFile.toString()}, new String[]{"image/png"},
+                        new MediaScannerConnection.OnScanCompletedListener() {
+                            public void onScanCompleted(String path, Uri uri) {
+                            }
                         }
-                    }
-            );
-
+                );
+            }
         }
     }
 
@@ -195,7 +196,6 @@ public class FileUtils {
 
         @Override
         protected void onPostExecute(Bitmap bitmap) {
-            super.onPostExecute(bitmap);
             if (bitmap != null) {
                 fManager.putBitmapAsBackground(bitmap);
             } else {
@@ -231,7 +231,6 @@ public class FileUtils {
 
         @Override
         protected void onPostExecute(Bitmap bitmap) {
-            super.onPostExecute(bitmap);
             if (bitmap != null) {
                 fManager.putBitmapAsBackground(bitmap);
             }

@@ -12,7 +12,7 @@
 
     <item
         android:id="@+id/i_extra_setting"
-        android:icon="@drawable/ic_action_settings"
+        android:icon="@drawable/ic_action_extra_settings"
         android:title="@string/extra_settings"
         android:showAsAction="collapseActionView" />
 

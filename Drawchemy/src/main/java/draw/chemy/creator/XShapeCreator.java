@@ -38,8 +38,8 @@ public class XShapeCreator extends ACreator {
     public static final int MAX_FLOW = 10;
 
     // Parameters
-    private float fNoise = 12;
-    private int fDetail = 5;
+    private float fNoise = 17;
+    private int fDetail = 8;
     private int fFlow = 3;
 
     private PointF fPreviousPoint;

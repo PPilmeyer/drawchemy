@@ -31,13 +31,13 @@ public class RibbonCreator extends ACreator {
     private static final float PI3 = (float) Math.PI * 1.5f;
 
     public static final float MIN_GRAVITY = 0.f;
-    public static final float MAX_GRAVITY = 1.f;
+    public static final float MAX_GRAVITY = 0.4f;
 
-    public static final float MIN_FRICTION = 1.f;
-    public static final float MAX_FRICTION = 2.f;
+    public static final float MIN_FRICTION = 0.5f;
+    public static final float MAX_FRICTION = 1.f;
 
-    public static final int MIN_SPACING = 5;
-    public static final int MAX_SPACING = 20;
+    public static final int MIN_SPACING = 3;
+    public static final int MAX_SPACING = 15;
 
     //Parameters
     private int fSpacing;

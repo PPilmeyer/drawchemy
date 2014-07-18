@@ -38,7 +38,7 @@
         android:id="@+id/i_settings"
         android:icon="@drawable/ic_action_settings"
         android:showAsAction="always"
-        android:title="@string/extra_settings" />
+        android:title="@string/settings" />
 
     <item
         android:id="@+id/i_overflow"

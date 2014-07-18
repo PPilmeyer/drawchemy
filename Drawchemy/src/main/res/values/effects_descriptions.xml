@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string name="descr_mirrors">
+<![CDATA[
+<h1>Mirrors</h1>
+<h3> Description </h3>
+<p>
+    There are two mirrors : an horizontal and a vertical.
+    If you enabled a mirror effect, your stroke will be reflected respectively horizontally and vertically.
+    You can enabled both in the same time but you can not enable the Kaleidoscope effect and the mirrors.
+</p>
+]]></string>
+<string name="descr_kaleidoscope">
+<![CDATA[
+<h1>Kaleidoscope</h1>
+<h3> Description </h3>
+<p>
+    This effect will rotate around the canvas center your stroke several time.
+     The default rotation number is 6 and can be chosen in the extra settings.
+    You can not enabled a mirror effect and the kaleidoscope in the same time.
+</p>
+]]></string>
+<string name="descr_fill">
+<![CDATA[
+<h1>Fill mode</h1>
+<h3> Description </h3>
+<p>
+    Your stroke will produce filled shape and not line anymore. Click again on the icon to go back in the stroke mode.
+</p>
+]]></string>
+<string name="descr_stroke">
+<![CDATA[
+<h1>Stroke mode</h1>
+<h3> Description </h3>
+<p>
+    Your stroke will produce line. Click on the icon to go in the fill mode.
+</p>
+]]></string>
+<string name="descr_unicolor">
+<![CDATA[
+<h1>Unicolor mode</h1>
+<h3> Description </h3>
+<p>
+    Your stroke will only use the main color (see Colors). Click on the icon to enter in gradient mode.
+</p>
+]]></string>
+<string name="descr_gradient">
+<![CDATA[
+<h1>Gradient mode</h1>
+<h3> Description </h3>
+<p>
+    A linear gradient from top left to bottom right using both the main and the secondary color will colorize your stroke.
+    Click on the icon to go back in mode.
+</p>
+]]></string>
+</resources>

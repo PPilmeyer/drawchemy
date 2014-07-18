@@ -22,6 +22,7 @@ package draw.chemy;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -38,7 +39,6 @@ public class HelpActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.help_view);
         fTextView = (TextView) findViewById(R.id.help_textview);
-        fTextView.setText("fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf fefezf");
     }
 
     @Override
@@ -51,5 +51,106 @@ public class HelpActivity extends Activity {
             getMenuInflater().inflate(R.menu.creators_menu, subMenu);
         }
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        getClick(item.getItemId());
+        return true;
+    }
+
+    private void getClick(int aId) {
+        switch (aId) {
+            case R.id.i_line:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_line)));
+                break;
+            case R.id.i_scraw:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_scraw)));
+                break;
+            case R.id.i_ribbon:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_ribbon)));
+                break;
+            case R.id.i_splatter:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_splatter)));
+                break;
+            case R.id.i_xshape:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_xshape)));
+                break;
+            case R.id.i_paintbrush:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_paint_brush)));
+                break;
+            case R.id.i_ball:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_ball)));
+                break;
+            case R.id.i_basic_shapes:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_basic_shapes)));
+                break;
+            case R.id.i_straigtline:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_straight_line)));
+                break;
+            case R.id.i_web_brush:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_web_brush)));
+                break;
+            case R.id.i_sketch_brush:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_sketch_brush)));
+                break;
+            case R.id.i_xshape2:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_xshape_v2)));
+                break;
+            case R.id.help_fill:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_fill)));
+                break;
+            case R.id.help_stroke:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_stroke)));
+                break;
+            case R.id.help_mirror:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_mirrors)));
+                break;
+            case R.id.help_kaleidoscope:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_kaleidoscope)));
+                break;
+            case R.id.help_gradient:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_gradient)));
+                break;
+            case R.id.help_unicolor:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_unicolor)));
+                break;
+            case R.id.help_load:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_load)));
+                break;
+            case R.id.help_save:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_save)));
+                break;
+            case R.id.help_share:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_share)));
+                break;
+            case R.id.help_clear:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_clear)));
+                break;
+            case R.id.help_undo:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_undo)));
+                break;
+            case R.id.help_zoom:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_zoom_pan)));
+                break;
+            case R.id.help_one:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_reset_view)));
+                break;
+            case R.id.help_logo:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_hide)));
+                break;
+            case R.id.help_colors:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_colors)));
+                break;
+            case R.id.help_settings:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_settings)));
+                break;
+            case R.id.help_extra:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_extra)));
+                break;
+            default:
+                break;
+        }
+
     }
 }

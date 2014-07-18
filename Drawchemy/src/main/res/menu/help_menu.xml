@@ -11,11 +11,6 @@
     </item>
 
     <item
-        android:id="@+id/help_faqs"
-        android:showAsAction="always|withText"
-        android:title="FAQS"></item>
-
-    <item
         android:id="@+id/help_colors"
         android:icon="@drawable/color"
         android:showAsAction="always|withText"
@@ -25,11 +20,6 @@
         </menu>
     </item>
 
-    <item
-        android:id="@+id/help_settings"
-        android:icon="@drawable/ic_action_settings"
-        android:showAsAction="always|withText"
-        android:title="@string/settings"></item>
 
     <item
         android:id="@+id/help_effects"
@@ -69,13 +59,47 @@
 
         </menu>
     </item>
-
     <item
         android:id="@+id/help_others"
-        android:showAsAction="always|withText"
+        android:icon="@drawable/ic_action_overflow"
+        android:showAsAction="always"
         android:title="@string/others">
         <menu>
             <item
+                android:id="@+id/help_zoom"
+                android:icon="@drawable/ic_action_search"
+                android:showAsAction="always|withText"
+                android:title="@string/pan_zoom" />
+            <item
+                android:id="@+id/help_one"
+                android:icon="@drawable/reset_view"
+                android:showAsAction="always|withText"
+                android:title="@string/reset_view" />
+            <item
+                android:id="@+id/help_logo"
+                android:icon="@drawable/drawchemy"
+                android:showAsAction="always|withText"
+                android:title="@string/hide_ui" />
+            <item
+                android:id="@+id/help_extra"
+                android:icon="@drawable/ic_action_extra_settings"
+                android:showAsAction="always|withText"
+                android:title="@string/extra_settings" />
+            <item
+                android:id="@+id/help_settings"
+                android:icon="@drawable/ic_action_settings"
+                android:showAsAction="always"
+                android:title="@string/settings"></item>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/help_others_bis"
+        android:icon="@drawable/ic_action_overflow"
+        android:showAsAction="always"
+        android:title="@string/others">
+        <menu>
+
+        <item
                 android:id="@+id/help_load"
                 android:icon="@drawable/ic_action_picture"
                 android:showAsAction="always|withText"
@@ -100,21 +124,6 @@
                 android:icon="@drawable/ic_action_undo"
                 android:showAsAction="always|withText"
                 android:title="@string/undo" />
-            <item
-                android:id="@+id/help_zoom"
-                android:icon="@drawable/ic_action_search"
-                android:showAsAction="always|withText"
-                android:title="@string/pan_zoom" />
-            <item
-                android:id="@+id/help_one"
-                android:icon="@drawable/reset_view"
-                android:showAsAction="always|withText"
-                android:title="@string/reset_view" />
-            <item
-                android:id="@+id/help_logo"
-                android:icon="@drawable/drawchemy"
-                android:showAsAction="always|withText"
-                android:title="@string/hide_ui" />
         </menu>
     </item>
 
