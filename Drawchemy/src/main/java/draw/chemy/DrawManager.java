@@ -232,9 +232,9 @@ public class DrawManager implements View.OnTouchListener {
                 op.undo();
                 fUndo.addFirst(op);
                 backup();
-                redraw();
             }
         }
+        redraw();
     }
 
     public void redo() {
@@ -244,17 +244,15 @@ public class DrawManager implements View.OnTouchListener {
                 op.redo();
                 fOperations.addLast(op);
                 backup();
-                redraw();
             }
         }
+        redraw();
     }
 
     private void backup() {
-        synchronized (fBackgroundCanvas) {
-            fBackgroundCanvas.drawBitmap(fBackgroundImageBackUP, 0, 0, fDitherPaint);
-            for (IDrawingOperation op : fOperations) {
-                op.draw(fBackgroundCanvas);
-            }
+        fBackgroundCanvas.drawBitmap(fBackgroundImageBackUP, 0, 0, fDitherPaint);
+        for (IDrawingOperation op : fOperations) {
+            op.draw(fBackgroundCanvas);
         }
     }
 
@@ -655,7 +653,7 @@ public class DrawManager implements View.OnTouchListener {
         }
 
         @Override
-        public void draw(Canvas aCanvas) {
+        public synchronized void draw(Canvas aCanvas) {
             getPaint().setShader(createShader());
             fDelegate.draw(aCanvas);
         }
@@ -700,7 +698,7 @@ public class DrawManager implements View.OnTouchListener {
 
 
         @Override
-        public void draw(Canvas aCanvas) {
+        public synchronized void draw(Canvas aCanvas) {
             fDelegate.draw(aCanvas);
             for (Matrix m : KaleidoscopeMatrix) {
                 aCanvas.save();

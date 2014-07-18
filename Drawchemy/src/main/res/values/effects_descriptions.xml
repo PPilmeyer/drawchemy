@@ -26,7 +26,7 @@
 <h3> Description </h3>
 <p>
     Your stroke will produce filled shape and not line anymore. Click again on the icon to go back in the stroke mode.
-    Some brush doesn't support the fill mode.
+    Some brush doesn\'t support the fill mode.
 </p>
 ]]></string>
 <string name="descr_stroke">
@@ -50,7 +50,8 @@
 <h1>Gradient mode</h1>
 <h3> Description </h3>
 <p>
-    A linear gradient from top left to bottom right using both the main and the secondary color will colorize your stroke.
+    A linear gradient from top left to bottom right using both the main and the secondary colors will colorize your stroke.
+    If you use a mirror or kaleidoscope effect, the gradient will be affected as well.
     Click on the icon to go back in mode.
 </p>
 ]]></string>

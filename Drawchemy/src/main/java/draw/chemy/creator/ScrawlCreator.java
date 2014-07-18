@@ -25,7 +25,7 @@ import draw.chemy.DrawManager;
 
 import static draw.chemy.DrawUtils.getProbability;
 
-public class ScrawCreator extends ACreator {
+public class ScrawlCreator extends ACreator {
 
     public static final float MIN_NOISE = 1.f;
     public static final float MAX_NOISE = 20.f;
@@ -45,7 +45,7 @@ public class ScrawCreator extends ACreator {
     private int fCount = 0;
     private SimpleLineOperation fCurrentOperation = null;
 
-    public ScrawCreator(DrawManager aManager) {
+    public ScrawlCreator(DrawManager aManager) {
         super(aManager);
         fPreviousPoint = new PointF();
     }

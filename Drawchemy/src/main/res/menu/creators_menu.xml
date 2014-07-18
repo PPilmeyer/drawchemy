@@ -7,7 +7,7 @@
 
     <item
         android:id="@+id/i_scraw"
-        android:title="@string/scraw" />
+        android:title="@string/scrawl" />
 
     <item
         android:id="@+id/i_ribbon"

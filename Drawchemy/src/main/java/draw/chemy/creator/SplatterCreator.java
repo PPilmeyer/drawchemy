@@ -205,7 +205,6 @@ public class SplatterCreator extends ACreator {
             subPath.moveTo(start.x + x4, start.y + y4);
             subPath.lineTo(start.x + x4 + x5, start.y + y4 + y5);
             fCurrentOperation.addPath(subPath, dd);
-
         }
     }
 

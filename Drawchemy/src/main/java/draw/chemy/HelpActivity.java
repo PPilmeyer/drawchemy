@@ -65,7 +65,7 @@ public class HelpActivity extends Activity {
                 fTextView.setText(Html.fromHtml(getString(R.string.descr_line)));
                 break;
             case R.id.i_scraw:
-                fTextView.setText(Html.fromHtml(getString(R.string.descr_scraw)));
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_scrawl)));
                 break;
             case R.id.i_ribbon:
                 fTextView.setText(Html.fromHtml(getString(R.string.descr_ribbon)));

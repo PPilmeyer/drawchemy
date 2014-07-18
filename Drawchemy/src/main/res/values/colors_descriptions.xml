@@ -6,6 +6,8 @@
 <h3> Main and secondary colors </h3>
 <p> On the top left in the Action bar (top bar), there are two colored circles : one big and one small.
 They are respectively the main and the secondary color.
+The main color for your stroke. The secondary color is used when you clear the canvas.
+Both colors are used in gradient mode (see Gradient).
 If you click on the secondary color, it will become the main one and the previous main the secondary.
 </p>
 <h3>Go to the color user interface</h3>

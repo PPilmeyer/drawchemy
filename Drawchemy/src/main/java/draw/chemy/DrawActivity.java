@@ -55,7 +55,7 @@ import draw.chemy.UI.ExtraSettingsUI;
 import draw.chemy.UI.NearestPointUI;
 import draw.chemy.UI.PaintBrushUI;
 import draw.chemy.UI.RibbonUI;
-import draw.chemy.UI.ScrawUI;
+import draw.chemy.UI.ScrawlUI;
 import draw.chemy.UI.SettingFragment;
 import draw.chemy.UI.SplatterUI;
 import draw.chemy.UI.StraightLineUI;
@@ -69,7 +69,7 @@ import draw.chemy.creator.LineCreator;
 import draw.chemy.creator.NearestPointLineCreator;
 import draw.chemy.creator.PaintBrushCreator;
 import draw.chemy.creator.RibbonCreator;
-import draw.chemy.creator.ScrawCreator;
+import draw.chemy.creator.ScrawlCreator;
 import draw.chemy.creator.SketchCreator;
 import draw.chemy.creator.SplatterCreator;
 import draw.chemy.creator.StraightlineCreator;
@@ -136,7 +136,7 @@ public class DrawActivity extends Activity {
         new FileUtils(fManager).loadTempImage(this);
 
         fManager.addTool(0, new LineCreator(fManager));
-        fManager.addTool(1, new ScrawCreator(fManager));
+        fManager.addTool(1, new ScrawlCreator(fManager));
         fManager.addTool(2, new SplatterCreator(fManager));
         fManager.addTool(3, new RibbonCreator(fManager));
         fManager.addTool(4, new XShapeCreator(fManager));
@@ -180,7 +180,7 @@ public class DrawActivity extends Activity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                if(fDrawingView.isEnable()) {
+                if (fDrawingView.isEnable()) {
                     fDrawingView.setEnabled(false);
                     if (fZoomItem.getIcon() != null) {
                         fZoomItem.getIcon().setAlpha(127);
@@ -409,7 +409,7 @@ public class DrawActivity extends Activity {
     }
 
     private void getClick(int id) {
-        if(id != R.id.i_zoom && fDrawingView.isEnable()) {
+        if (id != R.id.i_zoom && fDrawingView.isEnable()) {
             fDrawingView.setEnabled(false);
             if (fZoomItem.getIcon() != null) {
                 fZoomItem.getIcon().setAlpha(127);
@@ -448,7 +448,7 @@ public class DrawActivity extends Activity {
             case R.id.i_scraw: {
                 fManager.setCurrentTool(1);
                 fCurrentCreatorID = id;
-                fSettingsFragment.getNewCreator(new ScrawUI((ScrawCreator) fManager.getCurrentCreator()));
+                fSettingsFragment.getNewCreator(new ScrawlUI((ScrawlCreator) fManager.getCurrentCreator()));
                 break;
             }
             case R.id.i_splatter: {
@@ -661,7 +661,7 @@ public class DrawActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK){
+        if (resultCode == RESULT_OK) {
             Uri targetUri = data.getData();
             new FileUtils(fManager).load(this, targetUri);
         }
@@ -697,15 +697,15 @@ public class DrawActivity extends Activity {
         int id = aView.getId();
         switch (id) {
 
-            case R.id.about_drawchemy : {
+            case R.id.about_drawchemy: {
                 startWebIntent("https://code.google.com/p/drawchemy/");
                 break;
             }
-            case R.id.about_alchemy : {
+            case R.id.about_alchemy: {
                 startWebIntent("http://al.chemy.org/");
                 break;
             }
-            case R.id.about_tumblr : {
+            case R.id.about_tumblr: {
                 startWebIntent("http://drawchemy.tumblr.com/");
                 break;
             }
@@ -723,7 +723,7 @@ public class DrawActivity extends Activity {
         LayoutInflater inflater = getLayoutInflater();
         builder.setTitle(getResources().getString(R.string.about));
 
-        builder.setView(inflater.inflate(R.layout.about,null));
+        builder.setView(inflater.inflate(R.layout.about, null));
         builder.setCancelable(false);
         builder.setPositiveButton(getResources().getString(R.string.close), new DialogInterface.OnClickListener() {
 
@@ -742,7 +742,7 @@ public class DrawActivity extends Activity {
         LayoutInflater inflater = getLayoutInflater();
         builder.setTitle(getResources().getString(R.string.help));
 
-        builder.setView(inflater.inflate(R.layout.help,null));
+        builder.setView(inflater.inflate(R.layout.help, null));
         builder.setCancelable(false);
         builder.setPositiveButton(getResources().getString(R.string.close), new DialogInterface.OnClickListener() {
 
@@ -766,7 +766,7 @@ public class DrawActivity extends Activity {
 
         @Override
         public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-            if(fDrawingView.isEnable()) {
+            if (fDrawingView.isEnable()) {
                 fDrawingView.setEnabled(false);
                 if (fZoomItem.getIcon() != null) {
                     fZoomItem.getIcon().setAlpha(127);
@@ -796,7 +796,7 @@ public class DrawActivity extends Activity {
 
         @Override
         public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-            if(fDrawingView.isEnable()) {
+            if (fDrawingView.isEnable()) {
                 fDrawingView.setEnabled(false);
                 if (fZoomItem.getIcon() != null) {
                     fZoomItem.getIcon().setAlpha(127);

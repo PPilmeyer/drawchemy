@@ -21,16 +21,16 @@ package draw.chemy.UI;
 
 import org.al.chemy.R;
 
-import draw.chemy.creator.ScrawCreator;
+import draw.chemy.creator.ScrawlCreator;
 
-public class ScrawUI extends ASettingsGroupUIWithSeekBar {
+public class ScrawlUI extends ASettingsGroupUIWithSeekBar {
 
 
-    public ScrawUI(ScrawCreator aScrawCreator) {
-        super(createSettings(aScrawCreator));
+    public ScrawlUI(ScrawlCreator aScrawlCreator) {
+        super(createSettings(aScrawlCreator));
     }
 
-    private static SeekBarSettings[] createSettings(final ScrawCreator aScrawCreator) {
+    private static SeekBarSettings[] createSettings(final ScrawlCreator aScrawlCreator) {
         SeekBarSettings flow = new SeekBarSettings() {
             @Override
             public boolean isPercent() {
@@ -39,22 +39,22 @@ public class ScrawUI extends ASettingsGroupUIWithSeekBar {
 
             @Override
             public float getMax() {
-                return ScrawCreator.MAX_FLOW;
+                return ScrawlCreator.MAX_FLOW;
             }
 
             @Override
             public float getMin() {
-                return ScrawCreator.MIN_FLOW;
+                return ScrawlCreator.MIN_FLOW;
             }
 
             @Override
             public float getCurrent() {
-                return aScrawCreator.getFlow();
+                return aScrawlCreator.getFlow();
             }
 
             @Override
             public void setCurrent(float aValue) {
-                aScrawCreator.setFlow((int) aValue);
+                aScrawlCreator.setFlow((int) aValue);
             }
 
             @Override
@@ -71,22 +71,22 @@ public class ScrawUI extends ASettingsGroupUIWithSeekBar {
 
             @Override
             public float getMax() {
-                return ScrawCreator.MAX_NOISE;
+                return ScrawlCreator.MAX_NOISE;
             }
 
             @Override
             public float getMin() {
-                return ScrawCreator.MIN_NOISE;
+                return ScrawlCreator.MIN_NOISE;
             }
 
             @Override
             public float getCurrent() {
-                return aScrawCreator.getNoise();
+                return aScrawlCreator.getNoise();
             }
 
             @Override
             public void setCurrent(float aValue) {
-                aScrawCreator.setNoise(aValue);
+                aScrawlCreator.setNoise(aValue);
             }
 
             @Override
@@ -103,22 +103,22 @@ public class ScrawUI extends ASettingsGroupUIWithSeekBar {
 
             @Override
             public float getMax() {
-                return ScrawCreator.MAX_DETAIL;
+                return ScrawlCreator.MAX_DETAIL;
             }
 
             @Override
             public float getMin() {
-                return ScrawCreator.MIN_DETAIL;
+                return ScrawlCreator.MIN_DETAIL;
             }
 
             @Override
             public float getCurrent() {
-                return aScrawCreator.getDetail();
+                return aScrawlCreator.getDetail();
             }
 
             @Override
             public void setCurrent(float aValue) {
-                aScrawCreator.setDetail((int) aValue);
+                aScrawlCreator.setDetail((int) aValue);
             }
 
             @Override

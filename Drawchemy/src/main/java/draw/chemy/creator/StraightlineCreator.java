@@ -130,7 +130,6 @@ public class StraightlineCreator extends ACreator {
         public void redo() {
             fPreviousP.addLast(fPreviousPRedo.removeLast());
             fPreviousP.addLast(fPreviousPRedo.removeLast());
-
         }
 
         @Override
