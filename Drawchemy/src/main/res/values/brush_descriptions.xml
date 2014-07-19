@@ -8,7 +8,7 @@
 <p>
 This is a classic stroke without any modifications.
 </p>
-<em>Fill mode</em> : Yes.
+<p><em>Fill mode</em> : Yes.</p>
 ]]></string>
 <string name="descr_scrawl"><![CDATA[
 <h1>Scrawl</h1>
@@ -27,10 +27,10 @@ This is a random stroke. Your stroke is decomposed in different segments and eac
 </p>
 <p>
 <em>Flow</em> : segment frequency.
-Short flow means a short and more deformed segments for the same details value.
+Short flow means a short and more deformed segment for the same details value.
 </p>
 
-<em>Fill mode</em> : Yes.
+<p><em>Fill mode</em> : Yes.</p>
 ]]></string>
 
 <string name="descr_splatter"><![CDATA[
@@ -39,7 +39,7 @@ Short flow means a short and more deformed segments for the same details value.
 <p>
 This is a dripping stroke. This is composed of a main stroke and some drips. They are both
 with
-a size inversely proportional to the speed.
+a size inversely proportional to the stroke speed.
 </p>
 <h3>Options</h3>
 
@@ -52,8 +52,8 @@ a size inversely proportional to the speed.
 : number of drips.
 </p>
 
-<em>Fill mode</em>
-: No.
+<p><em>Fill mode</em>
+: No.</p>
 ]]></string>
 <string name="descr_ribbon"><![CDATA[
 <h1>Ribbon</h1>
@@ -65,18 +65,18 @@ This stroke is composed of several ribbons. Caution : a very long stroke (withou
 
 <p>
 <em>Gravity</em>
-: attraction to the bottom parameter.
+: gravity parameter.
 </p>
 <p>
 <em>Friction</em>
-: black magic parameter.
+: friction parameter.
 </p>
 <p>
 <em>Spacing</em>
-: the frequency at which a ribbon is added
+: the frequency at which a ribbon is added.
 </p>
 
-<em>Fill mode</em> : Yes.
+<p><em>Fill mode</em> : Yes.</p>
 
 ]]></string>
 <string name="descr_xshape"><![CDATA[
@@ -99,7 +99,7 @@ This is a randomly broken line stroke. Your stroke is decomposed in different se
 Short flow means  a short and more deformed segment for the same details value.
 </p>
 
-<em>Fill mode</em> : Yes.
+<p><em>Fill mode</em> : Yes.</p>
 ]]></string>
 <string name="descr_paint_brush"><![CDATA[
 <h1> Paintbrush </h1>
@@ -114,17 +114,17 @@ This is emulation of a "real brush" with few bristles.
 <em>Bristles</em> : number of bristles. Caution : a high number can reduce the performances without specially looking better.
 </p>
 
-<em>Fill mode</em> : No.
+<p><em>Fill mode</em> : No.</p>
 ]]></string>
 <string name="descr_basic_shapes"><![CDATA[
 <h1> Basic shape </h1>
 <h3> Description </h3>
 <p>
-Your stroke is composed of different basic shapes : Box, Circle or Triangle.
-The stroke can be composed of one kind or all three randomly chosen.
+This brush is made of different basic shapes : Box, Circle and Triangle.
+You can chose one kind of shape or all of them in a random pattern.
 The size of a shape is proportional to the stroke speed.
 </p>
-<em>Fill mode</em> : Yes.
+<p><em>Fill mode</em> : Yes.</p>
 ]]></string>
 
 <string name="descr_ball"><![CDATA[
@@ -146,7 +146,7 @@ This brush create "balls". One ball is a group of concentric circles.
 <em>Flow</em> : frequency of balls.
 </p>
 
-<em>Fill mode</em> : Yes.
+<p><em>Fill mode</em> : Yes.</p>
 ]]></string>
 <string name="descr_straight_line"><![CDATA[
 <h2> Straight Line </h2>
@@ -155,7 +155,7 @@ This brush create "balls". One ball is a group of concentric circles.
 One stroke will be an only straight line.
 If snapping is enabled, the beginning of the line will be the closest extremity of previous lines if it is not too far.
 </p>
-<em>Fill mode</em> : Yes.
+<p><em>Fill mode</em> : Yes.</p>
 ]]></string>
 <string name="descr_web_brush"><![CDATA[
 <h1>Web brush</h1>
@@ -174,16 +174,15 @@ there will be an extra line between these two extremities.
 : Maximal distance between two extremities to have an extra line.
 </p>
 
-<em>Fill mode</em>
-: No.
+<p><em>Fill mode</em>
+: No.</p>
 ]]></string>
 <string name="descr_sketch_brush">
 <![CDATA[
 <h1>Sketch brush</h1>
 <h3>Description</h3>
 <p>
-Variation of the web brush (see web brush), where the extra line is shorter and doesn\'t
-touch the extremities. The extremities of these extra lines aren\'t used by the brush.
+Variation of the web brush (see web brush) with shorter extra lines.
 </p>
 ]]></string>
 <string name="descr_xshape_v2">
@@ -191,7 +190,7 @@ touch the extremities. The extremities of these extra lines aren\'t used by the 
 <h1>XShape V2</h1>
 <h3>Description</h3>
 <p>
-This is an other randomly broken lines stroke with a different algorithm than XShape.
+This is an other randomly broken lines stroke with a different algorithm than the first XShape brush.
 </p>
 <h3>Options</h3>
 
@@ -200,7 +199,7 @@ This is an other randomly broken lines stroke with a different algorithm than XS
 : randomness of the broken lines.
 </p>
 
-<em>Fill mode</em>
-: Yes.
+<p><em>Fill mode</em>
+: Yes.</p>
 ]]></string>
 </resources>
