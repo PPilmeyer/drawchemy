@@ -15,7 +15,7 @@
 <h1>Share</h1>
 <h3> Description </h3>
 <p>
-    Save your canvas in PNG format and allow you to share it with an other application from your device.
+    Save your canvas (see Save) and allow you to share the saved image with an other application from your device.
 </p>
 ]]></string>
 <string name="descr_save">
@@ -23,7 +23,7 @@
 <h1>Save</h1>
 <h3> Description </h3>
 <p>
-    Save your canvas in PNG format. The location will be in the DRAWCHEMY folder inside your Picture folder.
+    Save your canvas in PNG format. The location will be in the DRAWCHEMY folder, which is inside your Picture folder.
 </p>
 ]]></string>
 <string name="descr_clear">
