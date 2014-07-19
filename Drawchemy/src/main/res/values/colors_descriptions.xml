@@ -6,19 +6,19 @@
 <h3> Main and secondary colors </h3>
 <p> On the top left in the Action bar (top bar), there are two colored circles : one big and one small.
 They are respectively the main and the secondary color.
-The main color for your stroke. The secondary color is used when you clear the canvas.
+The main color is used in the unicolor mode (see Unicolor). The secondary color is used when you clear the canvas (see Clear).
 Both colors are used in gradient mode (see Gradient).
 If you click on the secondary color, it will become the main one and the previous main the secondary.
 </p>
 <h3>Go to the color user interface</h3>
-<p>You can either go to the color user interface by clicking on the main color circle or on Colors in the menu.</p>
+<p>You can either go to the color user interface by clicking on the circle of the main color or on Colors in the menu.</p>
 <h3> Hue noise </h3>
-If hue noise is enabled, your stroke will not use the main and secondary color but colors
-with the same saturation and brightness but a different hue. The hue is chosen randomly.
+If hue noise is enabled, your stroke will not use the main and secondary color but colors slightly different.
+They will have the same saturation and brightness but a different hue. The hue is chosen randomly.
 The slide bar under the hue noise check box parameterize how far the random hue can differ from the original hue.
 <p></p>
 <h3> Palette </h3>
-<p> Drawchemy records the last eight different colors used on the canvas and allows you to re-use them.</p>
+<p> Drawchemy records the last eight colors used on the canvas (opacity included) and allows you to re-use them.</p>
 <h3> Pipette </h3>
 <p>
 Click on the pipette button and next on the canvas,

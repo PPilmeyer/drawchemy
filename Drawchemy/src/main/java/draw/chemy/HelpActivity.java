@@ -39,6 +39,7 @@ public class HelpActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.help_view);
         fTextView = (TextView) findViewById(R.id.help_textview);
+        fTextView.setText(Html.fromHtml(getString(R.string.descr_help)));
     }
 
     @Override
@@ -148,9 +149,11 @@ public class HelpActivity extends Activity {
             case R.id.help_extra:
                 fTextView.setText(Html.fromHtml(getString(R.string.descr_extra)));
                 break;
+            case R.id.help_brushes:
+                fTextView.setText(Html.fromHtml(getString(R.string.descr_brushes)));
+                break;
             default:
                 break;
         }
-
     }
 }

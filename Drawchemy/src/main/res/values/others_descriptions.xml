@@ -7,7 +7,7 @@
 <p>
     Load a image from your device and use it as background.
     The image is automatically scaled and rotated to fit your canvas for the best.
-    Your previous canvas is completely erased.
+    Your previous canvas is completely erased. You can not undo a load operation.
 </p>
 ]]></string>
 <string name="descr_share">
@@ -15,7 +15,7 @@
 <h1>Share</h1>
 <h3> Description </h3>
 <p>
-    Save your canvas in a PNG image and allow you to share it with an other application from your device.
+    Save your canvas in PNG format and allow you to share it with an other application from your device.
 </p>
 ]]></string>
 <string name="descr_save">
@@ -23,7 +23,7 @@
 <h1>Save</h1>
 <h3> Description </h3>
 <p>
-    Save your canvas in a PNG image with a randomly chosen name.
+    Save your canvas in PNG format. The location will be in the DRAWCHEMY folder inside your Picture folder.
 </p>
 ]]></string>
 <string name="descr_clear">
@@ -61,6 +61,7 @@
     Cancel the last stroke. You can undo up to 5 strokes by default.
     You can increase or decrease this number in the extra settings.
     If you change this number, it will be effective after your next stroke.
+    The memory footprint of the application will increase with the number of possible undos.
 </p>
 ]]></string>
 <string name="descr_hide">
@@ -85,7 +86,13 @@
 <h1>Extra settings</h1>
 <h3>Description</h3>
 <p>
-   Display a user interface to parameterize the number of possible undos and the kaleidoscope.
+   Display a user interface to parameterize the number of possible undos (see Undo) and the kaleidoscope (see Kaleidoscope).
+</p>
+]]></string>
+    <string name="descr_help">
+        <![CDATA[
+<p>
+  <strong>Click on an item in the menu to get its description.</strong>
 </p>
 ]]></string>
 </resources>
