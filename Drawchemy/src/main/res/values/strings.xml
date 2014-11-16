@@ -75,7 +75,7 @@
     <string name="circle">Circle</string>
     <string name="triangle">Triangle</string>
     <string name="random">Random</string>
-    <string name="snapping">Spanning</string>
+    <string name="snapping">Snapping</string>
 
     <!-- About Texts-->
     <string name="about_drawchemy">Drawchemy is a Open Source project under the License GPLv3. You can
