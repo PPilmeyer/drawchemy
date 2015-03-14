@@ -52,7 +52,7 @@ public class BasicShapesCreator extends ACreator {
         fX = x;
         fY = y;
 
-        Paint refPaint = fManager.getPaint();
+        Paint refPaint = getPaint();
         Paint paint = new Paint();
         paint.setColor(refPaint.getColor());
         paint.setStrokeWidth(refPaint.getStrokeWidth());
@@ -87,7 +87,7 @@ public class BasicShapesCreator extends ACreator {
         fX = x;
         fY = y;
 
-        fManager.redraw();
+        redraw();
     }
 
     public void setShape(SHAPE aShape) {

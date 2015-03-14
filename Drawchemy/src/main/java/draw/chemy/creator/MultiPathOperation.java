@@ -68,6 +68,8 @@ class MultiPathOperation implements IDrawingOperation {
 
     @Override
     public synchronized void computeBounds(RectF aBoundSFCT) {
+        if(fPaths.isEmpty())
+            return;
         fPaths.getLast().computeBounds(aBoundSFCT, true);
         if (fPaths.size() > 1) {
             aBoundSFCT.union(fBounds);

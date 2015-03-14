@@ -24,15 +24,18 @@ import android.animation.ObjectAnimator;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,8 +43,10 @@ import android.view.MotionEvent;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
@@ -65,7 +70,9 @@ import draw.chemy.color.ColorUIFragment;
 import draw.chemy.color.RoundIconGenerator;
 import draw.chemy.creator.BallCreator;
 import draw.chemy.creator.BasicShapesCreator;
+import draw.chemy.creator.ComplexShapeCreator;
 import draw.chemy.creator.LineCreator;
+import draw.chemy.creator.MultiLineCreator;
 import draw.chemy.creator.NearestPointLineCreator;
 import draw.chemy.creator.PaintBrushCreator;
 import draw.chemy.creator.RibbonCreator;
@@ -73,12 +80,14 @@ import draw.chemy.creator.ScrawlCreator;
 import draw.chemy.creator.SketchCreator;
 import draw.chemy.creator.SplatterCreator;
 import draw.chemy.creator.StraightlineCreator;
+import draw.chemy.creator.TextCreator;
 import draw.chemy.creator.XShapeCreator;
 import draw.chemy.creator.XShapeV2Creator;
 
 public class DrawActivity extends Activity {
 
     private DrawManager fManager;
+    private PaintState fPaintState;
 
     private ZoomPanDrawingView fDrawingView;
     private FragmentManager fFragmentManager;
@@ -103,8 +112,6 @@ public class DrawActivity extends Activity {
     private ImageButton fVerticalButton;
     private ImageButton fKaleidoscopeButton;
 
-    private MenuItem fZoomItem;
-
     private View fBottomBar;
     private ImageButton fShowUI;
     private boolean fTransactionFlag = false;
@@ -113,6 +120,9 @@ public class DrawActivity extends Activity {
 
     private static float sAlphaHide = 0.3f;
     private static int sDurationAnimation = 600;
+
+    private int fClearColor = Color.WHITE;
+    private int fClearID = R.id.clear_white;
 
     private int fCurrentCreatorID;
 
@@ -133,6 +143,8 @@ public class DrawActivity extends Activity {
 
         fDrawingView = (ZoomPanDrawingView) findViewById(R.id.drawingView);
         fManager = fDrawingView.getCanvasManager();
+        fPaintState = fManager.getPaintState();
+
         new FileUtils(fManager).loadTempImage(this);
 
         fManager.addTool(0, new LineCreator(fManager));
@@ -147,7 +159,14 @@ public class DrawActivity extends Activity {
         fManager.addTool(9, new NearestPointLineCreator(fManager));
         fManager.addTool(10, new SketchCreator(fManager));
         fManager.addTool(11, new XShapeV2Creator(fManager));
-        fManager.addTool(11, new XShapeV2Creator(fManager));
+        Log.e("JSON", "START");
+        try {
+            fManager.addTool(12, new ComplexShapeCreator(fManager, JSONLoader.getInstance().loadJSON(this, R.raw.parts)));
+        } catch (Exception e) {
+            Log.e("JSON", e.getMessage(), e);
+        }
+        fManager.addTool(13, new MultiLineCreator(fManager));
+        fManager.addTool(14, new TextCreator(fManager));
 
         fManager.setCurrentTool(0);
         fCurrentCreatorID = R.id.i_line;
@@ -180,17 +199,12 @@ public class DrawActivity extends Activity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                if (fDrawingView.isEnable()) {
-                    fDrawingView.setEnabled(false);
-                    if (fZoomItem.getIcon() != null) {
-                        fZoomItem.getIcon().setAlpha(127);
-                    }
-                }
+
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                fManager.setStrokeWeight(1.f + ((float) seekBar.getProgress()) / 10.f);
+                fPaintState.setStrokeWeight(1.f + ((float) seekBar.getProgress()) / 10.f);
             }
         });
 
@@ -224,25 +238,27 @@ public class DrawActivity extends Activity {
         fSettingsFragment.getNewCreator(fEmptySettings);
 
         fColorSettings = new ColorUIFragment();
-        fColorSettings.setColor(fManager.getMainColor(), false);
-        fManager.setNewColorUsedListener(fColorSettings);
-        fManager.setPipetteListener(fColorSettings);
-        fColorSettings.addPipetteActiveListener(new ColorUIFragment.PipetteActivateListener() {
+        fColorSettings.setHistoryColor(fManager.getPaintState().getHistoryColors());
+
+        fManager.getPaintState().setColorHistoryListener(new PaintState.ColorHistoryListener() {
             @Override
-            public void activate() {
-                fDrawingView.activatePipette();
+            public void historyChanged() {
+                if(fColorSettings != null) {
+                    fColorSettings.setHistoryColor(fManager.getPaintState().getHistoryColors());
+                    Log.i("INFO", "Color history event");
+                }
             }
         });
 
+        fColorSettings.setColor(fPaintState.getMainColor(), false);
+        ColorUIFragment.Pipette pipette = new ColorUIFragment.Pipette(fColorSettings, fManager);
+        fManager.setTouchListener(pipette);
+        
         fColorSettings.addHueSwitchListener(new ColorUIFragment.HueSwitchListener() {
-            @Override
-            public void stateChanged(boolean isEnabled) {
-                fManager.setColorSwitchFlag(isEnabled);
-            }
 
             @Override
             public void amplitudeChanged(float aAmplitude) {
-                fManager.setColorVariation(aAmplitude);
+                fPaintState.setColorVariation(aAmplitude);
             }
         });
 
@@ -284,14 +300,14 @@ public class DrawActivity extends Activity {
             fActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
             fFirstColor = fActionBar.newTab();
             fSecondColor = fActionBar.newTab();
-            fFirstColor.setIcon(fFirstIconGenerator.getIcon(fManager.getMainColor(), true));
+            fFirstColor.setIcon(fFirstIconGenerator.getIcon(fPaintState.getMainColor(), true));
             ColorOnTabListener listener = new ColorOnTabListener();
 
             fFirstColor.setTabListener(listener);
 
             fActionBar.addTab(fFirstColor);
 
-            fSecondColor.setIcon(fSecondIconGenerator.getIcon(fManager.getSubColor(), false));
+            fSecondColor.setIcon(fSecondIconGenerator.getIcon(fPaintState.getSubColor(), false));
             fSecondColor.setTabListener(listener);
 
             fActionBar.addTab(fSecondColor);
@@ -361,10 +377,6 @@ public class DrawActivity extends Activity {
             getMenuInflater().inflate(R.menu.creators_menu, subMenu);
         }
 
-        fZoomItem = menu.findItem(R.id.i_zoom);
-        if (fZoomItem != null && fZoomItem.getIcon() != null) {
-            fZoomItem.getIcon().setAlpha(127);
-        }
         return true;
     }
 
@@ -409,12 +421,6 @@ public class DrawActivity extends Activity {
     }
 
     private void getClick(int id) {
-        if (id != R.id.i_zoom && fDrawingView.isEnable()) {
-            fDrawingView.setEnabled(false);
-            if (fZoomItem.getIcon() != null) {
-                fZoomItem.getIcon().setAlpha(127);
-            }
-        }
         switch (id) {
             case R.id.i_undo: {
                 fManager.undo();
@@ -426,17 +432,6 @@ public class DrawActivity extends Activity {
             }
             case R.id.i_reset_view: {
                 fDrawingView.resetZoomPan();
-                break;
-            }
-            case R.id.i_zoom: {
-                fDrawingView.switchEnabled();
-                if (fZoomItem.getIcon() != null) {
-                    if (fDrawingView.isEnable()) {
-                        fZoomItem.getIcon().setAlpha(255);
-                    } else {
-                        fZoomItem.getIcon().setAlpha(127);
-                    }
-                }
                 break;
             }
             case R.id.i_line: {
@@ -511,34 +506,52 @@ public class DrawActivity extends Activity {
                 fSettingsFragment.getNewCreator(new XShapeV2UI((XShapeV2Creator) fManager.getCurrentCreator()));
                 break;
             }
+            case R.id.i_complex: {
+                fManager.setCurrentTool(12);
+                fCurrentCreatorID = id;
+                fSettingsFragment.getNewCreator(fEmptySettings);
+                break;
+            }
+            case R.id.i_multiline: {
+                fManager.setCurrentTool(13);
+                fCurrentCreatorID = id;
+                fSettingsFragment.getNewCreator(fEmptySettings);
+                break;
+            }
+            case R.id.i_textcreator: {
+                fManager.setCurrentTool(14);
+                fCurrentCreatorID = id;
+                fSettingsFragment.getNewCreator(fEmptySettings);
+                break;
+            }
             case R.id.i_flip_h: {
-                fManager.setMirrorHorizontal(!fManager.getMirrorHorizontal());
-                if (fManager.getMirrorHorizontal()) {
+                fPaintState.setMirrorHorizontal(!fPaintState.getMirrorHorizontal());
+                if (fPaintState.getMirrorHorizontal()) {
                     fHorizontalButton.setAlpha(1.f);
                     fKaleidoscopeButton.setAlpha(sAlphaHide);
-                    fManager.setKaleidoscopeFlag(false);
+                    fPaintState.setKaleidoscopeActive(false);
                 } else {
                     fHorizontalButton.setAlpha(sAlphaHide);
                 }
                 break;
             }
             case R.id.i_flip_v: {
-                fManager.setMirrorVertical(!fManager.getMirrorVertical());
-                if (fManager.getMirrorVertical()) {
+                fPaintState.setMirrorVertical(!fPaintState.getMirrorVertical());
+                if (fPaintState.getMirrorVertical()) {
                     fVerticalButton.setAlpha(1.f);
                     fKaleidoscopeButton.setAlpha(sAlphaHide);
-                    fManager.setKaleidoscopeFlag(false);
+                    fPaintState.setKaleidoscopeActive(false);
                 } else {
                     fVerticalButton.setAlpha(sAlphaHide);
                 }
                 break;
             }
             case R.id.i_kaleidoscope: {
-                fManager.setKaleidoscopeFlag(!fManager.getKaleidoscopeFlag());
-                if (fManager.getKaleidoscopeFlag()) {
+                fPaintState.setKaleidoscopeActive(!fPaintState.isKaleidoscopeActive());
+                if (fPaintState.isKaleidoscopeActive()) {
                     fKaleidoscopeButton.setAlpha(1.f);
-                    fManager.setMirrorVertical(false);
-                    fManager.setMirrorHorizontal(false);
+                    fPaintState.setMirrorVertical(false);
+                    fPaintState.setMirrorHorizontal(false);
                     fVerticalButton.setAlpha(sAlphaHide);
                     fHorizontalButton.setAlpha(sAlphaHide);
 
@@ -549,21 +562,21 @@ public class DrawActivity extends Activity {
             }
 
             case R.id.i_flip_gradient: {
-                if (fManager.isGradientActive()) {
-                    fManager.setGradientActive(false);
+                if (fPaintState.isGradientActive()) {
+                    fPaintState.setGradientActive(false);
                     fGradientButton.setImageDrawable(getResources().getDrawable(R.drawable.unicolor));
                 } else {
-                    fManager.setGradientActive(true);
+                    fPaintState.setGradientActive(true);
                     fGradientButton.setImageDrawable(getResources().getDrawable(R.drawable.gradient));
                 }
                 break;
             }
             case R.id.i_flip_style: {
-                if (fManager.getStyle() == Paint.Style.FILL) {
-                    fManager.setStyle(Paint.Style.STROKE);
+                if (fPaintState.getStyle() == Paint.Style.FILL) {
+                    fPaintState.setStyle(Paint.Style.STROKE);
                     fStyleButton.setImageDrawable(getResources().getDrawable(R.drawable.stroke));
                 } else {
-                    fManager.setStyle(Paint.Style.FILL);
+                    fPaintState.setStyle(Paint.Style.FILL);
                     fStyleButton.setImageDrawable(getResources().getDrawable(R.drawable.fill));
                 }
                 break;
@@ -578,7 +591,7 @@ public class DrawActivity extends Activity {
                 break;
             }
             case R.id.i_extra_setting: {
-                fSettingsFragment.getNewCreator(new ExtraSettingsUI(fManager));
+                fSettingsFragment.getNewCreator(new ExtraSettingsUI(fPaintState));
                 addFragment(fSettingsFragment);
                 break;
             }
@@ -644,7 +657,7 @@ public class DrawActivity extends Activity {
                 break;
             }
             case R.id.i_colors: {
-                int tmp_color = fManager.getMainColor();
+                int tmp_color = fPaintState.getMainColor();
                 addFragment(fColorSettings);
                 fColorSettings.setColor(tmp_color, true);
                 break;
@@ -668,23 +681,62 @@ public class DrawActivity extends Activity {
     }
 
     private void createClearDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(getResources().getString(R.string.clear_dialog));
-        builder.setCancelable(true);
-        builder.setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                fManager.clear();
-            }
-        });
-        builder.setNegativeButton(getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
 
+        final Dialog clearDialog = new Dialog(this);
+        clearDialog.setTitle("Clear");
+        View clearView = getLayoutInflater().inflate(R.layout.clear, null);
+        RadioGroup clearGroup = (RadioGroup) clearView.findViewById(R.id.clear_group);
+        clearGroup.check(fClearID);
+        if(fClearID == R.id.clear_sub) {
+            fClearColor = fManager.getPaintState().getSubColor();
+        }
+        if(fClearID == R.id.clear_main) {
+            fClearColor = fManager.getPaintState().getMainColor();
+        }
+        clearGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int radioID) {
+                clear(radioID);
+                fClearID = radioID;
             }
         });
-        AlertDialog dialog = builder.create();
-        dialog.show();
+
+        Button okButton = (Button) clearView.findViewById(R.id.clear_ok);
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fManager.clear(fClearColor);
+                clearDialog.cancel();
+            }
+        });
+
+        Button cancelButton = (Button) clearView.findViewById(R.id.clear_cancel);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clearDialog.cancel();
+            }
+        });
+
+        clearDialog.setContentView(clearView);
+        clearDialog.show();
+    }
+
+    private void clear(int aRadioID) {
+        switch (aRadioID) {
+            case R.id.clear_black:
+                fClearColor = Color.BLACK;
+                break;
+            case R.id.clear_white:
+                fClearColor = Color.WHITE;
+                break;
+            case R.id.clear_main:
+                fClearColor = fManager.getPaintState().getMainColor();
+                break;
+            case R.id.clear_sub:
+                fClearColor = fManager.getPaintState().getSubColor();
+                break;
+        }
     }
 
     private void startWebIntent(String aUrl) {
@@ -747,27 +799,21 @@ public class DrawActivity extends Activity {
 
         @Override
         public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-            if (fDrawingView.isEnable()) {
-                fDrawingView.setEnabled(false);
-                if (fZoomItem.getIcon() != null) {
-                    fZoomItem.getIcon().setAlpha(127);
-                }
-            }
             if (isInit) {
-                fManager.switchColor();
+                fPaintState.switchColor();
             } else {
                 isInit = true;
             }
             if (tab.getPosition() == 0) {
                 isFirst = true;
-                fFirstColor.setIcon(fFirstIconGenerator.getIcon(fManager.getMainColor(), true));
-                fSecondColor.setIcon(fSecondIconGenerator.getIcon(fManager.getSubColor(), false));
-                fColorSettings.setColor(fManager.getMainColor(), false);
+                fFirstColor.setIcon(fFirstIconGenerator.getIcon(fPaintState.getMainColor(), true));
+                fSecondColor.setIcon(fSecondIconGenerator.getIcon(fPaintState.getSubColor(), false));
+                fColorSettings.setColor(fPaintState.getMainColor(), false);
             } else if (tab.getPosition() == 1) {
                 isFirst = false;
-                fFirstColor.setIcon(fFirstIconGenerator.getIcon(fManager.getSubColor(), false));
-                fSecondColor.setIcon(fSecondIconGenerator.getIcon(fManager.getMainColor(), true));
-                fColorSettings.setColor(fManager.getMainColor(), false);
+                fFirstColor.setIcon(fFirstIconGenerator.getIcon(fPaintState.getSubColor(), false));
+                fSecondColor.setIcon(fSecondIconGenerator.getIcon(fPaintState.getMainColor(), true));
+                fColorSettings.setColor(fPaintState.getMainColor(), false);
             }
         }
 
@@ -777,24 +823,18 @@ public class DrawActivity extends Activity {
 
         @Override
         public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-            if (fDrawingView.isEnable()) {
-                fDrawingView.setEnabled(false);
-                if (fZoomItem.getIcon() != null) {
-                    fZoomItem.getIcon().setAlpha(127);
-                }
-            }
-            int tmp_color = fManager.getMainColor();
+            int tmp_color = fPaintState.getMainColor();
             addFragment(fColorSettings);
             fColorSettings.setColor(tmp_color, true);
         }
 
         @Override
         public void colorChange(int aColor) {
-            fManager.setMainColor(aColor);
+            fPaintState.setMainColor(aColor);
             if (isFirst) {
-                fFirstColor.setIcon(fFirstIconGenerator.getIcon(fManager.getMainColor(), true));
+                fFirstColor.setIcon(fFirstIconGenerator.getIcon(fPaintState.getMainColor(), true));
             } else {
-                fSecondColor.setIcon(fSecondIconGenerator.getIcon(fManager.getMainColor(), true));
+                fSecondColor.setIcon(fSecondIconGenerator.getIcon(fPaintState.getMainColor(), true));
             }
         }
     }

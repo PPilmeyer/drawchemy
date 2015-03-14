@@ -33,7 +33,6 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="right"
                 android:layout_marginBottom="?android:actionBarSize"
-                android:layout_marginTop="?android:actionBarSize"
                 android:background="@drawable/ab_background"
                 android:orientation="vertical">
             </LinearLayout>

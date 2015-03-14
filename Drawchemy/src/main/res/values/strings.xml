@@ -69,7 +69,6 @@
     <string name="radius">Radius</string>
     <string name="size">Size</string>
     <string name="drips">Drips</string>
-    <string name="allowed_undos">Max Undos</string>
     <string name="maxDist">Max Dist.</string>
     <string name="box">Box</string>
     <string name="circle">Circle</string>
@@ -84,4 +83,7 @@
     You can visit their website by clicking on their icon.</string>
     <string name="about_tumblr">Drawchemy possess its own Tumblr. Click on the icon to visit.</string>
     <string name="about_mrdoob">Few brushes are from the web application harmony. You can access it by clicking on the icon.</string>
+    <string name="complexe">complexe shape</string>
+    <string name="multiline">Multiline</string>
+    <string name="textcreator">Character</string>
 </resources>

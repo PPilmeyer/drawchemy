@@ -50,7 +50,7 @@ public class XShapeV2Creator extends ACreator {
     @Override
     public IDrawingOperation startDrawingOperation(float x, float y) {
 
-        Paint p = fManager.getPaint();
+        Paint p = getPaint();
 
         Paint paint = new Paint();
         paint.setColor(p.getColor());
@@ -83,7 +83,7 @@ public class XShapeV2Creator extends ACreator {
 
         fPreviousX = x;
         fPreviousY = y;
-        fManager.redraw();
+        redraw();
     }
 
     @Override

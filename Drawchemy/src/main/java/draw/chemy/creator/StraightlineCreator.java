@@ -70,14 +70,14 @@ public class StraightlineCreator extends ACreator {
         }
         fPreviousP.addLast(new PointF(finalX, finalY));
         fPreviousPRedo.clear();
-        fCurrentOperation = new StraightlineOperation(fManager.getPaint(), finalX, finalY);
+        fCurrentOperation = new StraightlineOperation(getPaint(), finalX, finalY);
         return fCurrentOperation;
     }
 
     @Override
     public void updateDrawingOperation(float x, float y) {
         fCurrentOperation.setEndpoint(x, y);
-        fManager.redraw();
+        redraw();
     }
 
     @Override

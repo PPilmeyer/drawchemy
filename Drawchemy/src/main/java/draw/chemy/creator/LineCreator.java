@@ -31,7 +31,7 @@ public class LineCreator extends ACreator {
 
     @Override
     public IDrawingOperation startDrawingOperation(float x, float y) {
-        fCurrentOperation = new SimpleLineOperation(x, y, fManager.getPaint());
+        fCurrentOperation = new SimpleLineOperation(x, y, getPaint());
         return fCurrentOperation;
     }
 
@@ -39,7 +39,7 @@ public class LineCreator extends ACreator {
     public void updateDrawingOperation(float x, float y) {
 
         fCurrentOperation.addPoint(x, y);
-        fManager.redraw();
+        redraw();
     }
 
     @Override

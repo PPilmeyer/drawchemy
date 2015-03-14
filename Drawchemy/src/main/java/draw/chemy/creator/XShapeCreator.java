@@ -77,7 +77,7 @@ public class XShapeCreator extends ACreator {
 
     @Override
     public IDrawingOperation startDrawingOperation(float x, float y) {
-        Paint p = fManager.getPaint();
+        Paint p = getPaint();
 
         Paint paint = new Paint();
         paint.setColor(p.getColor());
@@ -98,7 +98,7 @@ public class XShapeCreator extends ACreator {
     public void updateDrawingOperation(float x, float y) {
         if (fCount++ % fFlow == 0) {
             scraw(x, y);
-            fManager.redraw();
+            redraw();
         }
     }
 

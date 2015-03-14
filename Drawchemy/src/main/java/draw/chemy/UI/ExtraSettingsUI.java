@@ -21,15 +21,15 @@ package draw.chemy.UI;
 
 import org.al.chemy.R;
 
-import draw.chemy.DrawManager;
+import draw.chemy.PaintState;
 
 public class ExtraSettingsUI extends ASettingsGroupUIWithSeekBar {
 
-    public ExtraSettingsUI(DrawManager aDrawManager) {
-        super(createSeekSetting(aDrawManager));
+    public ExtraSettingsUI(PaintState aPaintState) {
+        super(createSeekSetting(aPaintState));
     }
 
-    private static SeekBarSettings[] createSeekSetting(final DrawManager aDrawManager) {
+    private static SeekBarSettings[] createSeekSetting(final PaintState aPaintState) {
 
         SeekBarSettings kaleidoscopeSettings = new SeekBarSettings() {
             @Override
@@ -39,22 +39,22 @@ public class ExtraSettingsUI extends ASettingsGroupUIWithSeekBar {
 
             @Override
             public float getMax() {
-                return DrawManager.MaxKaleidoscopeSec;
+                return PaintState.MaxKaleidoscopeSec;
             }
 
             @Override
             public float getMin() {
-                return DrawManager.MinKaleidoscopeSec;
+                return PaintState.MinKaleidoscopeSec;
             }
 
             @Override
             public float getCurrent() {
-                return aDrawManager.getKaleidoscopeSec();
+                return aPaintState.getKaleidoscopeSec();
             }
 
             @Override
             public void setCurrent(float aValue) {
-                aDrawManager.setKaleidoscopeSec((int) aValue);
+                aPaintState.setKaleidoscopeSec((int) aValue);
             }
 
             @Override
@@ -63,39 +63,6 @@ public class ExtraSettingsUI extends ASettingsGroupUIWithSeekBar {
             }
         };
 
-        SeekBarSettings undos = new SeekBarSettings() {
-            @Override
-            public boolean isPercent() {
-                return false;
-            }
-
-            @Override
-            public float getMax() {
-                return DrawManager.MaxAllowedUndos;
-            }
-
-            @Override
-            public float getMin() {
-                return DrawManager.MinAllowedUndos;
-            }
-
-            @Override
-            public float getCurrent() {
-                return aDrawManager.getAllowedUndos();
-            }
-
-            @Override
-            public void setCurrent(float aValue) {
-                aDrawManager.setAllowedUndos((int) aValue);
-            }
-
-            @Override
-            public int getTextId() {
-                return R.string.allowed_undos;
-            }
-        };
-
-
-        return new SeekBarSettings[]{kaleidoscopeSettings, undos};
+        return new SeekBarSettings[]{kaleidoscopeSettings};
     }
 }

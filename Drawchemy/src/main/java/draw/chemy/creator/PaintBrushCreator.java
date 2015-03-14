@@ -61,7 +61,7 @@ public class PaintBrushCreator extends ACreator {
         for (int i = 0; i < fBristlesNumber; i++) {
             fPainters[i].start(x, y);
         }
-        Paint p = fManager.getPaint();
+        Paint p = getPaint();
         p.setStyle(Paint.Style.STROKE);
         fCurrentOperation = new MultiLineOperation(x, y, p, fBristlesNumber);
         fX = x;
@@ -77,7 +77,7 @@ public class PaintBrushCreator extends ACreator {
             fPainters[i].update(x, y);
             fCurrentOperation.addPoint(fPainters[i].X, fPainters[i].Y, i);
         }
-        fManager.redraw();
+        redraw();
     }
 
     @Override

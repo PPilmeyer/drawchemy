@@ -54,7 +54,7 @@ public class BallCreator extends ACreator {
 
     @Override
     public IDrawingOperation startDrawingOperation(float x, float y) {
-        fCurrentOperation = new BallOperation(fManager.getPaint());
+        fCurrentOperation = new BallOperation(getPaint());
         fCount = 0;
         return fCurrentOperation;
     }
@@ -64,7 +64,7 @@ public class BallCreator extends ACreator {
 
         if (fCount++ % fFlow == 0) {
             ball(x, y);
-            fManager.redraw();
+            redraw();
         }
     }
 
@@ -169,7 +169,9 @@ public class BallCreator extends ACreator {
 
         @Override
         public synchronized void computeBounds(RectF aBoundSFCT) {
-            aBoundSFCT.set(fBounds);
+            if (fBounds != null) {
+                aBoundSFCT.set(fBounds);
+            }
         }
 
         public synchronized void addBall(Ball b) {

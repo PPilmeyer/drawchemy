@@ -62,7 +62,7 @@ public class RibbonCreator extends ACreator {
 
     @Override
     public IDrawingOperation startDrawingOperation(float x, float y) {
-        fCurrentOperation = new MultiPathOperation(fManager.getPaint());
+        fCurrentOperation = new MultiPathOperation(getPaint());
         fCurrentOperation.addPath();
         fRibbon.init();
         fRibbon.update(x, y);
@@ -80,7 +80,7 @@ public class RibbonCreator extends ACreator {
         } else {
             fRibbon.update(x, y);
         }
-        fManager.redraw();
+        redraw();
     }
 
     @Override

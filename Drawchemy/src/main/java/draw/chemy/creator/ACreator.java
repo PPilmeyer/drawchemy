@@ -19,14 +19,24 @@
 
 package draw.chemy.creator;
 
+import android.graphics.Paint;
+
 import draw.chemy.DrawManager;
 
 public abstract class ACreator {
 
-    protected final DrawManager fManager;
+    private final DrawManager fManager;
 
     public ACreator(DrawManager aManager) {
         fManager = aManager;
+    }
+
+    protected final void redraw() {
+        fManager.redraw();
+    }
+
+    protected final Paint getPaint() {
+        return fManager.getPaintState().getPaint();
     }
 
     public abstract IDrawingOperation startDrawingOperation(float x, float y);

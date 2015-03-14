@@ -123,12 +123,12 @@
 
                 android:progress="255" />
 
-            <CheckBox
+            <TextView
                 android:id="@+id/i_hue_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/seekAlpha"
-                android:text="@string/hue_switch_disabled" />
+                android:text="Color randomization" />
 
             <SeekBar
                 android:id="@+id/i_hue_switch_ampl"

@@ -67,7 +67,7 @@ public class SplatterCreator extends ACreator {
         endY = y;
 
         fSize = 1;
-        fCurrentOperation = new SplatterDrawOp(fManager.getPaint());
+        fCurrentOperation = new SplatterDrawOp(getPaint());
         return fCurrentOperation;
     }
 
@@ -92,7 +92,7 @@ public class SplatterCreator extends ACreator {
         fSize = newSize * (1.f - newSizeInfluence) + fSize * newSizeInfluence;
 
         splat(new PointF(startX, startY), new PointF(endX, endY), new PointF(mX, mY), fSize);
-        fManager.redraw();
+        redraw();
     }
 
     @Override

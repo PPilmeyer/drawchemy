@@ -77,7 +77,7 @@ public class ScrawlCreator extends ACreator {
     @Override
     public IDrawingOperation startDrawingOperation(float x, float y) {
 
-        fCurrentOperation = new SimpleLineOperation(x, y, fManager.getPaint());
+        fCurrentOperation = new SimpleLineOperation(x, y, getPaint());
 
         fPreviousPoint.x = x;
         fPreviousPoint.y = y;
@@ -89,7 +89,7 @@ public class ScrawlCreator extends ACreator {
     public void updateDrawingOperation(float x, float y) {
         if (fCount++ % fFlow == 0) {
             scraw(x, y);
-            fManager.redraw();
+            redraw();
         }
     }
 

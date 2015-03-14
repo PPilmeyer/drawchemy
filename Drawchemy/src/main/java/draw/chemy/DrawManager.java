@@ -21,8 +21,6 @@ package draw.chemy;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.CornerPathEffect;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -40,19 +38,6 @@ import draw.chemy.creator.IDrawingOperation;
 
 public class DrawManager implements View.OnTouchListener {
 
-    // Number of Operations possibles which can be cancelled
-    public static final int MaxAllowedUndos = 10;
-    public static final int MinAllowedUndos = 2;
-
-    public static final int MaxKaleidoscopeSec = 8;
-    public static final int MinKaleidoscopeSec = 2;
-
-    public enum MIRROR {
-        None,
-        Horizontal,
-        Vertical,
-        Both
-    }
 
     LinkedList<IDrawingOperation> fOperations;
     LinkedList<IDrawingOperation> fUndo;
@@ -61,12 +46,9 @@ public class DrawManager implements View.OnTouchListener {
     Map<Integer, ACreator> fCreators;
     private ACreator fCurrentCreator;
 
-    private boolean fColorSwitch;
-    private float fColorVariation;
     private DrawListener fDrawListener;
     private Matrix fInputMatrix = new Matrix();
-    private PipetteListener fPipetteListener;
-    private boolean fKaleidoscopeFlag = false;
+    private TouchListener fTouchListener;
 
     private final Matrix fMirrorHorizontal;
     private final Matrix fMirrorVertical;
@@ -81,22 +63,17 @@ public class DrawManager implements View.OnTouchListener {
     private final Bitmap fBackgroundImageBackUP;
 
     private final Canvas fBackgroundCanvasBackUP;
-    //Default
-    private int fMainColor = Color.BLACK;
-    private int fSubColor = Color.WHITE;
 
-    private Paint.Style fStyle = Paint.Style.STROKE;
-    private float fStrokeWeight = 1.5f;
 
-    private int fKaleidoscopeSec = 6;
-    private int fAllowedUndos = 5;
+    private static final int MAX_UNDO = 10;
 
-    private MIRROR fMirrorState = MIRROR.None;
-    private boolean fGradientActive = false;
 
-    private boolean fNewColorUsageFlag = false;
+    public PaintState getPaintState() {
+        return fPaintState;
+    }
 
-    private ColorUsageListener fColorUsageListener;
+    private final PaintState fPaintState = new PaintState();
+
 
     public DrawManager(int aWidth, int aHeight) {
         fBackgroundImage = Bitmap.createBitmap(aWidth, aHeight, Bitmap.Config.RGB_565);
@@ -107,8 +84,8 @@ public class DrawManager implements View.OnTouchListener {
 
         fBackgroundCanvasBackUP = new Canvas(fBackgroundImageBackUP);
 
-        fBackgroundCanvas.drawColor(fSubColor | 0xff000000);
-        fBackgroundCanvasBackUP.drawColor(fSubColor | 0xff000000);
+        fBackgroundCanvas.drawColor(fPaintState.getSubColor() | 0xff000000);
+        fBackgroundCanvasBackUP.drawColor(fPaintState.getSubColor() | 0xff000000);
 
         fOperations = new LinkedList<IDrawingOperation>();
         fUndo = new LinkedList<IDrawingOperation>();
@@ -132,90 +109,14 @@ public class DrawManager implements View.OnTouchListener {
 
     }
 
-    public void setNewColorUsedListener(ColorUsageListener aListener) {
-        fColorUsageListener = aListener;
-    }
-
-    public boolean getMirrorHorizontal() {
-        return fMirrorState == MIRROR.Horizontal || fMirrorState == MIRROR.Both;
-    }
-
-    public boolean getMirrorVertical() {
-        return fMirrorState == MIRROR.Vertical || fMirrorState == MIRROR.Both;
-    }
-
-    public void setKaleidoscopeFlag(Boolean aFlag) {
-        fKaleidoscopeFlag = aFlag;
-    }
-
-    public boolean getKaleidoscopeFlag() {
-        return fKaleidoscopeFlag;
-    }
-
-    public int getKaleidoscopeSec() {
-        return fKaleidoscopeSec;
-    }
-
-    public void setKaleidoscopeSec(int aKaleidoscopeSec) {
-        fKaleidoscopeSec = aKaleidoscopeSec;
-    }
-
-    public int getAllowedUndos() {
-        return fAllowedUndos;
-    }
-
-    public void setAllowedUndos(int aAllowedUndos) {
-        fAllowedUndos = aAllowedUndos;
-    }
-
-    public void setMirrorVertical(boolean checked) {
-        switch (fMirrorState) {
-            case None: {
-                fMirrorState = checked ? MIRROR.Vertical : MIRROR.None;
-                break;
-            }
-            case Horizontal: {
-                fMirrorState = checked ? MIRROR.Both : MIRROR.Horizontal;
-                break;
-            }
-            case Vertical: {
-                fMirrorState = checked ? MIRROR.Vertical : MIRROR.None;
-                break;
-            }
-            case Both: {
-                fMirrorState = checked ? MIRROR.Both : MIRROR.Horizontal;
-                break;
-            }
-
-        }
-    }
-
-    public void setMirrorHorizontal(boolean checked) {
-        switch (fMirrorState) {
-            case None: {
-                fMirrorState = checked ? MIRROR.Horizontal : MIRROR.None;
-                break;
-            }
-            case Horizontal: {
-                fMirrorState = checked ? MIRROR.Horizontal : MIRROR.None;
-                break;
-            }
-            case Vertical: {
-                fMirrorState = checked ? MIRROR.Both : MIRROR.Vertical;
-                break;
-            }
-            case Both: {
-                fMirrorState = checked ? MIRROR.Both : MIRROR.Vertical;
-                break;
-            }
-
-        }
-    }
-
     public void clear() {
+        clear(fPaintState.getSubColor());
+    }
+
+    public void clear(int aColor) {
         synchronized (fBackgroundCanvas) {
-            fBackgroundCanvas.drawColor(fSubColor | 0xff000000);
-            fBackgroundCanvasBackUP.drawColor(fSubColor | 0xff000000);
+            fBackgroundCanvas.drawColor(aColor | 0xff000000);
+            fBackgroundCanvasBackUP.drawColor( aColor | 0xff000000);
             fOperations.clear();
             fUndo.clear();
             for (Map.Entry<Integer, ACreator> creator : fCreators.entrySet()) {
@@ -224,6 +125,8 @@ public class DrawManager implements View.OnTouchListener {
         }
         redraw();
     }
+
+
 
     public void undo() {
         synchronized (fBackgroundCanvas) {
@@ -256,14 +159,6 @@ public class DrawManager implements View.OnTouchListener {
         }
     }
 
-    public void setColorVariation(float aColorVariation) {
-        fColorVariation = aColorVariation;
-    }
-
-    @SuppressWarnings("all")
-    public float getColorVariation() {
-        return fColorVariation;
-    }
 
     public void setInputMatrix(Matrix aInputMatrix) {
         fInputMatrix = aInputMatrix;
@@ -289,80 +184,61 @@ public class DrawManager implements View.OnTouchListener {
         }
     }
 
-    public int getMainColor() {
-        return fMainColor;
-    }
-
-    public int getSubColor() {
-        return fSubColor;
-    }
-
-    public void setMainColor(int aColor) {
-        fMainColor = aColor;
-        fNewColorUsageFlag = true;
-    }
-
     public ACreator getCurrentCreator() {
         return fCurrentCreator;
     }
 
-    @SuppressWarnings("all")
-    public void setSubColor(int aColor) {
-        fSubColor = aColor;
+    static class MyMotionEvent {
+
+        int action;
+        float x;
+        float y;
+
+        public MyMotionEvent(int aAction, float aX, float aY){
+            action = aAction;
+            x = aX;
+            y = aY;
+        }
+
+        public int getAction() {
+            return action;
+        }
+
+        public float getX() {
+            return x;
+        }
+
+        public float getY() {
+            return y;
+        }
     }
 
-    public void switchColor() {
-        int tmp = fMainColor;
-        fMainColor = fSubColor;
-        fSubColor = tmp;
-        fNewColorUsageFlag = true;
-    }
-
-    public Paint.Style getStyle() {
-        return fStyle;
-    }
-
-    public void setStyle(Paint.Style fStyle) {
-        this.fStyle = fStyle;
-    }
-
-    @SuppressWarnings("all")
-    public boolean isColorSwitchActivate() {
-        return fColorSwitch;
-    }
-
-    public void setColorSwitchFlag(boolean checked) {
-        fColorSwitch = checked;
-    }
-
-    public void setStrokeWeight(float aStrokeWeigth) {
-        fStrokeWeight = aStrokeWeigth;
-    }
-
-    @SuppressWarnings("all")
-    public float getStrokeWeight() {
-        return fStrokeWeight;
-    }
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
+        return onTouch(view, new MyMotionEvent(motionEvent.getAction(), motionEvent.getX(), motionEvent.getY()));
+    }
+
+    public boolean onTouch(View view, MyMotionEvent motionEvent) {
         int action = motionEvent.getAction();
 
-        float points[] = new float[]{motionEvent.getX(), motionEvent.getY()};
-        fInputMatrix.mapPoints(points);
+        float point[] = new float[]{motionEvent.getX(), motionEvent.getY()};
+        fInputMatrix.mapPoints(point);
+
+
+        if(fTouchListener.isActive()) {
+            fTouchListener.touch(action, point, motionEvent.getX(), motionEvent.getY());
+            return true;
+        }
+
         if (fCurrentCreator != null) {
             switch (action) {
                 case MotionEvent.ACTION_DOWN: {
-
-                    addOperation(fCurrentCreator.startDrawingOperation(points[0], points[1]));
-                    if (fNewColorUsageFlag) {
-                        fNewColorUsageFlag = false;
-                        newColorUsed();
-                    }
+                    addOperation(fCurrentCreator.startDrawingOperation(point[0], point[1]));
                     break;
                 }
                 case MotionEvent.ACTION_MOVE: {
-                    fCurrentCreator.updateDrawingOperation(points[0], points[1]);
+                    fCurrentCreator.updateDrawingOperation(point[0], point[1]);
                     break;
                 }
                 case MotionEvent.ACTION_UP: {
@@ -372,16 +248,9 @@ public class DrawManager implements View.OnTouchListener {
                 }
                 default:
                     return false;
-
             }
         }
         return true;
-    }
-
-    private void newColorUsed() {
-        if (fColorUsageListener != null) {
-            fColorUsageListener.colorUsed(fMainColor);
-        }
     }
 
     public void redraw() {
@@ -390,22 +259,22 @@ public class DrawManager implements View.OnTouchListener {
 
     public void addOperation(IDrawingOperation op) {
         fUndo.clear();
-        if (fGradientActive) {
-            op = new GradientOp(op, getColor(fMainColor), getColor(fSubColor));
+        if (fPaintState.isGradientActive()) {
+            op = new GradientOp(op, fPaintState.getModifiedMainColor(), fPaintState.getModifiedSubColor());
         }
 
-        if (fMirrorState != MIRROR.None) {
-            op = new MirrorOp(op, fMirrorState);
+        if (fPaintState.getMirrorState() != PaintState.MIRROR.None) {
+            op = new MirrorOp(op, fPaintState.getMirrorState());
         }
 
-        if (fKaleidoscopeFlag) {
+        if (fPaintState.isKaleidoscopeActive()) {
             op = new KaleidoscopeOp(op);
         }
 
         synchronized (fBackgroundCanvas) {
             fCurrentOperation = op;
             fOperations.addLast(fCurrentOperation);
-            while (fOperations.size() > fAllowedUndos) {
+            while (fOperations.size() > MAX_UNDO) {
                 op = fOperations.removeFirst();
                 op.complete();
                 op.draw(fBackgroundCanvasBackUP);
@@ -419,14 +288,6 @@ public class DrawManager implements View.OnTouchListener {
             fCurrentOperation = null;
         }
         redraw();
-    }
-
-    public boolean isGradientActive() {
-        return fGradientActive;
-    }
-
-    public void setGradientActive(boolean fGradientActive) {
-        this.fGradientActive = fGradientActive;
     }
 
     public void draw(Canvas aCanvas) {
@@ -452,39 +313,8 @@ public class DrawManager implements View.OnTouchListener {
         return result;
     }
 
-    public void triggerPipetteEvent(float x, float y) {
-        int color = fBackgroundImage.getPixel((int) Math.floor(x), (int) Math.floor(y));
-        if (fPipetteListener != null) {
-            fPipetteListener.newColorSelectedByThePipette(color);
-        }
-    }
-
-    public Paint getPaint() {
-        Paint p = new Paint();
-        p.setColor(getColor(fMainColor));
-        p.setStrokeWidth(fStrokeWeight);
-        p.setStyle(fStyle);
-        p.setStrokeJoin(Paint.Join.ROUND);
-        p.setStrokeCap(Paint.Cap.ROUND);
-        p.setAntiAlias(true);
-        p.setPathEffect(new CornerPathEffect(7.f));
-        return p;
-    }
-
-    private int getColor(int aColor) {
-        if (fColorSwitch) {
-            float hsv[] = new float[3];
-            Color.colorToHSV(aColor, hsv);
-            hsv[0] += DrawUtils.getProbability(90.f * fColorVariation);
-            if (hsv[0] < 0.f) {
-                hsv[0] += 360.f;
-            } else if (hsv[0] > 360.f) {
-                hsv[0] -= 360.f;
-            }
-            return Color.HSVToColor(Color.alpha(aColor), hsv);
-        } else {
-            return aColor;
-        }
+    public Bitmap getBitmap() {
+        return fBackgroundImage;
     }
 
     public void putBitmapAsBackground(Bitmap aBitmap) {
@@ -546,7 +376,7 @@ public class DrawManager implements View.OnTouchListener {
         matrix.postTranslate(dx, dy);
 
         synchronized (fBackgroundCanvas) {
-            fBackgroundCanvas.drawColor(fSubColor | 0xff000000);
+            fBackgroundCanvas.drawColor(fPaintState.getSubColor() | 0xff000000);
             fOperations.clear();
             fUndo.clear();
             fBackgroundCanvas.drawBitmap(aBitmap, matrix, null);
@@ -563,9 +393,9 @@ public class DrawManager implements View.OnTouchListener {
     private class MirrorOp implements IDrawingOperation {
 
         private final IDrawingOperation fDelegate;
-        private final MIRROR fMirrorState;
+        private final PaintState.MIRROR fMirrorState;
 
-        public MirrorOp(IDrawingOperation aDelegate, MIRROR aMirrorState) {
+        public MirrorOp(IDrawingOperation aDelegate, PaintState.MIRROR aMirrorState) {
             fDelegate = aDelegate;
             fMirrorState = aMirrorState;
         }
@@ -672,7 +502,7 @@ public class DrawManager implements View.OnTouchListener {
             computeBounds(fBounds);
             return new LinearGradient(fBounds.left, fBounds.top, fBounds.right, fBounds.bottom,
                     this.fMainColor,
-                    this.fSubColor, Shader.TileMode.CLAMP);
+                    this.fSubColor, Shader.TileMode.REPEAT);
         }
 
         @Override
@@ -735,7 +565,7 @@ public class DrawManager implements View.OnTouchListener {
 
         public KaleidoscopeOp(IDrawingOperation op) {
             fDelegate = op;
-            KaleidoscopeMatrix = new Matrix[fKaleidoscopeSec - 1];
+            KaleidoscopeMatrix = new Matrix[fPaintState.getKaleidoscopeSec() - 1];
             float angle = 360.f / (1.f + KaleidoscopeMatrix.length);
             for (int i = 0; i < KaleidoscopeMatrix.length; i++) {
                 Matrix m = new Matrix();
@@ -752,21 +582,19 @@ public class DrawManager implements View.OnTouchListener {
         public void redraw();
     }
 
-    public interface ColorUsageListener {
-        void colorUsed(int aColor);
+
+    public interface TouchListener {
+        void touch(int aMotionEventType, float[] aPoint, float X, float Y);
+
+        boolean isActive();
     }
 
-    public interface PipetteListener {
-        void newColorSelectedByThePipette(int aNewColor);
-    }
-
-    public void setPipetteListener(PipetteListener aPipetteListener) {
-        fPipetteListener = aPipetteListener;
+    public void setTouchListener(TouchListener aTouchListener) {
+        fTouchListener = aTouchListener;
     }
 
     public void removeListeners() {
-        fColorUsageListener = null;
         fDrawListener = null;
-        fPipetteListener = null;
+        fTouchListener = null;
     }
 }

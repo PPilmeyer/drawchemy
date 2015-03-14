@@ -48,7 +48,7 @@ public class NearestPointLineCreator extends ACreator {
     @Override
     public IDrawingOperation startDrawingOperation(float x, float y) {
         fPrevious = new PointF(x, y);
-        fCurrentOperation = new NearestPointLineOperation(fManager.getPaint(), x, y);
+        fCurrentOperation = new NearestPointLineOperation(getPaint(), x, y);
         return fCurrentOperation;
     }
 
@@ -76,7 +76,7 @@ public class NearestPointLineCreator extends ACreator {
 
         fCurrentOperation.addPoint(next);
         fPrevious = next;
-        fManager.redraw();
+        redraw();
     }
 
     void addLine(PointF a, PointF b) {

@@ -20,6 +20,7 @@
 package draw.chemy.color;
 
 import android.app.Fragment;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
@@ -29,10 +30,10 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.SeekBar;
 
 import org.al.chemy.R;
@@ -41,8 +42,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import draw.chemy.DrawManager;
+import draw.chemy.ZoomPanDrawingView;
 
-public class ColorUIFragment extends Fragment implements DrawManager.ColorUsageListener, DrawManager.PipetteListener {
+public class ColorUIFragment extends Fragment {
 
     private SeekBar fHueBar;
     private SeekBar fSaturationBar;
@@ -50,12 +52,9 @@ public class ColorUIFragment extends Fragment implements DrawManager.ColorUsageL
     private SeekBar fAlphaSeekBar;
     private SeekBar fHueSwitchSeekbar;
 
-    private CheckBox fHueCheckBox;
-
     private int fColor;
     private List<ColorChangeListener> fColorListeners;
     private List<HueSwitchListener> fHueSwitchListeners;
-    private List<PipetteActivateListener> fPipetteListeners;
 
     private int fHue;
     private int fSaturation;
@@ -63,8 +62,6 @@ public class ColorUIFragment extends Fragment implements DrawManager.ColorUsageL
     private int fAlpha;
 
     private int fHueAmp = 0;
-    private boolean fHueEnable = false;
-
     private float temp[];
 
     private ShapeDrawable fHueDrawable;
@@ -72,31 +69,28 @@ public class ColorUIFragment extends Fragment implements DrawManager.ColorUsageL
     private ShapeDrawable fBrightnessDrawable;
 
     private Button[] fPaletteButton;
-    private ColorElem[] fPalette;
+
+    private List<Integer> fColors;
+    private boolean fPipetteActive = false;
 
     public ColorUIFragment() {
         fColorListeners = new ArrayList<ColorChangeListener>();
         fHueSwitchListeners = new ArrayList<HueSwitchListener>();
-        fPipetteListeners = new ArrayList<PipetteActivateListener>();
         temp = new float[3];
         fHueDrawable = new ShapeDrawable(new RectShape());
         fSaturationDrawable = new ShapeDrawable(new RectShape());
         fBrightnessDrawable = new ShapeDrawable(new RectShape());
-        initPalette();
     }
 
-    private void initPalette() {
-        fPalette = new ColorElem[8];
-        fPalette[0] = new ColorElem(Color.BLACK, 0);
-        fPalette[1] = new ColorElem(Color.WHITE, 1);
-        fPalette[2] = new ColorElem(Color.RED, 2);
-        fPalette[3] = new ColorElem(Color.GREEN, 3);
-        fPalette[4] = new ColorElem(Color.BLUE, 4);
-        fPalette[5] = new ColorElem(Color.YELLOW, 5);
-        fPalette[6] = new ColorElem(Color.MAGENTA, 6);
-        fPalette[7] = new ColorElem(Color.CYAN, 7);
+    public void setHistoryColor(List<Integer> aColors) {
+        fColors = aColors;
+        if (fPaletteButton == null)
+            return;
+        for (int i = 0; i < fPaletteButton.length; i++) {
+            GradientDrawable drawable = (GradientDrawable) fPaletteButton[i].getBackground();
+            drawable.setColor(fColors.get(i));
+        }
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -152,36 +146,11 @@ public class ColorUIFragment extends Fragment implements DrawManager.ColorUsageL
             }
         });
 
-        fHueCheckBox = (CheckBox) view.findViewById(R.id.i_hue_switch);
-        fHueCheckBox.setChecked(fHueEnable);
-        if (fHueEnable) {
-            fHueCheckBox.setText(R.string.hue_switch_enabled);
-        } else {
-            fHueCheckBox.setText(R.string.hue_switch_disabled);
-        }
-
-        fHueCheckBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                fHueEnable = fHueCheckBox.isChecked();
-                if (fHueEnable) {
-                    fHueCheckBox.setText(R.string.hue_switch_enabled);
-                } else {
-                    fHueCheckBox.setText(R.string.hue_switch_disabled);
-                }
-                for (HueSwitchListener listener : fHueSwitchListeners) {
-                    listener.stateChanged(fHueEnable);
-                }
-            }
-        });
-
         Button pipette = (Button) view.findViewById(R.id.pipette_button);
         pipette.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                for (PipetteActivateListener listener : fPipetteListeners) {
-                    listener.activate();
-                }
+                fPipetteActive = true;
             }
         });
 
@@ -215,39 +184,17 @@ public class ColorUIFragment extends Fragment implements DrawManager.ColorUsageL
 
                 for (int i = 0; i < fPaletteButton.length; i++) {
                     if (fPaletteButton[i].getId() == view.getId()) {
-                        setColor(fPalette[i].color, true);
+                        setColor(fColors.get(i), true);
                     }
                 }
             }
         };
+
         for (int i = 0; i < fPaletteButton.length; i++) {
             GradientDrawable drawable = (GradientDrawable) fPaletteButton[i].getBackground();
-            drawable.setColor(fPalette[i].color);
+            drawable.setColor(fColors.get(i));
             fPaletteButton[i].setOnClickListener(onClickListener);
         }
-    }
-
-    private void updateColor(int aNewColor) {
-        for (int i = 0; i < fPalette.length; i++) {
-            fPalette[i].priority++;
-        }
-        int idx = 0;
-        int priority = -1;
-        for (int i = 0; i < fPalette.length; i++) {
-            if (fPalette[i].color == aNewColor) {
-                fPalette[i].priority = 0;
-                return;
-            } else if (priority < fPalette[i].priority) {
-                priority = fPalette[i].priority;
-                idx = i;
-            }
-        }
-        fPalette[idx].priority = 0;
-        fPalette[idx].color = aNewColor;
-        if (fPaletteButton != null) {
-            ((GradientDrawable) fPaletteButton[idx].getBackground()).setColor(aNewColor);
-        }
-
     }
 
     private void changeColor() {
@@ -307,17 +254,11 @@ public class ColorUIFragment extends Fragment implements DrawManager.ColorUsageL
         fBrightnessBar = null;
         fAlphaSeekBar = null;
         fHueSwitchSeekbar = null;
-        fHueCheckBox = null;
     }
 
-    @Override
-    public void colorUsed(int aNewColor) {
-        updateColor(aNewColor);
-    }
 
-    @Override
-    public void newColorSelectedByThePipette(int aNewColor) {
-        setColor(aNewColor, true);
+    private boolean isPipetteActive() {
+        return fPipetteActive;
     }
 
     private class MyOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
@@ -345,17 +286,11 @@ public class ColorUIFragment extends Fragment implements DrawManager.ColorUsageL
         fHueSwitchListeners.add(aListener);
     }
 
-    public void addPipetteActiveListener(PipetteActivateListener aListener) {
-        fPipetteListeners.add(aListener);
-    }
-
     public static interface ColorChangeListener {
         public void colorChange(int aColor);
     }
 
     public static interface HueSwitchListener {
-
-        public void stateChanged(boolean isEnabled);
 
         public void amplitudeChanged(float aAmplitude);
 
@@ -369,7 +304,6 @@ public class ColorUIFragment extends Fragment implements DrawManager.ColorUsageL
         fAlpha = Color.alpha(aColor);
         fColor = aColor;
     }
-
 
     private void setBrightnessDrawable() {
         Paint p = fBrightnessDrawable.getPaint();
@@ -427,30 +361,50 @@ public class ColorUIFragment extends Fragment implements DrawManager.ColorUsageL
         fHueBar.invalidate();
     }
 
-
-    private class ColorElem implements Comparable {
-
-        int color;
-        int priority;
-
-        public ColorElem(int aColor, int aPriority) {
-            color = aColor;
-            priority = aPriority;
-        }
-
-        @Override
-        public int compareTo(Object o) {
-            return priority - ((ColorElem) o).priority;
-        }
-    }
-
-    public static interface PipetteActivateListener {
-        public void activate();
-    }
-
     public void removeListeners() {
         fColorListeners.clear();
         fHueSwitchListeners.clear();
-        fPipetteListeners.clear();
+    }
+
+    public static class Pipette implements DrawManager.TouchListener {
+
+
+        private final ColorUIFragment fFragment;
+        private final DrawManager fDrawManager;
+
+        public Pipette(ColorUIFragment aFragment, DrawManager aDrawManager) {
+            super();
+            fFragment = aFragment;
+            fDrawManager = aDrawManager;
+        }
+
+        @Override
+        public void touch(int aMotionEventType, float[] aPoint, float aX, float aY) {
+            switch (aMotionEventType) {
+                case MotionEvent.ACTION_MOVE:
+                case MotionEvent.ACTION_DOWN:
+                    getColor(aPoint);
+                    break;
+                default:
+                    fFragment.fPipetteActive = false;
+            }
+        }
+
+        @Override
+        public boolean isActive() {
+            return fFragment.isPipetteActive();
+        }
+
+        public void getColor(float[] aPoint) {
+            int x = (int) aPoint[0];
+            int y = (int) aPoint[1];
+            if (x < 0 || x > fDrawManager.getWidth() || y < 0 || y > fDrawManager.getHeight()) {
+                return;
+            }
+            fDrawManager.redraw();
+            int pixel = fDrawManager.getBitmap().getPixel(x, y);
+            fFragment.setColor(pixel, true);
+        }
+
     }
 }

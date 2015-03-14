@@ -30,6 +30,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -56,12 +58,16 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
 
     private float fCorners[];
 
-    private enum MODE {
-        DRAG, ZOOM, NONE
+    private enum STATE {
+        INIT,
+        WAIT,
+        DRAW,
+        ZOOM_PAN
     }
 
+    List<OverlayPainter> fOverlayPainters = new ArrayList<OverlayPainter>();
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings("all")
     public ZoomPanDrawingView(Context context, AttributeSet attrs) {
         super(context, attrs);
         fHolder = getHolder();
@@ -98,6 +104,7 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
         return fCanvasManager;
     }
 
+    @SuppressWarnings("all")
     public ZoomPanDrawingView(Context context, DrawManager aCanvasManager) {
         super(context);
         fHolder = getHolder();
@@ -148,10 +155,10 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
         fThread.stopThread();
     }
 
-    public void stopThread() {
-        if (fThread != null) {
-            fThread.stopThread();
-        }
+    public interface OverlayPainter {
+
+        public void draw(Canvas aCanvas, DrawManager aDrawManager);
+
     }
 
     private static class ViewThread extends Thread {
@@ -193,10 +200,12 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
                             fInstance.fViewMatrix.mapPoints(fInstance.fCorners);
                             canvas.drawColor(Color.GRAY);
                             canvas.clipRect(fInstance.fCorners[2], fInstance.fCorners[3], fInstance.fCorners[0], fInstance.fCorners[1]);
-
+                            canvas.save();
                             canvas.setMatrix(fInstance.fViewMatrix);
                             fInstance.fCanvasManager.draw(canvas);
                             fInstance.fDrawListener.hadRedraw();
+                            canvas.restore();
+                            fInstance.paintOver(canvas);
                             fInstance.fHolder.unlockCanvasAndPost(canvas);
                         }
                     }
@@ -208,6 +217,28 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
             }
             fInstance = null;
         }
+
+
+    }
+
+    public void addOverlayPainter(OverlayPainter aOverlayPainter) {
+        synchronized (fOverlayPainters) {
+            fOverlayPainters.add(aOverlayPainter);
+        }
+    }
+
+    public void removeOverlayPainter(OverlayPainter aOverlayPainter) {
+        synchronized (fOverlayPainters) {
+            fOverlayPainters.remove(aOverlayPainter);
+        }
+    }
+
+    private void paintOver(Canvas aCanvas) {
+        synchronized (fOverlayPainters) {
+            for(OverlayPainter painter : fOverlayPainters) {
+                painter.draw(aCanvas, fCanvasManager);
+            }
+        }
     }
 
     public void close() {
@@ -218,22 +249,6 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
             fThread.stopThread();
             fThread.fInstance = null;
         }
-    }
-
-    public void setEnabled(boolean check) {
-        fZoomManager.setEnabled(check);
-    }
-
-    public void activatePipette() {
-        fZoomManager.activatePipette();
-    }
-
-    public boolean isEnable() {
-        return fZoomManager.isEnable();
-    }
-
-    public void switchEnabled() {
-        fZoomManager.switchEnabled();
     }
 
     public void resetZoomPan() {
@@ -262,9 +277,7 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
 
     public class ZoomPanTouchListener implements OnTouchListener {
 
-        private OnTouchListener fDelegate;
-        public boolean fZoomPanEnabled = false;
-        public boolean fPipetteEnabled = false;
+        private DrawManager fDelegate;
 
         private float fScale = 1.0f;
         private float fPreviousScale = 1.0f;
@@ -272,16 +285,15 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
         private float fTranslateX = 0;
         private float fTranslateY = 0;
 
-        private float fPreviousX = 0;
-        private float fPreviousY = 0;
+        private float fInitialCenterZoomScreen[];
+        private float fInitialCenterZoomConcrete[];
 
-        private MODE fMode;
-
-        private float fCenterZoomRelative[];
-        private float fCenterZoomConcrete[];
-
-        private float fInitialTouch[];
+        private float fCenterZoomScreen[];
         private float fInitialSpan;
+
+        private STATE fState = STATE.INIT;
+
+        private List<DrawManager.MyMotionEvent> fPreviousEvents = new ArrayList<DrawManager.MyMotionEvent>();
 
         public void setViewMatrix(Matrix viewMatrix) {
             viewMatrix.setScale(fScale, fScale);
@@ -293,139 +305,117 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
             inputMatrix.postScale(1.f / fScale, 1.f / fScale);
         }
 
-        public ZoomPanTouchListener(OnTouchListener aDelegate) {
+        public ZoomPanTouchListener(DrawManager aDelegate) {
             fDelegate = aDelegate;
         }
 
-        public void setEnabled(boolean check) {
-            fZoomPanEnabled = check;
-            change();
-        }
-
-        public void activatePipette() {
-            fZoomPanEnabled = false;
-            fPipetteEnabled = true;
-            change();
-        }
-
-        public boolean isEnable() {
-            return fZoomPanEnabled;
-        }
-
-        public void switchEnabled() {
-            fZoomPanEnabled = !fZoomPanEnabled;
-            change();
-        }
 
         private void change() {
-            if (!fZoomPanEnabled) {
-                setInputMatrix(fInputMatrix);
-                fCanvasManager.setInputMatrix(fInputMatrix);
-            }
+            setInputMatrix(fInputMatrix);
+            fCanvasManager.setInputMatrix(fInputMatrix);
         }
 
         @Override
         public boolean onTouch(View view, MotionEvent event) {
-            if (fZoomPanEnabled) {
-                switch (event.getAction() & MotionEvent.ACTION_MASK) {
-                    case MotionEvent.ACTION_DOWN:
-                        setActionMode(MODE.DRAG);
-                        initDrag(event.getX(), event.getY());
-                        break;
+            switch (event.getAction()) {
 
-                    case MotionEvent.ACTION_MOVE:
-                        if (getActionMode() == MODE.DRAG) {
-                            updateDrag(event.getX(), event.getY());
-                        } else if (getActionMode() == MODE.ZOOM) {
-                            updateZoom(event);
-                        }
-                        break;
-
-                    case MotionEvent.ACTION_POINTER_DOWN:
-                        setActionMode(MODE.ZOOM);
+                case MotionEvent.ACTION_DOWN:
+                    if (fState == STATE.INIT && event.getPointerCount() == 1) {
+                        fState = STATE.WAIT;
+                        fPreviousEvents.add(new DrawManager.MyMotionEvent(event.getAction(), event.getX(), event.getY()));
+                    }
+                    if (fState == STATE.INIT && event.getPointerCount() == 2) {
+                        fState = STATE.ZOOM_PAN;
                         initZoom(event);
-                        break;
+                    }
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    if (fState == STATE.WAIT && event.getPointerCount() == 1) {
+                        if (trueMove(event)) {
+                            fState = STATE.DRAW;
+                            for (DrawManager.MyMotionEvent previousEvent : fPreviousEvents)
+                                fDelegate.onTouch(view, previousEvent);
+                            fDelegate.onTouch(view, event);
+                            fPreviousEvents.clear();
+                        } else {
+                            fPreviousEvents.add(new DrawManager.MyMotionEvent(event.getAction(), event.getX(), event.getY()));
+                        }
 
-                    case MotionEvent.ACTION_UP:
-                        setActionMode(MODE.NONE);
+                    } else if (fState == STATE.WAIT && event.getPointerCount() == 2) {
+                        fState = STATE.ZOOM_PAN;
+                        //init zoom pan
+                        initZoom(event);
+                    } else if (fState == STATE.ZOOM_PAN) {
+                        //update zoom//pan
+                        updateZoomAndPan(event);
+                    } else if (fState == STATE.DRAW) {
+                        fDelegate.onTouch(view, event);
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if (fState == STATE.ZOOM_PAN) {
+                        //finish zoom
                         closeAction();
-                        break;
+                    } else if (fState == STATE.WAIT) {
+                        for (DrawManager.MyMotionEvent previousEvent : fPreviousEvents)
+                            fDelegate.onTouch(view, previousEvent);
+                        fPreviousEvents.clear();
+                        fDelegate.onTouch(view, event);
+                    } else if (fState == STATE.DRAW && event.getPointerCount() == 1) {
+                        fDelegate.onTouch(view, event);
+                    }
+                    fState = STATE.INIT;
+                    fPreviousEvents.clear();
+                    break;
+            }
+            return true;
+        }
 
-                    case MotionEvent.ACTION_POINTER_UP:
-                        setActionMode(MODE.NONE);
-                        closeAction();
-                        break;
-                }
-                return true;
-            } else if (fPipetteEnabled) {
-                float points[] = new float[]{event.getX(), event.getY()};
-                fInputMatrix.mapPoints(points);
-                switch (event.getAction() & MotionEvent.ACTION_MASK) {
-                    case MotionEvent.ACTION_DOWN:
-                        fCanvasManager.triggerPipetteEvent(points[0], points[1]);
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        fCanvasManager.triggerPipetteEvent(points[0], points[1]);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    default:
-                        fPipetteEnabled = false;
-                        break;
-                }
+        private boolean trueMove(MotionEvent aEvent) {
+            if (fPreviousEvents.size() > 5) {
                 return true;
             }
-            return fDelegate.onTouch(view, event);
+            DrawManager.MyMotionEvent myMotionEvent = fPreviousEvents.get(0);
+            double distance = Math.hypot(aEvent.getX() - myMotionEvent.getX(), aEvent.getY() - myMotionEvent.getY());
+            return distance > 3.;
         }
 
         private void closeAction() {
-            fPreviousX = fTranslateX;
-            fPreviousY = fTranslateY;
+            change();
             fPreviousScale = fScale;
         }
 
-        private void updateZoom(MotionEvent event) {
-            float dSpan = getSpan(event) - fInitialSpan;
-            fScale = fPreviousScale + (dSpan * 0.003f);
-            limitScale();
-
-            fTranslateX = fCenterZoomRelative[0] - fScale * fCenterZoomConcrete[0];
-            fTranslateY = fCenterZoomRelative[1] - fScale * fCenterZoomConcrete[1];
-
+        private void updateZoomAndPan(MotionEvent aEvent) {
+            if (aEvent.getPointerCount() != 2) {
+                return;
+            }
+            updateZoom(aEvent);
+            updateTranslation(aEvent);
             redraw();
         }
 
-        private void updateDrag(float x, float y) {
-            float dx = (x - fInitialTouch[0]) * .5f;
-            float dy = (y - fInitialTouch[1]) * .5f;
+        private void updateZoom(MotionEvent aEvent) {
+            float dSpan = getSpan(aEvent) - fInitialSpan;
+            fScale = fPreviousScale + (dSpan * 0.0025f);
+            limitScale();
+        }
 
-            fTranslateX = fPreviousX + dx;
-            fTranslateY = fPreviousY + dy;
+        private void updateTranslation(MotionEvent event) {
+            fCenterZoomScreen = getCenter(event, fCenterZoomScreen);
+
+            fTranslateX = (-fInitialCenterZoomConcrete[0]*fScale + fCenterZoomScreen[0]);
+            fTranslateY = (-fInitialCenterZoomConcrete[1]*fScale + fCenterZoomScreen[1]);
             limitDrag();
-            redraw();
         }
 
         private void initZoom(MotionEvent event) {
             fInitialSpan = getSpan(event);
-            // position relative
-            fCenterZoomRelative = getCenter(event, fCenterZoomRelative);
-            fCenterZoomConcrete = getConcreteCenter(fCenterZoomConcrete, fCenterZoomRelative);
-            //
+            initDrag(event);
         }
 
-        private void initDrag(float x, float y) {
-            if (fInitialTouch == null) {
-                fInitialTouch = new float[2];
-            }
-            fInitialTouch[0] = x;
-            fInitialTouch[1] = y;
-        }
-
-        private MODE getActionMode() {
-            return fMode;
-        }
-
-        private void setActionMode(MODE actionMode) {
-            fMode = actionMode;
+        private void initDrag(MotionEvent event) {
+            fInitialCenterZoomScreen = getCenter(event, fInitialCenterZoomScreen);
+            fInitialCenterZoomConcrete = getConcreteCenter(fInitialCenterZoomConcrete, fInitialCenterZoomScreen);
         }
 
         public void redraw() {
@@ -445,17 +435,16 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
             fScale = 1.f;
             fTranslateX = 0.f;
             fTranslateY = 0.f;
-            fPreviousX = 0.f;
-            fPreviousY = 0.f;
+            fPreviousScale = 1.f;
             change();
             redraw();
         }
 
         public void limitScale() {
-            if (fScale > 6.f) {
-                fScale = 6.f;
-            } else if (fScale < 0.2f) {
-                fScale = 0.2f;
+            if (fScale > 4.f) {
+                fScale = 4.f;
+            } else if (fScale < 0.25f) {
+                fScale = 0.25f;
             }
         }
 
@@ -478,26 +467,23 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
         }
     }
 
-    float getSpan(MotionEvent event) {
-        int P = event.getPointerCount();
-        if (P != 2) return 0;
-
-        final float x0 = event.getX(0);
-        final float x1 = event.getX(1);
-        final float y0 = event.getY(0);
-        final float y1 = event.getY(1);
+    float getSpan(MotionEvent aEvent) {
+        final float x0 = aEvent.getX(0);
+        final float x1 = aEvent.getX(1);
+        final float y0 = aEvent.getY(0);
+        final float y1 = aEvent.getY(1);
         return (float) Math.hypot(x1 - x0, y1 - y0);
     }
 
-    float[] getCenter(MotionEvent event, float[] pt) {
-        int P = event.getPointerCount();
+    float[] getCenter(MotionEvent aEvent, float[] pt) {
+        int P = aEvent.getPointerCount();
         pt = ((pt == null) ? new float[2] : pt);
-        pt[0] = event.getX(0);
-        pt[1] = event.getY(0);
+        pt[0] = aEvent.getX(0);
+        pt[1] = aEvent.getY(0);
 
         for (int j = 1; j < P; j++) {
-            pt[0] += event.getX(j);
-            pt[1] += event.getY(j);
+            pt[0] += aEvent.getX(j);
+            pt[1] += aEvent.getY(j);
         }
         pt[0] /= P;
         pt[1] /= P;
