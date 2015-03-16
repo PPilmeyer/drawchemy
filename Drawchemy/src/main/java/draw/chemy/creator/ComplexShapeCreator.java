@@ -17,7 +17,6 @@
  * along with Drawchemy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package draw.chemy.creator;
 
 import android.graphics.Matrix;
@@ -33,111 +32,109 @@ import draw.chemy.DrawUtils;
 
 public class ComplexShapeCreator extends ACreator {
 
+  private ShapeGroup[] fShapeGroups;
+  private MultiPathOperation fCurrentOperation = null;
 
-    private ShapeGroup[] fShapeGroups;
-    private MultiPathOperation fCurrentOperation = null;
+  public int getFlow() {
+    return fFlow;
+  }
 
-    public int getFlow() {
-        return fFlow;
+  public void setFlow(int aFlow) {
+    this.fFlow = aFlow;
+  }
+
+  private int fFlow = 10;
+  private int fCount = 0;
+
+  public ComplexShapeCreator(DrawManager aManager, ShapeGroup... aShapeGroups) {
+    super(aManager);
+    this.fShapeGroups = aShapeGroups;
+  }
+
+  @Override
+  public IDrawingOperation startDrawingOperation(float x, float y) {
+
+    fCurrentOperation = new MultiPathOperation(getPaint());
+    fCount = 0;
+    Shape shape = ShapeGroup.getShape(fShapeGroups);
+    transformPath(shape.getCopyPath(), x, y);
+    return fCurrentOperation;
+  }
+
+  private void transformPath(List<Path> aPathList, float x, float y) {
+    Matrix m = new Matrix();
+    float scale = DrawUtils.getProbability(2.f);
+    m.setRotate(DrawUtils.getProbability(180));
+    float value[] = new float[9];
+    m.getValues(value);
+    value[8] = 1 / scale;
+    m.setValues(value);
+    m.postTranslate(x, y);
+    for (Path p : aPathList) {
+      fCurrentOperation.addPath();
+      fCurrentOperation.setTop(transformPath(p, m));
+    }
+  }
+
+  private Path transformPath(Path aModifiablePath, Matrix aMatrix) {
+    aModifiablePath.transform(aMatrix);
+    return aModifiablePath;
+  }
+
+  @Override
+  public void updateDrawingOperation(float x, float y) {
+    if (fCount++ % fFlow == 0) {
+      Shape shape = ShapeGroup.getShape(fShapeGroups);
+      transformPath(shape.getCopyPath(), x, y);
+      redraw();
+    }
+  }
+
+  @Override
+  public void endDrawingOperation() {
+    fCurrentOperation = null;
+  }
+
+  public static class ShapeGroup {
+
+    private final List<Shape> fShapes;
+
+    public ShapeGroup() {
+      fShapes = new ArrayList<Shape>();
     }
 
-    public void setFlow(int aFlow) {
-        this.fFlow = aFlow;
+    public void addShape(Shape aShape) {
+      fShapes.add(aShape);
     }
 
-    private int fFlow = 10;
-    private int fCount = 0;
-
-
-    public ComplexShapeCreator(DrawManager aManager, ShapeGroup... aShapeGroups) {
-        super(aManager);
-        this.fShapeGroups = aShapeGroups;
+    public Shape getShape() {
+      int id = DrawUtils.RANDOM.nextInt(fShapes.size());
+      return fShapes.get(id);
     }
 
-    @Override
-    public IDrawingOperation startDrawingOperation(float x, float y) {
+    public static Shape getShape(ShapeGroup... aShapeGroups) {
+      int id = DrawUtils.RANDOM.nextInt(aShapeGroups.length);
+      return aShapeGroups[id].getShape();
+    }
+  }
 
-        fCurrentOperation = new MultiPathOperation(getPaint());
-        fCount = 0;
-        Shape shape = ShapeGroup.getShape(fShapeGroups);
-        transformPath(shape.getCopyPath(), x, y);
-        return fCurrentOperation;
+  public static class Shape {
+
+    private final List<Path> fPaths;
+
+    public Shape(List<Path> fPaths) {
+
+      this.fPaths = fPaths;
     }
 
-    private void transformPath(List<Path> aPathList, float x, float y) {
-        Matrix m = new Matrix();
-        float scale = DrawUtils.getProbability(2.f);
-        m.setRotate(DrawUtils.getProbability(180));
-        float value[] = new float[9];
-        m.getValues(value);
-        value[8] = 1/scale;
-        m.setValues(value);
-        m.postTranslate(x, y);
-        for (Path p : aPathList) {
-            fCurrentOperation.addPath();
-            fCurrentOperation.setTop(transformPath(p, m));
-        }
+    public List<Path> getCopyPath() {
+      List<Path> result = new ArrayList<Path>();
+      Path newPath = new Path();
+      for (Path p : fPaths) {
+        result.add(new Path(p));
+        newPath.addPath(p);
+      }
+      return Collections.singletonList(newPath);
     }
-
-    private Path transformPath(Path aModifiablePath, Matrix aMatrix) {
-        aModifiablePath.transform(aMatrix);
-        return aModifiablePath;
-    }
-
-    @Override
-    public void updateDrawingOperation(float x, float y) {
-        if (fCount++ % fFlow == 0) {
-            Shape shape = ShapeGroup.getShape(fShapeGroups);
-            transformPath(shape.getCopyPath(), x, y);
-            redraw();
-        }
-    }
-
-    @Override
-    public void endDrawingOperation() {
-        fCurrentOperation = null;
-    }
-
-    public static class ShapeGroup {
-
-        private final List<Shape> fShapes;
-
-        public ShapeGroup() {
-            fShapes = new ArrayList<Shape>();
-        }
-
-        public void addShape(Shape aShape) {
-            fShapes.add(aShape);
-        }
-
-        public Shape getShape() {
-            int id = DrawUtils.RANDOM.nextInt(fShapes.size());
-            return fShapes.get(id);
-        }
-
-        public static Shape getShape(ShapeGroup... aShapeGroups) {
-            int id = DrawUtils.RANDOM.nextInt(aShapeGroups.length);
-            return aShapeGroups[id].getShape();
-        }
-    }
-
-    public static class Shape {
-
-        private final List<Path> fPaths;
-
-        public Shape(List<Path> fPaths) {
-
-            this.fPaths = fPaths;
-        }
-
-        public List<Path> getCopyPath() {
-            List<Path> result = new ArrayList<Path>();
-            Path newPath = new Path();
-            for (Path p : fPaths) {
-                result.add(new Path(p));
-                newPath.addPath(p);
-            }
-            return Collections.singletonList(newPath);
-        }
-    }
+  }
 }

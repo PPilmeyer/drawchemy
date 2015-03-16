@@ -28,63 +28,64 @@ import java.util.LinkedList;
 
 class MultiPathOperation implements IDrawingOperation {
 
-    private Paint fPaint;
-    private LinkedList<Path> fPaths;
-    private RectF fBounds;
-    private RectF fBoundsTemp;
+  private Paint fPaint;
+  private LinkedList<Path> fPaths;
+  private RectF fBounds;
+  private RectF fBoundsTemp;
 
-    public MultiPathOperation(Paint aPaint) {
-        fPaint = aPaint;
-        fPaths = new LinkedList<Path>();
-        fBounds = new RectF();
-        fBoundsTemp = new RectF();
-    }
+  public MultiPathOperation(Paint aPaint) {
+    fPaint = aPaint;
+    fPaths = new LinkedList<Path>();
+    fBounds = new RectF();
+    fBoundsTemp = new RectF();
+  }
 
-    @Override
-    public synchronized void draw(Canvas aCanvas) {
-        for (Path p : fPaths) {
-            aCanvas.drawPath(p, fPaint);
-        }
+  @Override
+  public synchronized void draw(Canvas aCanvas) {
+    for (Path p : fPaths) {
+      aCanvas.drawPath(p, fPaint);
     }
+  }
 
-    public synchronized void addPath() {
-        if (fPaths.size() == 1) {
-            fPaths.getLast().computeBounds(fBounds, true);
-        } else if (fPaths.size() > 1) {
-            fPaths.getLast().computeBounds(fBoundsTemp, true);
-            fBounds.union(fBoundsTemp);
-        }
-        fPaths.addLast(new Path());
+  public synchronized void addPath() {
+    if (fPaths.size() == 1) {
+      fPaths.getLast().computeBounds(fBounds, true);
+    } else if (fPaths.size() > 1) {
+      fPaths.getLast().computeBounds(fBoundsTemp, true);
+      fBounds.union(fBoundsTemp);
     }
+    fPaths.addLast(new Path());
+  }
 
-    public synchronized void setTop(Path aPath) {
-        fPaths.getLast().set(aPath);
-    }
+  public synchronized void setTop(Path aPath) {
+    fPaths.getLast().set(aPath);
+  }
 
-    @Override
-    public Paint getPaint() {
-        return fPaint;
-    }
+  @Override
+  public Paint getPaint() {
+    return fPaint;
+  }
 
-    @Override
-    public synchronized void computeBounds(RectF aBoundSFCT) {
-        if(fPaths.isEmpty())
-            return;
-        fPaths.getLast().computeBounds(aBoundSFCT, true);
-        if (fPaths.size() > 1) {
-            aBoundSFCT.union(fBounds);
-        }
+  @Override
+  public synchronized void computeBounds(RectF aBoundSFCT) {
+    if (fPaths.isEmpty()) {
+      return;
     }
+    fPaths.getLast().computeBounds(aBoundSFCT, true);
+    if (fPaths.size() > 1) {
+      aBoundSFCT.union(fBounds);
+    }
+  }
 
-    @Override
-    public void undo() {
-    }
+  @Override
+  public void undo() {
+  }
 
-    @Override
-    public void redo() {
-    }
+  @Override
+  public void redo() {
+  }
 
-    @Override
-    public void complete() {
-    }
+  @Override
+  public void complete() {
+  }
 }

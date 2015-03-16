@@ -30,52 +30,52 @@ import android.graphics.drawable.Drawable;
 
 public class RoundIconGenerator {
 
-    private Bitmap fBitmap;
-    private Canvas fCanvas;
+  private static final int BACKGROUND_COLOR = Color.BLACK;
+  private static final int STROKE_COLOR = Color.LTGRAY;
 
-    private final static int BACKGROUND_COLOR = Color.BLACK;
-    private final static int STROKE_COLOR = Color.LTGRAY;
+  private static final int SIZE = 24;
+  private static final float MARGIN = 1.5f;
 
-    private static final int SIZE = 24;
-    private static final float MARGIN = 1.5f;
-    private Context fContext;
+  private Bitmap fBitmap;
+  private Canvas fCanvas;
+  private Context fContext;
 
-    public RoundIconGenerator(Context aContext) {
-        fContext = aContext;
+  public RoundIconGenerator(Context aContext) {
+    fContext = aContext;
 
-        fBitmap = Bitmap.createBitmap(SIZE,SIZE, Bitmap.Config.ARGB_8888);
-        fCanvas = new Canvas(fBitmap);
+    fBitmap = Bitmap.createBitmap(SIZE, SIZE, Bitmap.Config.ARGB_8888);
+    fCanvas = new Canvas(fBitmap);
+  }
+
+  private void draw(int aColor, boolean isMain) {
+
+    Paint main = new Paint();
+    main.setColor(aColor);
+    main.setStyle(Paint.Style.FILL);
+
+    Paint round = new Paint();
+    round.setColor(STROKE_COLOR);
+    round.setStrokeWidth(2.2f);
+    round.setAntiAlias(true);
+    round.setStyle(Paint.Style.STROKE);
+
+    fCanvas.drawColor(BACKGROUND_COLOR, PorterDuff.Mode.CLEAR);
+
+    float size;
+    if (isMain) {
+      size = (SIZE - MARGIN) / 2.f;
+    } else {
+      size = (SIZE - MARGIN) / 4.f;
     }
 
-    private void draw(int aColor, boolean isMain) {
+    fCanvas.drawCircle(SIZE / 2, SIZE / 2, size, main);
+    fCanvas.drawCircle(SIZE / 2, SIZE / 2, size, round);
+  }
 
-        Paint main = new Paint();
-        main.setColor(aColor);
-        main.setStyle(Paint.Style.FILL);
-
-        Paint round = new Paint();
-        round.setColor(STROKE_COLOR);
-        round.setStrokeWidth(2.2f);
-        round.setAntiAlias(true);
-        round.setStyle(Paint.Style.STROKE);
-
-        fCanvas.drawColor(BACKGROUND_COLOR, PorterDuff.Mode.CLEAR);
-
-        float size;
-        if(isMain) {
-            size = (SIZE-MARGIN)/2.f;
-        } else {
-            size = (SIZE-MARGIN)/4.f;
-        }
-
-        fCanvas.drawCircle(SIZE/2,SIZE/2,size,main);
-        fCanvas.drawCircle(SIZE/2,SIZE/2,size,round);
-    }
-
-    public synchronized Drawable getIcon(int aColor, boolean isMain) {
-        aColor = aColor | 0xff000000;
-        draw(aColor,isMain);
-        return new BitmapDrawable(fContext.getResources(),fBitmap);
-    }
+  public synchronized Drawable getIcon(int aColor, boolean isMain) {
+    aColor = aColor | 0xff000000;
+    draw(aColor, isMain);
+    return new BitmapDrawable(fContext.getResources(), fBitmap);
+  }
 
 }

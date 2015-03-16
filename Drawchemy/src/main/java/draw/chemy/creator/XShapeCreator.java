@@ -28,106 +28,106 @@ import static draw.chemy.DrawUtils.getProbability;
 
 public class XShapeCreator extends ACreator {
 
-    public static final float MIN_NOISE = 5.f;
-    public static final float MAX_NOISE = 30.f;
+  public static final float MIN_NOISE = 5.f;
+  public static final float MAX_NOISE = 30.f;
 
-    public static final int MIN_DETAIL = 2;
-    public static final int MAX_DETAIL = 15;
+  public static final int MIN_DETAIL = 2;
+  public static final int MAX_DETAIL = 15;
 
-    public static final int MIN_FLOW = 1;
-    public static final int MAX_FLOW = 10;
+  public static final int MIN_FLOW = 1;
+  public static final int MAX_FLOW = 10;
 
-    // Parameters
-    private float fNoise = 17;
-    private int fDetail = 8;
-    private int fFlow = 3;
+  // Parameters
+  private float fNoise = 17;
+  private int fDetail = 8;
+  private int fFlow = 3;
 
-    private PointF fPreviousPoint;
-    private int fCount = 0;
-    private SimpleLineOperation fCurrentOperation = null;
+  private PointF fPreviousPoint;
+  private int fCount = 0;
+  private SimpleLineOperation fCurrentOperation = null;
 
-    public XShapeCreator(DrawManager aManager) {
-        super(aManager);
-        fPreviousPoint = new PointF();
+  public XShapeCreator(DrawManager aManager) {
+    super(aManager);
+    fPreviousPoint = new PointF();
+  }
+
+  public float getNoise() {
+    return fNoise;
+  }
+
+  public void setNoise(float aNoise) {
+    fNoise = aNoise;
+  }
+
+  public int getDetail() {
+    return fDetail;
+  }
+
+  public void setDetail(int aDetail) {
+    fDetail = aDetail;
+  }
+
+  public int getFlow() {
+    return fFlow;
+  }
+
+  public void setFlow(int fFlow) {
+    this.fFlow = fFlow;
+  }
+
+  @Override
+  public IDrawingOperation startDrawingOperation(float x, float y) {
+    Paint p = getPaint();
+
+    Paint paint = new Paint();
+    paint.setColor(p.getColor());
+    paint.setStrokeWidth(p.getStrokeWidth());
+    paint.setStyle(p.getStyle());
+    paint.setAntiAlias(true);
+    paint.setStrokeJoin(Paint.Join.MITER);
+    paint.setStrokeCap(Paint.Cap.SQUARE);
+
+    fCurrentOperation = new SimpleLineOperation(x, y, paint);
+    fPreviousPoint.x = x;
+    fPreviousPoint.y = y;
+
+    return fCurrentOperation;
+  }
+
+  @Override
+  public void updateDrawingOperation(float x, float y) {
+    if (fCount++ % fFlow == 0) {
+      scraw(x, y);
+      redraw();
+    }
+  }
+
+  private void scraw(float x, float y) {
+    PointF current = new PointF(x, y);
+    float dirX = (current.x - fPreviousPoint.x) / (fDetail);
+    float dirY = (current.y - fPreviousPoint.y) / (fDetail);
+
+    float d = Math.abs(dirX) + Math.abs(dirY);
+
+    float pDirX = dirY / d;
+    float pDirY = dirX / (-d);
+
+    float x_s = x;
+    float y_s = y;
+
+    for (int i = 1; i < fDetail; i++) {
+      x_s = fPreviousPoint.x + i * dirX + pDirX * getProbability(fNoise);
+      y_s = fPreviousPoint.y + i * dirY + pDirY * getProbability(fNoise);
+
+      fCurrentOperation.addPoint(x_s, y_s);
     }
 
-    public float getNoise() {
-        return fNoise;
-    }
+    fPreviousPoint.x = x_s;
+    fPreviousPoint.y = y_s;
+  }
 
-    public void setNoise(float aNoise) {
-        fNoise = aNoise;
-    }
-
-    public int getDetail() {
-        return fDetail;
-    }
-
-    public void setDetail(int aDetail) {
-        fDetail = aDetail;
-    }
-
-    public int getFlow() {
-        return fFlow;
-    }
-
-    public void setFlow(int fFlow) {
-        this.fFlow = fFlow;
-    }
-
-    @Override
-    public IDrawingOperation startDrawingOperation(float x, float y) {
-        Paint p = getPaint();
-
-        Paint paint = new Paint();
-        paint.setColor(p.getColor());
-        paint.setStrokeWidth(p.getStrokeWidth());
-        paint.setStyle(p.getStyle());
-        paint.setAntiAlias(true);
-        paint.setStrokeJoin(Paint.Join.MITER);
-        paint.setStrokeCap(Paint.Cap.SQUARE);
-
-        fCurrentOperation = new SimpleLineOperation(x, y, paint);
-        fPreviousPoint.x = x;
-        fPreviousPoint.y = y;
-
-        return fCurrentOperation;
-    }
-
-    @Override
-    public void updateDrawingOperation(float x, float y) {
-        if (fCount++ % fFlow == 0) {
-            scraw(x, y);
-            redraw();
-        }
-    }
-
-    private void scraw(float x, float y) {
-        PointF current = new PointF(x, y);
-        float dirX = (current.x - fPreviousPoint.x) / (fDetail);
-        float dirY = (current.y - fPreviousPoint.y) / (fDetail);
-
-        float d = Math.abs(dirX) + Math.abs(dirY);
-
-        float pDirX = dirY / d;
-        float pDirY = dirX / (-d);
-
-        float x_s = x;
-        float y_s = y;
-
-        for (int i = 1; i < fDetail; i++) {
-            x_s = fPreviousPoint.x + i * dirX + pDirX * getProbability(fNoise);
-            y_s = fPreviousPoint.y + i * dirY + pDirY * getProbability(fNoise);
-
-            fCurrentOperation.addPoint(x_s, y_s);
-        }
-
-        fPreviousPoint.x = x_s;
-        fPreviousPoint.y = y_s;
-    }
-
-    @Override
-    public void endDrawingOperation() {
-        fCurrentOperation = null;
-    }
+  @Override
+  public void endDrawingOperation() {
+    fCurrentOperation = null;
+  }
 }

@@ -25,15 +25,15 @@ import android.graphics.RectF;
 
 public interface IDrawingOperation {
 
-    public void draw(Canvas aCanvas);
+  public void draw(Canvas aCanvas);
 
-    public Paint getPaint();
+  public Paint getPaint();
 
-    public void computeBounds(RectF aBoundSFCT);
+  public void computeBounds(RectF aBoundSFCT);
 
-    public void undo();
+  public void undo();
 
-    public void redo();
+  public void redo();
 
-    public void complete();
+  public void complete();
 }

@@ -17,7 +17,6 @@
  * along with Drawchemy.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package draw.chemy.creator;
 
 import android.graphics.Paint;
@@ -27,67 +26,66 @@ import draw.chemy.DrawUtils;
 
 public class XShapeV2Creator extends ACreator {
 
-    public static final float MAX_NOISE = 1.0f;
-    public static final float MIN_NOISE = 0.1f;
+  public static final float MAX_NOISE = 1.0f;
+  public static final float MIN_NOISE = 0.1f;
 
-    private SimpleLineOperation fCurrentOperation;
-    private float fNoise = 0.5f;
-    private float fPreviousX, fPreviousY;
+  private SimpleLineOperation fCurrentOperation;
+  private float fNoise = 0.5f;
+  private float fPreviousX, fPreviousY;
 
+  public XShapeV2Creator(DrawManager aManager) {
+    super(aManager);
+  }
 
-    public XShapeV2Creator(DrawManager aManager) {
-        super(aManager);
-    }
+  public float getNoise() {
+    return fNoise;
+  }
 
-    public float getNoise() {
-        return fNoise;
-    }
+  public void setNoise(float aNoise) {
+    fNoise = aNoise;
+  }
 
-    public void setNoise(float aNoise) {
-        fNoise = aNoise;
-    }
+  @Override
+  public IDrawingOperation startDrawingOperation(float x, float y) {
 
-    @Override
-    public IDrawingOperation startDrawingOperation(float x, float y) {
+    Paint p = getPaint();
 
-        Paint p = getPaint();
+    Paint paint = new Paint();
+    paint.setColor(p.getColor());
+    paint.setStrokeWidth(p.getStrokeWidth());
+    paint.setStyle(p.getStyle());
+    paint.setAntiAlias(true);
+    paint.setStrokeJoin(Paint.Join.MITER);
+    paint.setStrokeCap(Paint.Cap.SQUARE);
 
-        Paint paint = new Paint();
-        paint.setColor(p.getColor());
-        paint.setStrokeWidth(p.getStrokeWidth());
-        paint.setStyle(p.getStyle());
-        paint.setAntiAlias(true);
-        paint.setStrokeJoin(Paint.Join.MITER);
-        paint.setStrokeCap(Paint.Cap.SQUARE);
+    fCurrentOperation = new SimpleLineOperation(x, y, paint);
+    fPreviousX = x;
+    fPreviousY = y;
+    return fCurrentOperation;
+  }
 
-        fCurrentOperation = new SimpleLineOperation(x, y, paint);
-        fPreviousX = x;
-        fPreviousY = y;
-        return fCurrentOperation;
-    }
+  @Override
+  public void updateDrawingOperation(float x, float y) {
 
-    @Override
-    public void updateDrawingOperation(float x, float y) {
+    float vX = x - fPreviousX;
+    float vY = y - fPreviousY;
 
-        float vX = x - fPreviousX;
-        float vY = y - fPreviousY;
+    float aX = x - vX * (1 + DrawUtils.getProbability(fNoise));
+    float aY = y - vY * (1 + DrawUtils.getProbability(fNoise));
 
-        float aX = x - vX * (1 + DrawUtils.getProbability(fNoise));
-        float aY = y - vY * (1 + DrawUtils.getProbability(fNoise));
+    float bX = fPreviousX + vX * (1 + DrawUtils.getProbability(fNoise));
+    float bY = fPreviousY + vY * (1 + DrawUtils.getProbability(fNoise));
 
-        float bX = fPreviousX + vX * (1 + DrawUtils.getProbability(fNoise));
-        float bY = fPreviousY + vY * (1 + DrawUtils.getProbability(fNoise));
+    fCurrentOperation.addPoint(aX, aY);
+    fCurrentOperation.addPoint(bX, bY);
 
-        fCurrentOperation.addPoint(aX, aY);
-        fCurrentOperation.addPoint(bX, bY);
+    fPreviousX = x;
+    fPreviousY = y;
+    redraw();
+  }
 
-        fPreviousX = x;
-        fPreviousY = y;
-        redraw();
-    }
-
-    @Override
-    public void endDrawingOperation() {
-        fCurrentOperation = null;
-    }
+  @Override
+  public void endDrawingOperation() {
+    fCurrentOperation = null;
+  }
 }

@@ -30,125 +30,124 @@ import draw.chemy.DrawManager;
 
 public class StraightlineCreator extends ACreator {
 
-    private boolean fSpanningFlag = true;
-    private float fSpanningLimit = 50.f;
+  private boolean fSpanningFlag = true;
+  private float fSpanningLimit = 50.f;
 
-    LinkedList<PointF> fPreviousP;
-    LinkedList<PointF> fPreviousPRedo;
+  LinkedList<PointF> fUndo;
+  LinkedList<PointF> fRedo;
 
-    private StraightlineOperation fCurrentOperation;
+  private StraightlineOperation fCurrentOperation;
 
-    public StraightlineCreator(DrawManager aManager) {
-        super(aManager);
-        fPreviousP = new LinkedList<PointF>();
-        fPreviousPRedo = new LinkedList<PointF>();
+  public StraightlineCreator(DrawManager aManager) {
+    super(aManager);
+    fUndo = new LinkedList<PointF>();
+    fRedo = new LinkedList<PointF>();
+  }
+
+  public boolean isSpanningFlag() {
+    return fSpanningFlag;
+  }
+
+  public void setSpanningFlag(boolean aSpanningFlag) {
+    fSpanningFlag = aSpanningFlag;
+  }
+
+  @Override
+  public IDrawingOperation startDrawingOperation(float x, float y) {
+    float finalX = x;
+    float finalY = y;
+    if (fSpanningFlag) {
+      float lim = fSpanningLimit;
+      for (PointF p : fUndo) {
+        float dst = (float) Math.hypot(p.x - x, p.y - y);
+        if (dst < lim) {
+          finalX = p.x;
+          finalY = p.y;
+          lim = dst;
+        }
+      }
+    }
+    fUndo.addLast(new PointF(finalX, finalY));
+    fRedo.clear();
+    fCurrentOperation = new StraightlineOperation(getPaint(), finalX, finalY);
+    return fCurrentOperation;
+  }
+
+  @Override
+  public void updateDrawingOperation(float x, float y) {
+    fCurrentOperation.setEndpoint(x, y);
+    redraw();
+  }
+
+  @Override
+  public void endDrawingOperation() {
+    fUndo.addLast(new PointF(fCurrentOperation.fEx, fCurrentOperation.fEy));
+    fRedo.clear();
+    fCurrentOperation = null;
+  }
+
+  public class StraightlineOperation implements IDrawingOperation {
+
+    float fSx, fSy, fEx, fEy;
+    Paint fPaint;
+
+    public StraightlineOperation(Paint aPaint, float x, float y) {
+      fPaint = new Paint();
+      fPaint.setAntiAlias(true);
+      fPaint.setStyle(Paint.Style.STROKE);
+      fPaint.setStrokeWidth(aPaint.getStrokeWidth());
+      fPaint.setColor(aPaint.getColor());
+      fSx = fEx = x;
+      fSy = fEy = y;
     }
 
-
-    public boolean isSpanningFlag() {
-        return fSpanningFlag;
-    }
-
-    public void setSpanningFlag(boolean aSpanningFlag) {
-        fSpanningFlag = aSpanningFlag;
-    }
-
-    @Override
-    public IDrawingOperation startDrawingOperation(float x, float y) {
-        float finalX = x;
-        float finalY = y;
-        if (fSpanningFlag) {
-            float lim = fSpanningLimit;
-            for (PointF p : fPreviousP) {
-                float dst = (float) Math.hypot(p.x - x, p.y - y);
-                if (dst < lim) {
-                    finalX = p.x;
-                    finalY = p.y;
-                    lim = dst;
-                }
-            }
-        }
-        fPreviousP.addLast(new PointF(finalX, finalY));
-        fPreviousPRedo.clear();
-        fCurrentOperation = new StraightlineOperation(getPaint(), finalX, finalY);
-        return fCurrentOperation;
-    }
-
-    @Override
-    public void updateDrawingOperation(float x, float y) {
-        fCurrentOperation.setEndpoint(x, y);
-        redraw();
-    }
-
-    @Override
-    public void endDrawingOperation() {
-        fPreviousP.addLast(new PointF(fCurrentOperation.fEx, fCurrentOperation.fEy));
-        fPreviousPRedo.clear();
-        fCurrentOperation = null;
-    }
-
-    public class StraightlineOperation implements IDrawingOperation {
-
-        float fSx, fSy, fEx, fEy;
-        Paint fPaint;
-
-        public StraightlineOperation(Paint aPaint, float x, float y) {
-            fPaint = new Paint();
-            fPaint.setAntiAlias(true);
-            fPaint.setStyle(Paint.Style.STROKE);
-            fPaint.setStrokeWidth(aPaint.getStrokeWidth());
-            fPaint.setColor(aPaint.getColor());
-            fSx = fEx = x;
-            fSy = fEy = y;
-        }
-
-        public synchronized void setEndpoint(float x, float y) {
-            fEx = x;
-            fEy = y;
-        }
-
-        @Override
-        public synchronized void draw(Canvas aCanvas) {
-            aCanvas.drawLine(fSx, fSy, fEx, fEy, fPaint);
-        }
-
-        @Override
-        public Paint getPaint() {
-            return fPaint;
-        }
-
-        @Override
-        public synchronized void computeBounds(RectF aBoundSFCT) {
-            float minX = fSx < fEx ? fSx : fEx;
-            float minY = fSy < fEy ? fSy : fEy;
-            float maxX = fSx > fEx ? fSx : fEx;
-            float maxY = fSy > fEy ? fSy : fEy;
-            aBoundSFCT.set(minX, minY, maxX, maxY);
-        }
-
-        @Override
-        public void redo() {
-            fPreviousP.addLast(fPreviousPRedo.removeLast());
-            fPreviousP.addLast(fPreviousPRedo.removeLast());
-        }
-
-        @Override
-        public void undo() {
-            fPreviousPRedo.addLast(fPreviousP.removeLast());
-            fPreviousPRedo.addLast(fPreviousP.removeLast());
-        }
-
-        @Override
-        public void complete() {
-            fPreviousP.removeFirst();
-            fPreviousP.removeFirst();
-        }
+    public synchronized void setEndpoint(float x, float y) {
+      fEx = x;
+      fEy = y;
     }
 
     @Override
-    public void clear() {
-        super.clear();
-        fPreviousP.clear();
-        fPreviousPRedo.clear();
+    public synchronized void draw(Canvas aCanvas) {
+      aCanvas.drawLine(fSx, fSy, fEx, fEy, fPaint);
     }
+
+    @Override
+    public Paint getPaint() {
+      return fPaint;
+    }
+
+    @Override
+    public synchronized void computeBounds(RectF aBoundSFCT) {
+      float minX = fSx < fEx ? fSx : fEx;
+      float minY = fSy < fEy ? fSy : fEy;
+      float maxX = fSx > fEx ? fSx : fEx;
+      float maxY = fSy > fEy ? fSy : fEy;
+      aBoundSFCT.set(minX, minY, maxX, maxY);
+    }
+
+    @Override
+    public void redo() {
+      fUndo.addLast(fRedo.removeLast());
+      fUndo.addLast(fRedo.removeLast());
+    }
+
+    @Override
+    public void undo() {
+      fRedo.addLast(fUndo.removeLast());
+      fRedo.addLast(fUndo.removeLast());
+    }
+
+    @Override
+    public void complete() {
+      fUndo.removeFirst();
+      fUndo.removeFirst();
+    }
+  }
+
+  @Override
+  public void clear() {
+    super.clear();
+    fUndo.clear();
+    fRedo.clear();
+  }
 }

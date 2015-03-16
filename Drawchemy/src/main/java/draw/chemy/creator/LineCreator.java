@@ -23,27 +23,27 @@ import draw.chemy.DrawManager;
 
 public class LineCreator extends ACreator {
 
-    private SimpleLineOperation fCurrentOperation = null;
+  private SimpleLineOperation fCurrentOperation = null;
 
-    public LineCreator(DrawManager aManager) {
-        super(aManager);
-    }
+  public LineCreator(DrawManager aManager) {
+    super(aManager);
+  }
 
-    @Override
-    public IDrawingOperation startDrawingOperation(float x, float y) {
-        fCurrentOperation = new SimpleLineOperation(x, y, getPaint());
-        return fCurrentOperation;
-    }
+  @Override
+  public IDrawingOperation startDrawingOperation(float x, float y) {
+    fCurrentOperation = new SimpleLineOperation(x, y, getPaint());
+    return fCurrentOperation;
+  }
 
-    @Override
-    public void updateDrawingOperation(float x, float y) {
+  @Override
+  public void updateDrawingOperation(float x, float y) {
 
-        fCurrentOperation.addPoint(x, y);
-        redraw();
-    }
+    fCurrentOperation.addPoint(x, y);
+    redraw();
+  }
 
-    @Override
-    public void endDrawingOperation() {
-        fCurrentOperation = null;
-    }
+  @Override
+  public void endDrawingOperation() {
+    fCurrentOperation = null;
+  }
 }

@@ -33,104 +33,105 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class DrawingView extends SurfaceView implements SurfaceHolder.Callback {
 
-    private DrawManager fCanvasManager;
-    private SurfaceHolder fHolder;
-    private ViewThread fThread;
+  private DrawManager fCanvasManager;
+  private SurfaceHolder fHolder;
+  private ViewThread fThread;
 
-    private MyDrawListener fDrawListener;
+  private MyDrawListener fDrawListener;
 
-    public DrawingView(Context context, DrawManager aCanvasManager) {
-        super(context);
-        fHolder = getHolder();
-        fHolder.addCallback(this);
-        fCanvasManager = aCanvasManager;
-        fDrawListener = new MyDrawListener();
-        fCanvasManager.setDrawListener(fDrawListener);
+  public DrawingView(Context context, DrawManager aCanvasManager) {
+    super(context);
+    fHolder = getHolder();
+    fHolder.addCallback(this);
+    fCanvasManager = aCanvasManager;
+    fDrawListener = new MyDrawListener();
+    fCanvasManager.setDrawListener(fDrawListener);
+  }
+
+  @Override
+  public void surfaceCreated(SurfaceHolder surfaceHolder) {
+    setOnTouchListener(fCanvasManager);
+    fThread = new ViewThread();
+    fThread.start();
+    fCanvasManager.redraw();
+  }
+
+  @Override
+  public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
+  }
+
+  @Override
+  public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+    fThread.stopThread();
+  }
+
+  private class ViewThread extends Thread {
+
+    private boolean fRun = true;
+
+    public void stopThread() {
+      fRun = false;
+      interrupt();
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder surfaceHolder) {
-        setOnTouchListener(fCanvasManager);
-        fThread = new ViewThread();
-        fThread.start();
-        fCanvasManager.redraw();
+    public void run() {
+      while (fRun) {
+        try {
+
+          fDrawListener.getDrawLock().lock();
+          while (!fDrawListener.needToRedraw()) {
+            fDrawListener.getDrawCondition().await();
+          }
+          Canvas canvas = fHolder.lockCanvas();
+          fCanvasManager.draw(canvas);
+          fDrawListener.hadRedraw();
+          fHolder.unlockCanvasAndPost(canvas);
+        } catch (InterruptedException e) {
+
+        } finally {
+          fDrawListener.getDrawLock().unlock();
+        }
+      }
+    }
+  }
+
+  private class MyDrawListener implements DrawManager.DrawListener {
+
+    private final Lock fDrawLock;
+    private final Condition fDrawCondition;
+    private boolean fDrawFlag;
+
+    public MyDrawListener() {
+      fDrawLock = new ReentrantLock();
+      fDrawCondition = fDrawLock.newCondition();
+      fDrawFlag = true;
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
+    public void redraw() {
+      fDrawLock.lock();
+      fDrawFlag = true;
+      fDrawCondition.signalAll();
+      fDrawLock.unlock();
     }
 
-    @Override
-    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-        fThread.stopThread();
+    public Condition getDrawCondition() {
+      return fDrawCondition;
     }
 
-    private class ViewThread extends Thread {
-
-        private boolean fRun = true;
-
-        public void stopThread() {
-            fRun = false;
-            interrupt();
-        }
-        @Override
-        public void run() {
-            while (fRun) {
-                try {
-
-                    fDrawListener.getDrawLock().lock();
-                    while (!fDrawListener.needToRedraw()) {
-                        fDrawListener.getDrawCondition().await();
-                    }
-                    Canvas canvas = fHolder.lockCanvas();
-                    fCanvasManager.draw(canvas);
-                    fDrawListener.hadRedraw();
-                    fHolder.unlockCanvasAndPost(canvas);
-                } catch (InterruptedException e) {
-
-                } finally {
-                    fDrawListener.getDrawLock().unlock();
-                }
-            }
-        }
+    public Lock getDrawLock() {
+      return fDrawLock;
     }
 
-    private class MyDrawListener implements DrawManager.DrawListener {
-
-        private final Lock fDrawLock;
-        private final Condition fDrawCondition;
-        private boolean fDrawFlag;
-
-        public MyDrawListener() {
-            fDrawLock = new ReentrantLock();
-            fDrawCondition = fDrawLock.newCondition();
-            fDrawFlag = true;
-        }
-
-        @Override
-        public void redraw() {
-            fDrawLock.lock();
-            fDrawFlag = true;
-            fDrawCondition.signalAll();
-            fDrawLock.unlock();
-        }
-
-        public Condition getDrawCondition() {
-            return fDrawCondition;
-        }
-
-        public Lock getDrawLock() {
-            return fDrawLock;
-        }
-
-        public boolean needToRedraw() {
-            return fDrawFlag;
-        }
-
-        public void hadRedraw() {
-            fDrawLock.lock();
-            fDrawFlag = false;
-            fDrawLock.unlock();
-        }
+    public boolean needToRedraw() {
+      return fDrawFlag;
     }
+
+    public void hadRedraw() {
+      fDrawLock.lock();
+      fDrawFlag = false;
+      fDrawLock.unlock();
+    }
+  }
 }

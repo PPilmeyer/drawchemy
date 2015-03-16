@@ -31,137 +31,137 @@ import draw.chemy.DrawManager;
 
 public class NearestPointLineCreator extends ACreator {
 
-    public static final float MAX_DIST_LIM = 55.f;
-    public static final float MIN_DIST_LIM = 15.f;
+  public static final float MAX_DIST_LIM = 55.f;
+  public static final float MIN_DIST_LIM = 15.f;
 
-    private NearestPointLineOperation fCurrentOperation;
-    private LinkedList<NearestPointLineOperation> fPreviousOps;
-    private PointF fPrevious;
+  private NearestPointLineOperation fCurrentOperation;
+  private LinkedList<NearestPointLineOperation> fPreviousOps;
+  private PointF fPrevious;
 
-    private float fDistLim = 35.f;
+  private float fDistLim = 35.f;
 
-    public NearestPointLineCreator(DrawManager aManager) {
-        super(aManager);
-        fPreviousOps = new LinkedList<NearestPointLineOperation>();
+  public NearestPointLineCreator(DrawManager aManager) {
+    super(aManager);
+    fPreviousOps = new LinkedList<NearestPointLineOperation>();
+  }
+
+  @Override
+  public IDrawingOperation startDrawingOperation(float x, float y) {
+    fPrevious = new PointF(x, y);
+    fCurrentOperation = new NearestPointLineOperation(getPaint(), x, y);
+    return fCurrentOperation;
+  }
+
+  @Override
+  public void updateDrawingOperation(float x, float y) {
+    PointF next = new PointF(x, y);
+    fCurrentOperation.addLine(fPrevious, next);
+    // find removeListeners points from previous operations
+    for (NearestPointLineOperation previousOp : fPreviousOps) {
+      for (PointF p : previousOp.fPreviousPoints) {
+        if (Math.hypot(p.x - x, p.y - y) < fDistLim) {
+          addLine(p, next);
+        }
+      }
+    }
+
+    // find removeListeners points from current operations
+    synchronized (fCurrentOperation) {
+      for (PointF p : fCurrentOperation.fPreviousPoints) {
+        if (Math.hypot(p.x - x, p.y - y) < fDistLim) {
+          addLine(p, next);
+        }
+      }
+    }
+
+    fCurrentOperation.addPoint(next);
+    fPrevious = next;
+    redraw();
+  }
+
+  void addLine(PointF a, PointF b) {
+    fCurrentOperation.addLine(a, b);
+  }
+
+  @Override
+  public void endDrawingOperation() {
+    fPreviousOps.addLast(fCurrentOperation);
+    fCurrentOperation = null;
+  }
+
+  @Override
+  public void clear() {
+    super.clear();
+    fPreviousOps.clear();
+  }
+
+  public float getDistLim() {
+    return fDistLim;
+  }
+
+  public void setDistLim(float aDistLim) {
+    fDistLim = aDistLim;
+  }
+
+  private class NearestPointLineOperation implements IDrawingOperation {
+
+    RectF fBounds;
+    Paint fPaint;
+    LinkedList<Pair<PointF, PointF>> fLines;
+    LinkedList<PointF> fPreviousPoints;
+
+    public NearestPointLineOperation(Paint aPaint, float x, float y) {
+      fBounds = new RectF(x, y, x, y);
+      fPaint = new Paint();
+      fPaint.setAntiAlias(true);
+      fPaint.setStyle(Paint.Style.STROKE);
+      fPaint.setStrokeWidth(aPaint.getStrokeWidth());
+      fPaint.setStrokeCap(Paint.Cap.ROUND);
+      fPaint.setColor(aPaint.getColor());
+      fLines = new LinkedList<Pair<PointF, PointF>>();
+      fPreviousPoints = new LinkedList<PointF>();
+      fPreviousPoints.add(new PointF(x, y));
     }
 
     @Override
-    public IDrawingOperation startDrawingOperation(float x, float y) {
-        fPrevious = new PointF(x, y);
-        fCurrentOperation = new NearestPointLineOperation(getPaint(), x, y);
-        return fCurrentOperation;
+    public synchronized void draw(Canvas aCanvas) {
+      for (Pair<PointF, PointF> line : fLines) {
+        aCanvas.drawLine(line.first.x, line.first.y, line.second.x, line.second.y, fPaint);
+      }
+    }
+
+    public synchronized void addLine(PointF first, PointF second) {
+      fLines.addLast(new Pair<PointF, PointF>(first, second));
+    }
+
+    public synchronized void addPoint(PointF aPoint) {
+      fPreviousPoints.addLast(aPoint);
+      fBounds.union(aPoint.x, aPoint.y);
     }
 
     @Override
-    public void updateDrawingOperation(float x, float y) {
-        PointF next = new PointF(x, y);
-        fCurrentOperation.addLine(fPrevious, next);
-        // find removeListeners points from previous operations
-        for (NearestPointLineOperation previousOp : fPreviousOps) {
-            for (PointF p : previousOp.fPreviousPoints) {
-                if (Math.hypot(p.x - x, p.y - y) < fDistLim) {
-                    addLine(p, next);
-                }
-            }
-        }
-
-        // find removeListeners points from current operations
-        synchronized (fCurrentOperation) {
-            for (PointF p : fCurrentOperation.fPreviousPoints) {
-                if (Math.hypot(p.x - x, p.y - y) < fDistLim) {
-                    addLine(p, next);
-                }
-            }
-        }
-
-        fCurrentOperation.addPoint(next);
-        fPrevious = next;
-        redraw();
-    }
-
-    void addLine(PointF a, PointF b) {
-        fCurrentOperation.addLine(a, b);
+    public Paint getPaint() {
+      return fPaint;
     }
 
     @Override
-    public void endDrawingOperation() {
-        fPreviousOps.addLast(fCurrentOperation);
-        fCurrentOperation = null;
+    public synchronized void computeBounds(RectF aBoundSFCT) {
+      aBoundSFCT.set(fBounds);
     }
 
     @Override
-    public void clear() {
-        super.clear();
-        fPreviousOps.clear();
+    public void undo() {
+      fPreviousOps.removeLast();
     }
 
-    public float getDistLim() {
-        return fDistLim;
+    @Override
+    public void redo() {
+      fPreviousOps.addLast(this);
     }
 
-    public void setDistLim(float aDistLim) {
-        fDistLim = aDistLim;
+    @Override
+    public void complete() {
+      fPreviousOps.removeFirst();
     }
-
-    private class NearestPointLineOperation implements IDrawingOperation {
-
-        RectF fBounds;
-        Paint fPaint;
-        LinkedList<Pair<PointF, PointF>> fLines;
-        LinkedList<PointF> fPreviousPoints;
-
-        public NearestPointLineOperation(Paint aPaint, float x, float y) {
-            fBounds = new RectF(x, y, x, y);
-            fPaint = new Paint();
-            fPaint.setAntiAlias(true);
-            fPaint.setStyle(Paint.Style.STROKE);
-            fPaint.setStrokeWidth(aPaint.getStrokeWidth());
-            fPaint.setStrokeCap(Paint.Cap.ROUND);
-            fPaint.setColor(aPaint.getColor());
-            fLines = new LinkedList<Pair<PointF, PointF>>();
-            fPreviousPoints = new LinkedList<PointF>();
-            fPreviousPoints.add(new PointF(x, y));
-        }
-
-        @Override
-        public synchronized void draw(Canvas aCanvas) {
-            for (Pair<PointF, PointF> line : fLines) {
-                aCanvas.drawLine(line.first.x, line.first.y, line.second.x, line.second.y, fPaint);
-            }
-        }
-
-        public synchronized void addLine(PointF first, PointF second) {
-            fLines.addLast(new Pair<PointF, PointF>(first, second));
-        }
-
-        public synchronized void addPoint(PointF aPoint) {
-            fPreviousPoints.addLast(aPoint);
-            fBounds.union(aPoint.x, aPoint.y);
-        }
-
-        @Override
-        public Paint getPaint() {
-            return fPaint;
-        }
-
-        @Override
-        public synchronized void computeBounds(RectF aBoundSFCT) {
-            aBoundSFCT.set(fBounds);
-        }
-
-        @Override
-        public void undo() {
-            fPreviousOps.removeLast();
-        }
-
-        @Override
-        public void redo() {
-            fPreviousOps.addLast(this);
-        }
-
-        @Override
-        public void complete() {
-            fPreviousOps.removeFirst();
-        }
-    }
+  }
 }

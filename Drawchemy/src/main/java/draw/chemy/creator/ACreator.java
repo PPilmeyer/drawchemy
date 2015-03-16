@@ -25,27 +25,27 @@ import draw.chemy.DrawManager;
 
 public abstract class ACreator {
 
-    private final DrawManager fManager;
+  private final DrawManager fManager;
 
-    public ACreator(DrawManager aManager) {
-        fManager = aManager;
-    }
+  public ACreator(DrawManager aManager) {
+    fManager = aManager;
+  }
 
-    protected final void redraw() {
-        fManager.redraw();
-    }
+  protected final void redraw() {
+    fManager.redraw();
+  }
 
-    protected final Paint getPaint() {
-        return fManager.getPaintState().getPaint();
-    }
+  protected final Paint getPaint() {
+    return fManager.getPaintState().getPaint();
+  }
 
-    public abstract IDrawingOperation startDrawingOperation(float x, float y);
+  public abstract IDrawingOperation startDrawingOperation(float x, float y);
 
-    public abstract void updateDrawingOperation(float x, float y);
+  public abstract void updateDrawingOperation(float x, float y);
 
-    public abstract void endDrawingOperation();
+  public abstract void endDrawingOperation();
 
-    // Clear the creator state (used when clearing the canvas)
-    public void clear() {
-    }
+  // Clear the creator state (used when clearing the canvas)
+  public void clear() {
+  }
 }

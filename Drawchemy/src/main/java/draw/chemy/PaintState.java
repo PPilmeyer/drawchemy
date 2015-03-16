@@ -19,7 +19,6 @@
 
 package draw.chemy;
 
-
 import android.graphics.Color;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
@@ -31,290 +30,288 @@ import java.util.List;
 
 public class PaintState {
 
-    //Default
-    private int fMainColor = Color.BLACK;
-    private int fSubColor = Color.WHITE;
+  //Default
+  private int fMainColor = Color.BLACK;
+  private int fSubColor = Color.WHITE;
 
-    public static final int MaxKaleidoscopeSec = 8;
-    public static final int MinKaleidoscopeSec = 2;
+  public static final int MaxKaleidoscopeSec = 8;
+  public static final int MinKaleidoscopeSec = 2;
 
-    private float fColorVariation;
+  private float fColorVariation;
 
-    private Paint.Style fStyle = Paint.Style.STROKE;
-    private float fStrokeWeight = 1.5f;
+  private Paint.Style fStyle = Paint.Style.STROKE;
+  private float fStrokeWeight = 1.5f;
 
-    private ColorHistory fColorHistory = new ColorHistory();
-    private boolean fNewColorUsage = false;
+  private ColorHistory fColorHistory = new ColorHistory();
+  private boolean fNewColorUsage = false;
 
-    private int fKaleidoscopeSec = 6;
+  private int fKaleidoscopeSec = 6;
 
-    private boolean fGradientActive = false;
+  private boolean fGradientActive = false;
 
-    private PaintState.MIRROR fMirrorState = PaintState.MIRROR.None;
+  private PaintState.MIRROR fMirrorState = PaintState.MIRROR.None;
 
-    public enum MIRROR {
-        None,
-        Horizontal,
-        Vertical,
-        Both
+  public enum MIRROR {
+    None,
+    Horizontal,
+    Vertical,
+    Both
+  }
+
+  public int getMainColor() {
+    return fMainColor;
+  }
+
+  public int getSubColor() {
+    return fSubColor;
+  }
+
+  public void setMainColor(int aColor) {
+    fMainColor = aColor;
+    fNewColorUsage = true;
+  }
+
+  public int getModifiedMainColor() {
+    if (fNewColorUsage) {
+      fNewColorUsage = false;
+      fColorHistory.updateColor(getMainColor());
+    }
+    return getColor(getMainColor());
+  }
+
+  public boolean getMirrorHorizontal() {
+    return fMirrorState == PaintState.MIRROR.Horizontal || fMirrorState == PaintState.MIRROR.Both;
+  }
+
+  public boolean getMirrorVertical() {
+    return fMirrorState == PaintState.MIRROR.Vertical || fMirrorState == PaintState.MIRROR.Both;
+  }
+
+  private boolean fKaleidoscopeFlag = false;
+
+  public void setKaleidoscopeActive(Boolean aFlag) {
+    fKaleidoscopeFlag = aFlag;
+  }
+
+  public boolean isKaleidoscopeActive() {
+    return fKaleidoscopeFlag;
+  }
+
+  public int getKaleidoscopeSec() {
+    return fKaleidoscopeSec;
+  }
+
+  public void setKaleidoscopeSec(int aKaleidoscopeSec) {
+    fKaleidoscopeSec = aKaleidoscopeSec;
+  }
+
+  public void setMirrorVertical(boolean checked) {
+    switch (fMirrorState) {
+    case None: {
+      fMirrorState = checked ? PaintState.MIRROR.Vertical : PaintState.MIRROR.None;
+      break;
+    }
+    case Horizontal: {
+      fMirrorState = checked ? PaintState.MIRROR.Both : PaintState.MIRROR.Horizontal;
+      break;
+    }
+    case Vertical: {
+      fMirrorState = checked ? PaintState.MIRROR.Vertical : PaintState.MIRROR.None;
+      break;
+    }
+    case Both: {
+      fMirrorState = checked ? PaintState.MIRROR.Both : PaintState.MIRROR.Horizontal;
+      break;
     }
 
-    public int getMainColor() {
-        return fMainColor;
+    }
+  }
+
+  public void setMirrorHorizontal(boolean checked) {
+    switch (fMirrorState) {
+    case None: {
+      fMirrorState = checked ? PaintState.MIRROR.Horizontal : PaintState.MIRROR.None;
+      break;
+    }
+    case Horizontal: {
+      fMirrorState = checked ? PaintState.MIRROR.Horizontal : PaintState.MIRROR.None;
+      break;
+    }
+    case Vertical: {
+      fMirrorState = checked ? PaintState.MIRROR.Both : PaintState.MIRROR.Vertical;
+      break;
+    }
+    case Both: {
+      fMirrorState = checked ? PaintState.MIRROR.Both : PaintState.MIRROR.Vertical;
+      break;
     }
 
-    public int getSubColor() {
-        return fSubColor;
+    }
+  }
+
+  public int getModifiedSubColor() {
+    return getColor(getSubColor());
+  }
+
+  public MIRROR getMirrorState() {
+    return fMirrorState;
+  }
+
+  public boolean isGradientActive() {
+    return fGradientActive;
+  }
+
+  public void setGradientActive(boolean fGradientActive) {
+    this.fGradientActive = fGradientActive;
+  }
+
+  @SuppressWarnings("all")
+  public void setSubColor(int aColor) {
+    fSubColor = aColor;
+  }
+
+  public void switchColor() {
+    int tmp = fMainColor;
+    fMainColor = fSubColor;
+    fSubColor = tmp;
+    fNewColorUsage = true;
+  }
+
+  public void setColorVariation(float aColorVariation) {
+    fColorVariation = aColorVariation;
+  }
+
+  @SuppressWarnings("all")
+  public float getColorVariation() {
+    return fColorVariation;
+  }
+
+  public Paint getPaint() {
+    Paint p = new Paint();
+    p.setColor(getModifiedMainColor());
+    p.setStrokeWidth(fStrokeWeight);
+    p.setStyle(fStyle);
+    p.setStrokeJoin(Paint.Join.ROUND);
+    p.setStrokeCap(Paint.Cap.ROUND);
+    p.setAntiAlias(true);
+    p.setPathEffect(new CornerPathEffect(7.f));
+    return p;
+  }
+
+  private int getColor(int aColor) {
+    if (fColorVariation != 0) {
+      float hsv[] = new float[3];
+      Color.colorToHSV(aColor, hsv);
+      hsv[0] += DrawUtils.getProbability(90.f * fColorVariation);
+      if (hsv[0] < 0.f) {
+        hsv[0] += 360.f;
+      } else if (hsv[0] > 360.f) {
+        hsv[0] -= 360.f;
+      }
+      return Color.HSVToColor(Color.alpha(aColor), hsv);
+    } else {
+      return aColor;
+    }
+  }
+
+  public Paint.Style getStyle() {
+    return fStyle;
+  }
+
+  public void setStyle(Paint.Style fStyle) {
+    this.fStyle = fStyle;
+  }
+
+  public void setStrokeWeight(float aStrokeWeigth) {
+    fStrokeWeight = aStrokeWeigth;
+  }
+
+  @SuppressWarnings("all")
+  public float getStrokeWeight() {
+    return fStrokeWeight;
+  }
+
+  public List<Integer> getHistoryColors() {
+    return Collections.unmodifiableList(fColorHistory.getHistoryColors());
+  }
+
+  public void setColorHistoryListener(ColorHistoryListener aColorHistoryListener) {
+    fColorHistory.fListener = aColorHistoryListener;
+  }
+
+  public static interface ColorHistoryListener {
+
+    public void historyChanged();
+  }
+
+  private static class ColorHistory {
+
+    private ColorElem fColors[];
+
+    private ColorHistoryListener fListener;
+
+    public ColorHistory() {
+      fColors = new ColorElem[8];
+      fColors[0] = new ColorElem(Color.BLACK, 0);
+      fColors[1] = new ColorElem(Color.WHITE, 1);
+      fColors[2] = new ColorElem(Color.RED, 2);
+      fColors[3] = new ColorElem(Color.GREEN, 3);
+      fColors[4] = new ColorElem(Color.BLUE, 4);
+      fColors[5] = new ColorElem(Color.YELLOW, 5);
+      fColors[6] = new ColorElem(Color.MAGENTA, 6);
+      fColors[7] = new ColorElem(Color.CYAN, 7);
     }
 
-    public void setMainColor(int aColor) {
-        fMainColor = aColor;
-        fNewColorUsage = true;
-    }
-
-    public int getModifiedMainColor() {
-        if(fNewColorUsage) {
-            fNewColorUsage = false;
-            fColorHistory.updateColor(getMainColor());
+    private void updateColor(int aNewColor) {
+      Log.i("INFO", "update color");
+      for (ColorElem fColor : fColors) {
+        fColor.priority++;
+      }
+      int idx = 0;
+      int priority = -1;
+      for (int i = 0; i < fColors.length; i++) {
+        if (fColors[i].color == aNewColor) {
+          fColors[i].priority = 0;
+          return;
+        } else if (priority < fColors[i].priority) {
+          priority = fColors[i].priority;
+          idx = i;
         }
-        return getColor(getMainColor());
+      }
+      fColors[idx].priority = 0;
+      fColors[idx].color = aNewColor;
+
+      if (fListener != null) {
+        fListener.historyChanged();
+      }
     }
 
-    public boolean getMirrorHorizontal() {
-        return fMirrorState == PaintState.MIRROR.Horizontal || fMirrorState == PaintState.MIRROR.Both;
+    private List<Integer> getHistoryColors() {
+      ArrayList<Integer> result = new ArrayList<Integer>();
+      for (ColorElem fColor : fColors) {
+        result.add(fColor.color);
+      }
+      return result;
+    }
+  }
+
+  private static class ColorElem implements Comparable {
+
+    int color;
+    int priority;
+
+    public ColorElem(int aColor, int aPriority) {
+      color = aColor;
+      priority = aPriority;
     }
 
-    public boolean getMirrorVertical() {
-        return fMirrorState == PaintState.MIRROR.Vertical || fMirrorState == PaintState.MIRROR.Both;
+    @Override
+    public int compareTo(Object o) {
+      if (!(o instanceof ColorElem)) {
+        throw new RuntimeException();
+      }
+      return priority - ((ColorElem) o).priority;
     }
-
-    private boolean fKaleidoscopeFlag = false;
-
-    public void setKaleidoscopeActive(Boolean aFlag) {
-        fKaleidoscopeFlag = aFlag;
-    }
-
-    public boolean isKaleidoscopeActive() {
-        return fKaleidoscopeFlag;
-    }
-
-    public int getKaleidoscopeSec() {
-        return fKaleidoscopeSec;
-    }
-
-    public void setKaleidoscopeSec(int aKaleidoscopeSec) {
-        fKaleidoscopeSec = aKaleidoscopeSec;
-    }
-
-    public void setMirrorVertical(boolean checked) {
-        switch (fMirrorState) {
-            case None: {
-                fMirrorState = checked ? PaintState.MIRROR.Vertical : PaintState.MIRROR.None;
-                break;
-            }
-            case Horizontal: {
-                fMirrorState = checked ? PaintState.MIRROR.Both : PaintState.MIRROR.Horizontal;
-                break;
-            }
-            case Vertical: {
-                fMirrorState = checked ? PaintState.MIRROR.Vertical : PaintState.MIRROR.None;
-                break;
-            }
-            case Both: {
-                fMirrorState = checked ? PaintState.MIRROR.Both : PaintState.MIRROR.Horizontal;
-                break;
-            }
-
-        }
-    }
-
-    public void setMirrorHorizontal(boolean checked) {
-        switch (fMirrorState) {
-            case None: {
-                fMirrorState = checked ? PaintState.MIRROR.Horizontal : PaintState.MIRROR.None;
-                break;
-            }
-            case Horizontal: {
-                fMirrorState = checked ? PaintState.MIRROR.Horizontal : PaintState.MIRROR.None;
-                break;
-            }
-            case Vertical: {
-                fMirrorState = checked ? PaintState.MIRROR.Both : PaintState.MIRROR.Vertical;
-                break;
-            }
-            case Both: {
-                fMirrorState = checked ? PaintState.MIRROR.Both : PaintState.MIRROR.Vertical;
-                break;
-            }
-
-        }
-    }
-
-    public int getModifiedSubColor() {
-        return getColor(getSubColor());
-    }
-
-    public MIRROR getMirrorState() {
-        return fMirrorState;
-    }
-
-    public boolean isGradientActive() {
-        return fGradientActive;
-    }
-
-    public void setGradientActive(boolean fGradientActive) {
-        this.fGradientActive = fGradientActive;
-    }
-
-    @SuppressWarnings("all")
-    public void setSubColor(int aColor) {
-        fSubColor = aColor;
-    }
-
-    public void switchColor() {
-        int tmp = fMainColor;
-        fMainColor = fSubColor;
-        fSubColor = tmp;
-        fNewColorUsage = true;
-    }
-
-
-    public void setColorVariation(float aColorVariation) {
-        fColorVariation = aColorVariation;
-    }
-
-    @SuppressWarnings("all")
-    public float getColorVariation() {
-        return fColorVariation;
-    }
-
-    public Paint getPaint() {
-        Paint p = new Paint();
-        p.setColor(getModifiedMainColor());
-        p.setStrokeWidth(fStrokeWeight);
-        p.setStyle(fStyle);
-        p.setStrokeJoin(Paint.Join.ROUND);
-        p.setStrokeCap(Paint.Cap.ROUND);
-        p.setAntiAlias(true);
-        p.setPathEffect(new CornerPathEffect(7.f));
-        return p;
-    }
-
-    private int getColor(int aColor) {
-        if (fColorVariation != 0) {
-            float hsv[] = new float[3];
-            Color.colorToHSV(aColor, hsv);
-            hsv[0] += DrawUtils.getProbability(90.f * fColorVariation);
-            if (hsv[0] < 0.f) {
-                hsv[0] += 360.f;
-            } else if (hsv[0] > 360.f) {
-                hsv[0] -= 360.f;
-            }
-            return Color.HSVToColor(Color.alpha(aColor), hsv);
-        } else {
-            return aColor;
-        }
-    }
-
-
-    public Paint.Style getStyle() {
-        return fStyle;
-    }
-
-    public void setStyle(Paint.Style fStyle) {
-        this.fStyle = fStyle;
-    }
-
-    public void setStrokeWeight(float aStrokeWeigth) {
-        fStrokeWeight = aStrokeWeigth;
-    }
-
-    @SuppressWarnings("all")
-    public float getStrokeWeight() {
-        return fStrokeWeight;
-    }
-
-    public List<Integer> getHistoryColors() {
-        return Collections.unmodifiableList(fColorHistory.getHistoryColors());
-    }
-
-    public void setColorHistoryListener(ColorHistoryListener aColorHistoryListener) {
-        fColorHistory.fListener = aColorHistoryListener;
-    }
-
-    public static interface ColorHistoryListener {
-
-        public void historyChanged();
-    }
-
-    private static class ColorHistory {
-
-        private ColorElem fColors[];
-
-        private ColorHistoryListener fListener;
-
-        public ColorHistory() {
-            fColors = new ColorElem[8];
-            fColors[0] = new ColorElem(Color.BLACK, 0);
-            fColors[1] = new ColorElem(Color.WHITE, 1);
-            fColors[2] = new ColorElem(Color.RED, 2);
-            fColors[3] = new ColorElem(Color.GREEN, 3);
-            fColors[4] = new ColorElem(Color.BLUE, 4);
-            fColors[5] = new ColorElem(Color.YELLOW, 5);
-            fColors[6] = new ColorElem(Color.MAGENTA, 6);
-            fColors[7] = new ColorElem(Color.CYAN, 7);
-        }
-
-        private void updateColor(int aNewColor) {
-            Log.i("INFO","update color");
-            for (ColorElem fColor : fColors) {
-                fColor.priority++;
-            }
-            int idx = 0;
-            int priority = -1;
-            for (int i = 0; i < fColors.length; i++) {
-                if (fColors[i].color == aNewColor) {
-                    fColors[i].priority = 0;
-                    return;
-                } else if (priority < fColors[i].priority) {
-                    priority = fColors[i].priority;
-                    idx = i;
-                }
-            }
-            fColors[idx].priority = 0;
-            fColors[idx].color = aNewColor;
-
-            if(fListener != null)  {
-                fListener.historyChanged();
-            }
-        }
-
-        private List<Integer> getHistoryColors() {
-            ArrayList<Integer> result = new ArrayList<Integer>();
-            for (ColorElem fColor : fColors) {
-                result.add(fColor.color);
-            }
-            return result;
-        }
-    }
-
-    private static class ColorElem implements Comparable {
-
-        int color;
-        int priority;
-
-        public ColorElem(int aColor, int aPriority) {
-            color = aColor;
-            priority = aPriority;
-        }
-
-        @Override
-        public int compareTo(Object o) {
-            if(!(o instanceof ColorElem)) {
-                throw new RuntimeException();
-            }
-            return priority - ((ColorElem) o).priority;
-        }
-    }
+  }
 
 }

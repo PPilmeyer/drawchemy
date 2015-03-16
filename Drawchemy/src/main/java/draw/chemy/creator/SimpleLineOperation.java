@@ -26,46 +26,46 @@ import android.graphics.RectF;
 
 class SimpleLineOperation implements IDrawingOperation {
 
-    private Path fPath;
-    private Paint fPaint;
-    private RectF fBounds;
+  private Path fPath;
+  private Paint fPaint;
+  private RectF fBounds;
 
-    public SimpleLineOperation(float x, float y, Paint aPaint) {
-        fPath = new Path();
-        fPath.moveTo(x, y);
-        fPaint = aPaint;
-        fBounds = new RectF(x, y, x, y);
-    }
+  public SimpleLineOperation(float x, float y, Paint aPaint) {
+    fPath = new Path();
+    fPath.moveTo(x, y);
+    fPaint = aPaint;
+    fBounds = new RectF(x, y, x, y);
+  }
 
-    @Override
-    public synchronized void draw(Canvas aCanvas) {
-        aCanvas.drawPath(fPath, fPaint);
-    }
+  @Override
+  public synchronized void draw(Canvas aCanvas) {
+    aCanvas.drawPath(fPath, fPaint);
+  }
 
-    public synchronized void addPoint(float x, float y) {
-        fPath.lineTo(x, y);
-        fBounds.union(x, y);
-    }
+  public synchronized void addPoint(float x, float y) {
+    fPath.lineTo(x, y);
+    fBounds.union(x, y);
+  }
 
-    @Override
-    public Paint getPaint() {
-        return fPaint;
-    }
+  @Override
+  public Paint getPaint() {
+    return fPaint;
+  }
 
-    @Override
-    public synchronized void computeBounds(RectF aBoundSFCT) {
-        aBoundSFCT.set(fBounds);
-    }
+  @Override
+  public synchronized void computeBounds(RectF aBoundSFCT) {
+    aBoundSFCT.set(fBounds);
+  }
 
-    @Override
-    public void undo() {
-    }
+  @Override
+  public void undo() {
+  }
 
-    @Override
-    public void redo() {
-    }
+  @Override
+  public void redo() {
+  }
 
-    @Override
-    public void complete() {
-    }
+  @Override
+  public void complete() {
+  }
 }

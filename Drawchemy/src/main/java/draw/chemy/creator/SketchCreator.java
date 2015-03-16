@@ -25,17 +25,17 @@ import draw.chemy.DrawManager;
 
 public class SketchCreator extends NearestPointLineCreator {
 
-    public static final float alpha = 0.3f;
-    public static final float beta = 1.f - alpha;
+  public static final float ALPHA = 0.3f;
+  public static final float BETA = 1.f - ALPHA;
 
-    public SketchCreator(DrawManager aManager) {
-        super(aManager);
-    }
+  public SketchCreator(DrawManager aManager) {
+    super(aManager);
+  }
 
-    @Override
-    void addLine(PointF a, PointF b) {
-        PointF a2 = new PointF(a.x * beta + b.x * alpha, a.y * beta + b.y * alpha);
-        PointF b2 = new PointF(a.x * alpha + b.x * beta, a.y * alpha + b.y * beta);
-        super.addLine(a2, b2);
-    }
+  @Override
+  void addLine(PointF a, PointF b) {
+    PointF a2 = new PointF(a.x * BETA + b.x * ALPHA, a.y * BETA + b.y * ALPHA);
+    PointF b2 = new PointF(a.x * ALPHA + b.x * BETA, a.y * ALPHA + b.y * BETA);
+    super.addLine(a2, b2);
+  }
 }

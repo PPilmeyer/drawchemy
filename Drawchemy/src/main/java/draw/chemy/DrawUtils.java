@@ -23,9 +23,9 @@ import java.util.Random;
 
 public class DrawUtils {
 
-    public final static Random RANDOM = new Random();
+  public final static Random RANDOM = new Random();
 
-    public static float getProbability(float aAmplitude) {
-        return ((RANDOM.nextFloat() * 2.f) - 1.f) * aAmplitude;
-    }
+  public static float getProbability(float aAmplitude) {
+    return ((RANDOM.nextFloat() * 2.f) - 1.f) * aAmplitude;
+  }
 }

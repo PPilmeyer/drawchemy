@@ -38,563 +38,550 @@ import draw.chemy.creator.IDrawingOperation;
 
 public class DrawManager implements View.OnTouchListener {
 
+  LinkedList<IDrawingOperation> fOperations;
+  LinkedList<IDrawingOperation> fUndo;
+  IDrawingOperation fCurrentOperation = null;
 
-    LinkedList<IDrawingOperation> fOperations;
-    LinkedList<IDrawingOperation> fUndo;
-    IDrawingOperation fCurrentOperation = null;
+  Map<Integer, ACreator> fCreators;
+  private ACreator fCurrentCreator;
 
-    Map<Integer, ACreator> fCreators;
-    private ACreator fCurrentCreator;
+  private DrawListener fDrawListener;
+  private Matrix fInputMatrix = new Matrix();
+  private TouchListener fTouchListener;
 
-    private DrawListener fDrawListener;
-    private Matrix fInputMatrix = new Matrix();
-    private TouchListener fTouchListener;
+  private final Matrix fMirrorHorizontal;
+  private final Matrix fMirrorVertical;
+  private final Matrix fMirrorHAndV;
 
-    private final Matrix fMirrorHorizontal;
-    private final Matrix fMirrorVertical;
-    private final Matrix fMirrorHAndV;
+  private final Paint fDitherPaint = new Paint();
 
-    private final Paint fDitherPaint = new Paint();
+  private final Bitmap fBackgroundImage;
 
-    private final Bitmap fBackgroundImage;
+  private final Canvas fBackgroundCanvas;
 
-    private final Canvas fBackgroundCanvas;
+  private final Bitmap fBackgroundImageBackUP;
 
-    private final Bitmap fBackgroundImageBackUP;
+  private final Canvas fBackgroundCanvasBackUP;
 
-    private final Canvas fBackgroundCanvasBackUP;
+  private static final int MAX_UNDO = 10;
 
+  public PaintState getPaintState() {
+    return fPaintState;
+  }
 
-    private static final int MAX_UNDO = 10;
+  private final PaintState fPaintState = new PaintState();
 
+  public DrawManager(int aWidth, int aHeight) {
+    fBackgroundImage = Bitmap.createBitmap(aWidth, aHeight, Bitmap.Config.RGB_565);
 
-    public PaintState getPaintState() {
-        return fPaintState;
+    fBackgroundCanvas = new Canvas(fBackgroundImage);
+
+    fBackgroundImageBackUP = Bitmap.createBitmap(aWidth, aHeight, Bitmap.Config.RGB_565);
+
+    fBackgroundCanvasBackUP = new Canvas(fBackgroundImageBackUP);
+
+    fBackgroundCanvas.drawColor(fPaintState.getSubColor() | 0xff000000);
+    fBackgroundCanvasBackUP.drawColor(fPaintState.getSubColor() | 0xff000000);
+
+    fOperations = new LinkedList<IDrawingOperation>();
+    fUndo = new LinkedList<IDrawingOperation>();
+
+    fCreators = new HashMap<Integer, ACreator>();
+    fCurrentCreator = null;
+
+    fDitherPaint.setDither(true);
+
+    fMirrorHorizontal = new Matrix();
+    fMirrorHorizontal.setScale(1, -1, 0, 0);
+    fMirrorHorizontal.postTranslate(0, aHeight);
+
+    fMirrorVertical = new Matrix();
+    fMirrorVertical.setScale(-1, 1, 0, 0);
+    fMirrorVertical.postTranslate(aWidth, 0);
+
+    fMirrorHAndV = new Matrix();
+    fMirrorHAndV.setScale(-1, -1, 0, 0);
+    fMirrorHAndV.postTranslate(aWidth, aHeight);
+  }
+
+  public void clear() {
+    clear(fPaintState.getSubColor());
+  }
+
+  public void clear(int aColor) {
+    synchronized (fBackgroundCanvas) {
+      fBackgroundCanvas.drawColor(aColor | 0xff000000);
+      fBackgroundCanvasBackUP.drawColor(aColor | 0xff000000);
+      fOperations.clear();
+      fUndo.clear();
+      for (Map.Entry<Integer, ACreator> creator : fCreators.entrySet()) {
+        creator.getValue().clear();
+      }
+    }
+    redraw();
+  }
+
+  public void undo() {
+    synchronized (fBackgroundCanvas) {
+      if (fOperations.size() != 0) {
+        IDrawingOperation op = fOperations.removeLast();
+        op.undo();
+        fUndo.addFirst(op);
+        backup();
+      }
+    }
+    redraw();
+  }
+
+  public void redo() {
+    synchronized (fBackgroundCanvas) {
+      if (fUndo.size() != 0) {
+        IDrawingOperation op = fUndo.removeFirst();
+        op.redo();
+        fOperations.addLast(op);
+        backup();
+      }
+    }
+    redraw();
+  }
+
+  private void backup() {
+    fBackgroundCanvas.drawBitmap(fBackgroundImageBackUP, 0, 0, fDitherPaint);
+    for (IDrawingOperation op : fOperations) {
+      op.draw(fBackgroundCanvas);
+    }
+  }
+
+  public void setInputMatrix(Matrix aInputMatrix) {
+    fInputMatrix = aInputMatrix;
+  }
+
+  public void setDrawListener(DrawListener aDrawListener) {
+    fDrawListener = aDrawListener;
+  }
+
+  @SuppressWarnings("all")
+  public DrawListener getDrawListener() {
+    return fDrawListener;
+  }
+
+  public void addTool(int aKey, ACreator aDrawingTool) {
+    fCreators.put(aKey, aDrawingTool);
+  }
+
+  public void setCurrentTool(int aKey) {
+    if (fCreators.containsKey(aKey)) {
+      fCurrentCreator = fCreators.get(aKey);
+    }
+  }
+
+  public ACreator getCurrentCreator() {
+    return fCurrentCreator;
+  }
+
+  static class MyMotionEvent {
+
+    int action;
+    float x;
+    float y;
+
+    public MyMotionEvent(int aAction, float aX, float aY) {
+      action = aAction;
+      x = aX;
+      y = aY;
     }
 
-    private final PaintState fPaintState = new PaintState();
-
-
-    public DrawManager(int aWidth, int aHeight) {
-        fBackgroundImage = Bitmap.createBitmap(aWidth, aHeight, Bitmap.Config.RGB_565);
-
-        fBackgroundCanvas = new Canvas(fBackgroundImage);
-
-        fBackgroundImageBackUP = Bitmap.createBitmap(aWidth, aHeight, Bitmap.Config.RGB_565);
-
-        fBackgroundCanvasBackUP = new Canvas(fBackgroundImageBackUP);
-
-        fBackgroundCanvas.drawColor(fPaintState.getSubColor() | 0xff000000);
-        fBackgroundCanvasBackUP.drawColor(fPaintState.getSubColor() | 0xff000000);
-
-        fOperations = new LinkedList<IDrawingOperation>();
-        fUndo = new LinkedList<IDrawingOperation>();
-
-        fCreators = new HashMap<Integer, ACreator>();
-        fCurrentCreator = null;
-
-        fDitherPaint.setDither(true);
-
-        fMirrorHorizontal = new Matrix();
-        fMirrorHorizontal.setScale(1, -1, 0, 0);
-        fMirrorHorizontal.postTranslate(0, aHeight);
-
-        fMirrorVertical = new Matrix();
-        fMirrorVertical.setScale(-1, 1, 0, 0);
-        fMirrorVertical.postTranslate(aWidth, 0);
-
-        fMirrorHAndV = new Matrix();
-        fMirrorHAndV.setScale(-1, -1, 0, 0);
-        fMirrorHAndV.postTranslate(aWidth, aHeight);
-
+    public int getAction() {
+      return action;
     }
 
-    public void clear() {
-        clear(fPaintState.getSubColor());
+    public float getX() {
+      return x;
     }
 
-    public void clear(int aColor) {
-        synchronized (fBackgroundCanvas) {
-            fBackgroundCanvas.drawColor(aColor | 0xff000000);
-            fBackgroundCanvasBackUP.drawColor( aColor | 0xff000000);
-            fOperations.clear();
-            fUndo.clear();
-            for (Map.Entry<Integer, ACreator> creator : fCreators.entrySet()) {
-                creator.getValue().clear();
-            }
-        }
-        redraw();
+    public float getY() {
+      return y;
+    }
+  }
+
+  @Override
+  public boolean onTouch(View view, MotionEvent motionEvent) {
+    return onTouch(view, new MyMotionEvent(motionEvent.getAction(), motionEvent.getX(), motionEvent.getY()));
+  }
+
+  public boolean onTouch(View view, MyMotionEvent motionEvent) {
+    int action = motionEvent.getAction();
+
+    float point[] = new float[]{motionEvent.getX(), motionEvent.getY()};
+    fInputMatrix.mapPoints(point);
+
+    if (fTouchListener.isActive()) {
+      fTouchListener.touch(action, point, motionEvent.getX(), motionEvent.getY());
+      return true;
     }
 
+    if (fCurrentCreator != null) {
+      switch (action) {
+      case MotionEvent.ACTION_DOWN: {
+        addOperation(fCurrentCreator.startDrawingOperation(point[0], point[1]));
+        break;
+      }
+      case MotionEvent.ACTION_MOVE: {
+        fCurrentCreator.updateDrawingOperation(point[0], point[1]);
+        break;
+      }
+      case MotionEvent.ACTION_UP: {
+        fCurrentCreator.endDrawingOperation();
+        finishOp();
+        break;
+      }
+      default:
+        return false;
+      }
+    }
+    return true;
+  }
 
+  public void redraw() {
+    fDrawListener.redraw();
+  }
 
-    public void undo() {
-        synchronized (fBackgroundCanvas) {
-            if (fOperations.size() != 0) {
-                IDrawingOperation op = fOperations.removeLast();
-                op.undo();
-                fUndo.addFirst(op);
-                backup();
-            }
-        }
-        redraw();
+  public void addOperation(IDrawingOperation op) {
+    fUndo.clear();
+    if (fPaintState.isGradientActive()) {
+      op = new GradientOp(op, fPaintState.getModifiedMainColor(), fPaintState.getModifiedSubColor());
     }
 
-    public void redo() {
-        synchronized (fBackgroundCanvas) {
-            if (fUndo.size() != 0) {
-                IDrawingOperation op = fUndo.removeFirst();
-                op.redo();
-                fOperations.addLast(op);
-                backup();
-            }
-        }
-        redraw();
+    if (fPaintState.getMirrorState() != PaintState.MIRROR.None) {
+      op = new MirrorOp(op, fPaintState.getMirrorState());
     }
 
-    private void backup() {
-        fBackgroundCanvas.drawBitmap(fBackgroundImageBackUP, 0, 0, fDitherPaint);
-        for (IDrawingOperation op : fOperations) {
-            op.draw(fBackgroundCanvas);
-        }
+    if (fPaintState.isKaleidoscopeActive()) {
+      op = new KaleidoscopeOp(op);
     }
 
-
-    public void setInputMatrix(Matrix aInputMatrix) {
-        fInputMatrix = aInputMatrix;
+    synchronized (fBackgroundCanvas) {
+      fCurrentOperation = op;
+      fOperations.addLast(fCurrentOperation);
+      while (fOperations.size() > MAX_UNDO) {
+        op = fOperations.removeFirst();
+        op.complete();
+        op.draw(fBackgroundCanvasBackUP);
+      }
     }
+  }
 
-    public void setDrawListener(DrawListener aDrawListener) {
-        fDrawListener = aDrawListener;
+  private void finishOp() {
+    synchronized (fBackgroundCanvas) {
+      fCurrentOperation.draw(fBackgroundCanvas);
+      fCurrentOperation = null;
     }
+    redraw();
+  }
 
-    @SuppressWarnings("all")
-    public DrawListener getDrawListener() {
-        return fDrawListener;
+  public void draw(Canvas aCanvas) {
+    synchronized (fBackgroundCanvas) {
+      aCanvas.drawBitmap(fBackgroundImage, 0.f, 0.f, fDitherPaint);
+      if (fCurrentOperation != null) {
+        fCurrentOperation.draw(aCanvas);
+      }
     }
+  }
 
+  public int getWidth() {
+    return fBackgroundImage.getWidth();
+  }
 
-    public void addTool(int aKey, ACreator aDrawingTool) {
-        fCreators.put(aKey, aDrawingTool);
+  public int getHeight() {
+    return fBackgroundImage.getHeight();
+  }
+
+  public Bitmap copyBitmap() {
+    Bitmap result = Bitmap.createBitmap(fBackgroundImage.getWidth(), fBackgroundImage.getHeight(), Bitmap.Config.RGB_565);
+    draw(new Canvas(result));
+    return result;
+  }
+
+  public Bitmap getBitmap() {
+    return fBackgroundImage;
+  }
+
+  public void putBitmapAsBackground(Bitmap aBitmap) {
+
+    float width = getWidth();
+    float height = getHeight();
+
+    float bitmapWidth = aBitmap.getWidth();
+    float bitmapHeight = aBitmap.getHeight();
+
+    Matrix matrix = new Matrix();
+    float dx, dy, scale;
+
+    if (width > height) {
+      // canvas is in on paysage mode
+
+      if (bitmapHeight > bitmapWidth) {
+        // bitmap is in on portrait mode
+        matrix.setRotate(-90);
+        matrix.postTranslate(0, bitmapWidth);
+
+        float temp = bitmapWidth;
+        bitmapWidth = bitmapHeight;
+        bitmapHeight = temp;
+      }
+
+      scale = width / bitmapWidth;
+      if (scale * bitmapHeight > height) {
+        scale = height / bitmapHeight;
+        dx = (width - scale * bitmapWidth) / 2.f;
+        dy = 0.f;
+      } else {
+        dx = 0;
+        dy = (height - scale * bitmapHeight) / 2.f;
+      }
+    } else {
+      // canvas is in on portrait mode
+      if (bitmapWidth > bitmapHeight) {
+        // bitmap is in on paysage mode
+        matrix.setRotate(90);
+        matrix.postTranslate(bitmapHeight, 0);
+
+        float temp = bitmapWidth;
+        bitmapWidth = bitmapHeight;
+        bitmapHeight = temp;
+      }
+
+      scale = height / bitmapHeight;
+      if (scale * bitmapWidth > bitmapWidth) {
+        scale = width / bitmapWidth;
+        dx = 0;
+        dy = (height - scale * bitmapHeight) / 2.f;
+      } else {
+        dx = (width - scale * bitmapWidth) / 2.f;
+        dy = 0.f;
+      }
     }
+    matrix.postScale(scale, scale);
+    matrix.postTranslate(dx, dy);
 
-    public void setCurrentTool(int aKey) {
-        if (fCreators.containsKey(aKey)) {
-            fCurrentCreator = fCreators.get(aKey);
-        }
+    synchronized (fBackgroundCanvas) {
+      fBackgroundCanvas.drawColor(fPaintState.getSubColor() | 0xff000000);
+      fOperations.clear();
+      fUndo.clear();
+      fBackgroundCanvas.drawBitmap(aBitmap, matrix, null);
+      fBackgroundCanvasBackUP.drawBitmap(aBitmap, matrix, null);
+      for (Map.Entry<Integer, ACreator> creator : fCreators.entrySet()) {
+        creator.getValue().clear();
+      }
     }
+    redraw();
+  }
 
-    public ACreator getCurrentCreator() {
-        return fCurrentCreator;
+  //Effect Operations;
+
+  private class MirrorOp implements IDrawingOperation {
+
+    private final IDrawingOperation fDelegate;
+    private final PaintState.MIRROR fMirrorState;
+
+    public MirrorOp(IDrawingOperation aDelegate, PaintState.MIRROR aMirrorState) {
+      fDelegate = aDelegate;
+      fMirrorState = aMirrorState;
     }
-
-    static class MyMotionEvent {
-
-        int action;
-        float x;
-        float y;
-
-        public MyMotionEvent(int aAction, float aX, float aY){
-            action = aAction;
-            x = aX;
-            y = aY;
-        }
-
-        public int getAction() {
-            return action;
-        }
-
-        public float getX() {
-            return x;
-        }
-
-        public float getY() {
-            return y;
-        }
-    }
-
 
     @Override
-    public boolean onTouch(View view, MotionEvent motionEvent) {
-        return onTouch(view, new MyMotionEvent(motionEvent.getAction(), motionEvent.getX(), motionEvent.getY()));
-    }
-
-    public boolean onTouch(View view, MyMotionEvent motionEvent) {
-        int action = motionEvent.getAction();
-
-        float point[] = new float[]{motionEvent.getX(), motionEvent.getY()};
-        fInputMatrix.mapPoints(point);
-
-
-        if(fTouchListener.isActive()) {
-            fTouchListener.touch(action, point, motionEvent.getX(), motionEvent.getY());
-            return true;
-        }
-
-        if (fCurrentCreator != null) {
-            switch (action) {
-                case MotionEvent.ACTION_DOWN: {
-                    addOperation(fCurrentCreator.startDrawingOperation(point[0], point[1]));
-                    break;
-                }
-                case MotionEvent.ACTION_MOVE: {
-                    fCurrentCreator.updateDrawingOperation(point[0], point[1]);
-                    break;
-                }
-                case MotionEvent.ACTION_UP: {
-                    fCurrentCreator.endDrawingOperation();
-                    finishOp();
-                    break;
-                }
-                default:
-                    return false;
-            }
-        }
-        return true;
-    }
-
-    public void redraw() {
-        fDrawListener.redraw();
-    }
-
-    public void addOperation(IDrawingOperation op) {
-        fUndo.clear();
-        if (fPaintState.isGradientActive()) {
-            op = new GradientOp(op, fPaintState.getModifiedMainColor(), fPaintState.getModifiedSubColor());
-        }
-
-        if (fPaintState.getMirrorState() != PaintState.MIRROR.None) {
-            op = new MirrorOp(op, fPaintState.getMirrorState());
-        }
-
-        if (fPaintState.isKaleidoscopeActive()) {
-            op = new KaleidoscopeOp(op);
-        }
-
-        synchronized (fBackgroundCanvas) {
-            fCurrentOperation = op;
-            fOperations.addLast(fCurrentOperation);
-            while (fOperations.size() > MAX_UNDO) {
-                op = fOperations.removeFirst();
-                op.complete();
-                op.draw(fBackgroundCanvasBackUP);
-            }
-        }
-    }
-
-    private void finishOp() {
-        synchronized (fBackgroundCanvas) {
-            fCurrentOperation.draw(fBackgroundCanvas);
-            fCurrentOperation = null;
-        }
-        redraw();
-    }
-
     public void draw(Canvas aCanvas) {
-        synchronized (fBackgroundCanvas) {
-            aCanvas.drawBitmap(fBackgroundImage, 0.f, 0.f, fDitherPaint);
-            if (fCurrentOperation != null) {
-                fCurrentOperation.draw(aCanvas);
-            }
-        }
+      switch (fMirrorState) {
+      case Horizontal: {
+        fDelegate.draw(aCanvas);
+        aCanvas.save();
+        aCanvas.concat(fMirrorHorizontal);
+        fDelegate.draw(aCanvas);
+        aCanvas.restore();
+        break;
+      }
+      case Vertical: {
+        fDelegate.draw(aCanvas);
+        aCanvas.save();
+        aCanvas.concat(fMirrorVertical);
+        fDelegate.draw(aCanvas);
+        aCanvas.restore();
+        break;
+      }
+      case Both: {
+        fDelegate.draw(aCanvas);
+
+        aCanvas.save();
+        aCanvas.concat(fMirrorVertical);
+        fDelegate.draw(aCanvas);
+        aCanvas.restore();
+
+        aCanvas.save();
+        aCanvas.concat(fMirrorHorizontal);
+        fDelegate.draw(aCanvas);
+        aCanvas.restore();
+
+        aCanvas.save();
+        aCanvas.concat(fMirrorHAndV);
+        fDelegate.draw(aCanvas);
+        aCanvas.restore();
+        break;
+      }
+
+      }
     }
 
-    public int getWidth() {
-        return fBackgroundImage.getWidth();
+    @Override
+    public Paint getPaint() {
+      return fDelegate.getPaint();
     }
 
-    public int getHeight() {
-        return fBackgroundImage.getHeight();
+    @Override
+    public void computeBounds(RectF aBoundSFCT) {
+      fDelegate.computeBounds(aBoundSFCT);
     }
 
-    public Bitmap copyBitmap() {
-        Bitmap result = Bitmap.createBitmap(fBackgroundImage.getWidth(), fBackgroundImage.getHeight(), Bitmap.Config.RGB_565);
-        draw(new Canvas(result));
-        return result;
+    @Override
+    public void undo() {
+      fDelegate.undo();
     }
 
-    public Bitmap getBitmap() {
-        return fBackgroundImage;
+    @Override
+    public void redo() {
+      fDelegate.redo();
     }
 
-    public void putBitmapAsBackground(Bitmap aBitmap) {
+    @Override
+    public void complete() {
+      fDelegate.complete();
+    }
+  }
 
-        float width = getWidth();
-        float height = getHeight();
+  private class GradientOp implements IDrawingOperation {
 
-        float bitmapWidth = aBitmap.getWidth();
-        float bitmapHeight = aBitmap.getHeight();
+    private final int fMainColor;
+    private final int fSubColor;
+    private final IDrawingOperation fDelegate;
+    private final RectF fBounds;
 
-        Matrix matrix = new Matrix();
-        float dx, dy, scale;
-
-        if (width > height) {
-            // canvas is in on paysage mode
-
-            if (bitmapHeight > bitmapWidth) {
-                // bitmap is in on portrait mode
-                matrix.setRotate(-90);
-                matrix.postTranslate(0, bitmapWidth);
-
-                float temp = bitmapWidth;
-                bitmapWidth = bitmapHeight;
-                bitmapHeight = temp;
-            }
-
-            scale = width / bitmapWidth;
-            if (scale * bitmapHeight > height) {
-                scale = height / bitmapHeight;
-                dx = (width - scale * bitmapWidth) / 2.f;
-                dy = 0.f;
-            } else {
-                dx = 0;
-                dy = (height - scale * bitmapHeight) / 2.f;
-            }
-        } else {
-            // canvas is in on portrait mode
-            if (bitmapWidth > bitmapHeight) {
-                // bitmap is in on paysage mode
-                matrix.setRotate(90);
-                matrix.postTranslate(bitmapHeight, 0);
-
-                float temp = bitmapWidth;
-                bitmapWidth = bitmapHeight;
-                bitmapHeight = temp;
-            }
-
-            scale = height / bitmapHeight;
-            if (scale * bitmapWidth > bitmapWidth) {
-                scale = width / bitmapWidth;
-                dx = 0;
-                dy = (height - scale * bitmapHeight) / 2.f;
-            } else {
-                dx = (width - scale * bitmapWidth) / 2.f;
-                dy = 0.f;
-            }
-        }
-        matrix.postScale(scale, scale);
-        matrix.postTranslate(dx, dy);
-
-        synchronized (fBackgroundCanvas) {
-            fBackgroundCanvas.drawColor(fPaintState.getSubColor() | 0xff000000);
-            fOperations.clear();
-            fUndo.clear();
-            fBackgroundCanvas.drawBitmap(aBitmap, matrix, null);
-            fBackgroundCanvasBackUP.drawBitmap(aBitmap, matrix, null);
-            for (Map.Entry<Integer, ACreator> creator : fCreators.entrySet()) {
-                creator.getValue().clear();
-            }
-        }
-        redraw();
+    public GradientOp(IDrawingOperation aDelegate, int aMainColor, int aSubColor) {
+      fDelegate = aDelegate;
+      fMainColor = aMainColor;
+      fSubColor = aSubColor;
+      fBounds = new RectF();
     }
 
-    //Effect Operations;
-
-    private class MirrorOp implements IDrawingOperation {
-
-        private final IDrawingOperation fDelegate;
-        private final PaintState.MIRROR fMirrorState;
-
-        public MirrorOp(IDrawingOperation aDelegate, PaintState.MIRROR aMirrorState) {
-            fDelegate = aDelegate;
-            fMirrorState = aMirrorState;
-        }
-
-        @Override
-        public void draw(Canvas aCanvas) {
-            switch (fMirrorState) {
-                case Horizontal: {
-                    fDelegate.draw(aCanvas);
-                    aCanvas.save();
-                    aCanvas.concat(fMirrorHorizontal);
-                    fDelegate.draw(aCanvas);
-                    aCanvas.restore();
-                    break;
-                }
-                case Vertical: {
-                    fDelegate.draw(aCanvas);
-                    aCanvas.save();
-                    aCanvas.concat(fMirrorVertical);
-                    fDelegate.draw(aCanvas);
-                    aCanvas.restore();
-                    break;
-                }
-                case Both: {
-                    fDelegate.draw(aCanvas);
-
-                    aCanvas.save();
-                    aCanvas.concat(fMirrorVertical);
-                    fDelegate.draw(aCanvas);
-                    aCanvas.restore();
-
-                    aCanvas.save();
-                    aCanvas.concat(fMirrorHorizontal);
-                    fDelegate.draw(aCanvas);
-                    aCanvas.restore();
-
-                    aCanvas.save();
-                    aCanvas.concat(fMirrorHAndV);
-                    fDelegate.draw(aCanvas);
-                    aCanvas.restore();
-                    break;
-                }
-
-            }
-        }
-
-        @Override
-        public Paint getPaint() {
-            return fDelegate.getPaint();
-        }
-
-        @Override
-        public void computeBounds(RectF aBoundSFCT) {
-            fDelegate.computeBounds(aBoundSFCT);
-        }
-
-        @Override
-        public void undo() {
-            fDelegate.undo();
-        }
-
-        @Override
-        public void redo() {
-            fDelegate.redo();
-        }
-
-        @Override
-        public void complete() {
-            fDelegate.complete();
-        }
+    @Override
+    public synchronized void draw(Canvas aCanvas) {
+      getPaint().setShader(createShader());
+      fDelegate.draw(aCanvas);
     }
 
-    private class GradientOp implements IDrawingOperation {
-
-        private final int fMainColor;
-        private final int fSubColor;
-        private final IDrawingOperation fDelegate;
-        private final RectF fBounds;
-
-        public GradientOp(IDrawingOperation aDelegate, int aMainColor, int aSubColor) {
-            fDelegate = aDelegate;
-            fMainColor = aMainColor;
-            fSubColor = aSubColor;
-            fBounds = new RectF();
-        }
-
-        @Override
-        public synchronized void draw(Canvas aCanvas) {
-            getPaint().setShader(createShader());
-            fDelegate.draw(aCanvas);
-        }
-
-        @Override
-        public Paint getPaint() {
-            return fDelegate.getPaint();
-        }
-
-        @Override
-        public void computeBounds(RectF aBoundSFCT) {
-            fDelegate.computeBounds(aBoundSFCT);
-        }
-
-        private Shader createShader() {
-            computeBounds(fBounds);
-            return new LinearGradient(fBounds.left, fBounds.top, fBounds.right, fBounds.bottom,
-                    this.fMainColor,
-                    this.fSubColor, Shader.TileMode.REPEAT);
-        }
-
-        @Override
-        public void undo() {
-            fDelegate.undo();
-        }
-
-        @Override
-        public void redo() {
-            fDelegate.redo();
-        }
-
-        @Override
-        public void complete() {
-            fDelegate.complete();
-        }
+    @Override
+    public Paint getPaint() {
+      return fDelegate.getPaint();
     }
 
-    private class KaleidoscopeOp implements IDrawingOperation {
-
-        IDrawingOperation fDelegate;
-        private Matrix[] KaleidoscopeMatrix;
-
-
-        @Override
-        public synchronized void draw(Canvas aCanvas) {
-            fDelegate.draw(aCanvas);
-            for (Matrix m : KaleidoscopeMatrix) {
-                aCanvas.save();
-                aCanvas.concat(m);
-                fDelegate.draw(aCanvas);
-                aCanvas.restore();
-            }
-        }
-
-        @Override
-        public Paint getPaint() {
-            return fDelegate.getPaint();
-        }
-
-        @Override
-        public void computeBounds(RectF aBoundSFCT) {
-            fDelegate.computeBounds(aBoundSFCT);
-        }
-
-        @Override
-        public void undo() {
-            fDelegate.undo();
-        }
-
-        @Override
-        public void redo() {
-            fDelegate.redo();
-        }
-
-        @Override
-        public void complete() {
-            fDelegate.complete();
-        }
-
-        public KaleidoscopeOp(IDrawingOperation op) {
-            fDelegate = op;
-            KaleidoscopeMatrix = new Matrix[fPaintState.getKaleidoscopeSec() - 1];
-            float angle = 360.f / (1.f + KaleidoscopeMatrix.length);
-            for (int i = 0; i < KaleidoscopeMatrix.length; i++) {
-                Matrix m = new Matrix();
-                m.setTranslate(-getWidth() / 2, -getHeight() / 2);
-                m.postRotate((i + 1) * angle);
-                m.postTranslate(getWidth() / 2, getHeight() / 2);
-                KaleidoscopeMatrix[i] = m;
-            }
-        }
+    @Override
+    public void computeBounds(RectF aBoundSFCT) {
+      fDelegate.computeBounds(aBoundSFCT);
     }
 
-    //Listener Interface
-    public interface DrawListener {
-        public void redraw();
+    private Shader createShader() {
+      computeBounds(fBounds);
+      return new LinearGradient(fBounds.left, fBounds.top, fBounds.right, fBounds.bottom,
+                                this.fMainColor,
+                                this.fSubColor, Shader.TileMode.REPEAT);
     }
 
-
-    public interface TouchListener {
-        void touch(int aMotionEventType, float[] aPoint, float X, float Y);
-
-        boolean isActive();
+    @Override
+    public void undo() {
+      fDelegate.undo();
     }
 
-    public void setTouchListener(TouchListener aTouchListener) {
-        fTouchListener = aTouchListener;
+    @Override
+    public void redo() {
+      fDelegate.redo();
     }
 
-    public void removeListeners() {
-        fDrawListener = null;
-        fTouchListener = null;
+    @Override
+    public void complete() {
+      fDelegate.complete();
     }
+  }
+
+  private class KaleidoscopeOp implements IDrawingOperation {
+
+    IDrawingOperation fDelegate;
+    private Matrix[] KaleidoscopeMatrix;
+
+    @Override
+    public synchronized void draw(Canvas aCanvas) {
+      fDelegate.draw(aCanvas);
+      for (Matrix m : KaleidoscopeMatrix) {
+        aCanvas.save();
+        aCanvas.concat(m);
+        fDelegate.draw(aCanvas);
+        aCanvas.restore();
+      }
+    }
+
+    @Override
+    public Paint getPaint() {
+      return fDelegate.getPaint();
+    }
+
+    @Override
+    public void computeBounds(RectF aBoundSFCT) {
+      fDelegate.computeBounds(aBoundSFCT);
+    }
+
+    @Override
+    public void undo() {
+      fDelegate.undo();
+    }
+
+    @Override
+    public void redo() {
+      fDelegate.redo();
+    }
+
+    @Override
+    public void complete() {
+      fDelegate.complete();
+    }
+
+    public KaleidoscopeOp(IDrawingOperation op) {
+      fDelegate = op;
+      KaleidoscopeMatrix = new Matrix[fPaintState.getKaleidoscopeSec() - 1];
+      float angle = 360.f / (1.f + KaleidoscopeMatrix.length);
+      for (int i = 0; i < KaleidoscopeMatrix.length; i++) {
+        Matrix m = new Matrix();
+        m.setTranslate(-getWidth() / 2, -getHeight() / 2);
+        m.postRotate((i + 1) * angle);
+        m.postTranslate(getWidth() / 2, getHeight() / 2);
+        KaleidoscopeMatrix[i] = m;
+      }
+    }
+  }
+
+  //Listener Interface
+  public interface DrawListener {
+    public void redraw();
+  }
+
+  public interface TouchListener {
+    void touch(int aMotionEventType, float[] aPoint, float X, float Y);
+
+    boolean isActive();
+  }
+
+  public void setTouchListener(TouchListener aTouchListener) {
+    fTouchListener = aTouchListener;
+  }
+
+  public void removeListeners() {
+    fDrawListener = null;
+    fTouchListener = null;
+  }
 }
