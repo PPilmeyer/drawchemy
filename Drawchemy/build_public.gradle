@@ -1,0 +1,38 @@
+apply plugin: 'android'
+
+android {
+    compileSdkVersion 17
+    buildToolsVersion '19.1.0'
+
+    defaultConfig {
+        minSdkVersion 11
+        targetSdkVersion 17
+        versionCode 3
+        versionName "1.3"
+    }
+    buildTypes {
+        release {
+            runProguard true
+            proguardFiles getDefaultProguardFile( 'proguard-android.txt' ), 'proguard-rules.txt'
+            signingConfig signingConfigs.release
+        }
+
+        productFlavors {
+            finalR {
+                packageName "draw.chemy"
+            }
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://github.com/LarsWerkman/HoloColorPicker.git"
+    }
+}
+
+dependencies {
+    compile fileTree( include: ['*.jar'], dir: 'libs' )
+    compile('com.larswerkman:HoloColorPicker:1.5').ext.git = 'https://github.com/LarsWerkman/HoloColorPicker.git'
+}
