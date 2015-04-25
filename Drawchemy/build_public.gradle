@@ -25,14 +25,6 @@ android {
     }
 }
 
-repositories {
-    mavenCentral()
-    maven {
-        url "https://github.com/LarsWerkman/HoloColorPicker.git"
-    }
-}
-
 dependencies {
     compile fileTree( include: ['*.jar'], dir: 'libs' )
-    compile('com.larswerkman:HoloColorPicker:1.5').ext.git = 'https://github.com/LarsWerkman/HoloColorPicker.git'
 }

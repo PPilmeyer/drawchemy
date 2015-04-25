@@ -1,4 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+apply plugin: 'git-dependencies'
 
 buildscript {
     repositories {
@@ -6,6 +7,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:0.12.2'
+        classpath 'org.batcha.gradle.plugins:git-dependencies:0.1'
     }
 }
 
