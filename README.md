@@ -4,7 +4,7 @@
 Liberate your creativity with Drawchemy.
 
 You can see some artworks on the dedicated *Tumblr* (http://drawchemy.tumblr.com/). 
-Don't hesite to send my your art to publish it. 
+Don't hesite to send me your art to publish it. 
 
 The current features are :
 
