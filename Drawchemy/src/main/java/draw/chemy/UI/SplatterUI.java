@@ -1,7 +1,7 @@
 /*
- * This file is part of the Drawchemy project - https://code.google.com/p/drawchemy/
+ * This file is part of the Drawchemy project - https://github.com/PPilmeyer/drawchemy
  *
- * Copyright (c) 2014 Pilmeyer Patrick
+ * Copyright (c) 2015 Pilmeyer Patrick
  *
  * Drawchemy is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

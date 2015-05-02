@@ -1,7 +1,7 @@
 /*
- * This file is part of the Drawchemy project - https://code.google.com/p/drawchemy/
+ * This file is part of the Drawchemy project - https://github.com/PPilmeyer/drawchemy
  *
- * Copyright (c) 2014 Pilmeyer Patrick
+ * Copyright (c) 2015 Pilmeyer Patrick
  *
  * Drawchemy is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -540,7 +540,7 @@ public class DrawActivity extends Activity {
     switch (id) {
 
     case R.id.about_drawchemy: {
-      startWebIntent("https://code.google.com/p/drawchemy/");
+      startWebIntent("https://github.com/PPilmeyer/drawchemy");
       break;
     }
     case R.id.about_alchemy: {
