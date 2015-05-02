@@ -53,7 +53,7 @@
     <string name="unicolor">Unicolor</string>
     <string name="hide_ui">Hide/Show UI</string>
 
-    <!-- UI Texts-->
+    <!-- UI Texts -->
     <string name="hue_switch_enabled">Hue noise enabled</string>
     <string name="hue_switch_disabled">Hue noise disabled</string>
     <string name="clear_dialog">This will clear the canvas, are you sure ?</string>
@@ -75,8 +75,11 @@
     <string name="triangle">Triangle</string>
     <string name="random">Random</string>
     <string name="snapping">Snapping</string>
+    <string name="bones">bones</string>
+    <string name="parts">parts</string>
+    <string name="all">All</string>
 
-    <!-- About Texts-->
+    <!-- About Texts -->
     <string name="about_drawchemy">Drawchemy is a Open Source project under the License GPLv3. You can
     go to the git repository by clicking on the icon. This application is done by Pilmeyer Patrick.</string>
     <string name="about_alchemy">Drawchemy is inspired by Alchemy : a drawing desktop application.
@@ -86,4 +89,9 @@
     <string name="complexe">complexe shape</string>
     <string name="multiline">Multiline</string>
     <string name="textcreator">Character</string>
+    <string name="title_activity_test">TestActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+  <string name="fluid">fluid</string>
+
 </resources>

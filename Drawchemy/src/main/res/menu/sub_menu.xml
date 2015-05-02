@@ -3,24 +3,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
 
-    <item
-        android:id="@+id/i_help"
-        android:icon="@drawable/ic_action_help"
-        android:title="@string/help"
-        android:showAsAction="collapseActionView" />
-
-
-    <item
-        android:id="@+id/i_extra_setting"
-        android:icon="@drawable/ic_action_extra_settings"
-        android:title="@string/extra_settings"
-        android:showAsAction="collapseActionView" />
-
-    <item
-        android:id="@+id/i_colors"
-        android:icon="@drawable/color"
-        android:title="@string/colors"
-        android:showAsAction="collapseActionView" />
+  <item
+      android:id="@+id/i_settings"
+      android:icon="@drawable/ic_action_settings"
+      android:title="@string/settings"
+      android:showAsAction="collapseActionView" />
 
     <item
         android:id="@+id/i_save"

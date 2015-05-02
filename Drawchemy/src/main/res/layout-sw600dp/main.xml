@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="#00000000"
+              android:orientation="vertical">
+
+  <FrameLayout
+      android:id="@+id/drawingContainer"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+
+    <draw.chemy.ZoomPanDrawingView
+        android:id="@+id/drawingView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <LinearLayout
+        android:id="@+id/settingContainer"
+        android:layout_width="match_parent"
+        android:layout_height="330dp"
+        android:layout_marginLeft="?android:actionBarSize"
+        android:layout_marginTop="?android:actionBarSize"
+        android:background="@color/bg"
+        android:orientation="horizontal">
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+      <LinearLayout
+          android:id="@+id/leftBar"
+          android:layout_width="?android:actionBarSize"
+          android:layout_height="fill_parent"
+          android:layout_marginTop="?android:actionBarSize"
+          android:layout_marginBottom="?android:actionBarSize"
+          android:background="@color/bg"
+          android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp"
+            android:layout_weight="1"
+            android:src="@drawable/ic_visibility_black_36dp"/>
+
+        <draw.chemy.UI.VerticalSeekBar
+            android:id="@+id/opacity"
+            android:layout_width="?android:actionBarSize"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:maxHeight="?android:actionBarSize"
+            android:maxWidth="?android:actionBarSize"
+            android:minHeight="?android:actionBarSize"
+            android:minWidth="?android:actionBarSize"/>
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/strokewidth"/>
+
+        <draw.chemy.UI.VerticalSeekBar
+            android:id="@+id/i_stroke_weight"
+            android:layout_width="?android:actionBarSize"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:maxHeight="?android:actionBarSize"
+            android:maxWidth="?android:actionBarSize"
+            android:minHeight="?android:actionBarSize"
+            android:minWidth="?android:actionBarSize"/>
+
+      </LinearLayout>
+
+      <RelativeLayout
+          android:id="@+id/bottomBar"
+          android:layout_width="fill_parent"
+          android:layout_height="?android:actionBarSize"
+          android:layout_alignParentBottom="true"
+          android:background="@color/bg"
+          android:gravity="right"
+          android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/gradient"
+            android:onClick="gradient"
+            android:layout_width="?android:actionBarSize"
+            android:layout_height="fill_parent"
+            android:background="#00000000"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/unicolor"/>
+
+        <ImageButton
+            android:id="@+id/style"
+            android:onClick="style"
+            android:layout_width="?android:actionBarSize"
+            android:layout_height="fill_parent"
+            android:background="#00000000"
+            android:src="@drawable/stroke"
+            android:layout_toLeftOf="@+id/gradient"
+            android:layout_toStartOf="@+id/gradient"/>
+
+        <Spinner
+            android:id="@+id/mirroring"
+            android:layout_width="?android:actionBarSize"
+            android:layout_height="fill_parent"
+            android:background="#00000000"
+            android:layout_toLeftOf="@+id/style"
+            android:layout_toStartOf="@+id/style"/>
+        <ImageButton
+            android:id="@+id/redo"
+            android:onClick="redo"
+            android:layout_width="?android:actionBarSize"
+            android:layout_height="fill_parent"
+            android:background="#00000000"
+            android:src="@drawable/ic_action_redo"
+            android:layout_toRightOf="@+id/undo"
+            android:layout_toEndOf="@+id/undo"/>
+        <ImageButton
+            android:id="@+id/undo"
+            android:onClick="undo"
+            android:layout_width="?android:actionBarSize"
+            android:layout_height="fill_parent"
+            android:background="#00000000"
+            android:src="@drawable/ic_action_undo"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"/>
+      </RelativeLayout>
+    </RelativeLayout>
+  </FrameLayout>
+</LinearLayout>

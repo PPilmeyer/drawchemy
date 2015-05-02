@@ -153,6 +153,7 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
   @Override
   public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
     fThread.stopThread();
+    fZoomManager.clear();
   }
 
   public interface OverlayPainter {
@@ -242,6 +243,7 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
 
   public void close() {
     fCanvasManager = null;
+    fZoomManager.clear();
     fZoomManager.fDelegate = null;
     fZoomManager = null;
     if (fThread != null) {
@@ -311,6 +313,11 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
     private void change() {
       setInputMatrix(fInputMatrix);
       fCanvasManager.setInputMatrix(fInputMatrix);
+    }
+
+    private void clear() {
+      fState = STATE.INIT;
+      fPreviousEvents.clear();
     }
 
     @Override

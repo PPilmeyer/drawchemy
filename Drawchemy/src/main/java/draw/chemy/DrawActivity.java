@@ -19,16 +19,17 @@
 
 package draw.chemy;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -42,153 +43,155 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.SubMenu;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
-import android.widget.Toast;
-
-import org.al.chemy.R;
-
-import draw.chemy.UI.ASettingsGroupUI;
-import draw.chemy.UI.BallUI;
-import draw.chemy.UI.BasicShapeUI;
-import draw.chemy.UI.CreatorWithoutUI;
-import draw.chemy.UI.ExtraSettingsUI;
-import draw.chemy.UI.NearestPointUI;
-import draw.chemy.UI.PaintBrushUI;
-import draw.chemy.UI.RibbonUI;
-import draw.chemy.UI.ScrawlUI;
-import draw.chemy.UI.SettingFragment;
-import draw.chemy.UI.SplatterUI;
-import draw.chemy.UI.StraightLineUI;
-import draw.chemy.UI.XShapeUI;
-import draw.chemy.UI.XShapeV2UI;
+import android.widget.Spinner;
+import draw.chemy.UI.*;
+import draw.chemy.color.ColorSwitchIconGenerator;
 import draw.chemy.color.ColorUIFragment;
-import draw.chemy.color.RoundIconGenerator;
-import draw.chemy.creator.BallCreator;
-import draw.chemy.creator.BasicShapesCreator;
-import draw.chemy.creator.ComplexShapeCreator;
-import draw.chemy.creator.LineCreator;
-import draw.chemy.creator.MultiLineCreator;
-import draw.chemy.creator.NearestPointLineCreator;
-import draw.chemy.creator.PaintBrushCreator;
-import draw.chemy.creator.RibbonCreator;
-import draw.chemy.creator.ScrawlCreator;
-import draw.chemy.creator.SketchCreator;
-import draw.chemy.creator.SplatterCreator;
-import draw.chemy.creator.StraightlineCreator;
-import draw.chemy.creator.TextCreator;
-import draw.chemy.creator.XShapeCreator;
-import draw.chemy.creator.XShapeV2Creator;
+import draw.chemy.creator.*;
+import draw.chemy.utils.PropertyChangeEvent;
+import draw.chemy.utils.PropertyChangeEventListener;
+import org.al.chemy.R;
 
 public class DrawActivity extends Activity {
 
+  // Drawing
   private DrawManager fManager;
   private PaintState fPaintState;
-
   private ZoomPanDrawingView fDrawingView;
-  private FragmentManager fFragmentManager;
-  private LinearLayout fSettingContainer;
+  private Spinner fSpinner;
 
-  SettingFragment fSettingsFragment;
-  ColorUIFragment fColorSettings;
+  private ColorSwitchIconGenerator fColorIconGenerator;
+  private VerticalSeekBar fOpacitySeekBar;
 
-  private ASettingsGroupUI fEmptySettings;
-  private ActionBar fActionBar;
-  private Fragment fSecondaryFragment;
-
-  private RoundIconGenerator fFirstIconGenerator;
-  private RoundIconGenerator fSecondIconGenerator;
-
-  private ActionBar.Tab fFirstColor;
-  private ActionBar.Tab fSecondColor;
-
-  private ImageButton fStyleButton;
-  private ImageButton fGradientButton;
-  private ImageButton fHorizontalButton;
-  private ImageButton fVerticalButton;
-  private ImageButton fKaleidoscopeButton;
-
-  private View fBottomBar;
-  private ImageButton fShowUI;
-  private boolean fTransactionFlag = false;
-
-  private Context fContext;
-
-  private static float sAlphaHide = 0.3f;
-  private static int sDurationAnimation = 600;
-
-  private int fClearColor = Color.WHITE;
   private int fClearID = R.id.clear_white;
+  private int fClearColor = Color.WHITE;
+  private ColorUIFragment fColorFragment;
 
-  private int fCurrentCreatorID;
+  private boolean fFragmentTransition;
+  private Fragment fSecondaryFragment;
+  private View fSettingContainer;
 
+  private static int sDurationAnimation = 600;
+  private MenuItem fColorSwitch;
+  private SettingFragment fSettingsFragment;
+  private ASettingsGroupUI fEmptySettings = new EmptyBrushSettings();
+  private Map<ACreator, ASettingsGroupUI> fBrushSettings = new HashMap<ACreator, ASettingsGroupUI>();
+
+  @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    fContext = this;
     setContentView(R.layout.main);
 
-    fShowUI = (ImageButton) findViewById(R.id.i_show_ui);
-    fShowUI.setOnClickListener(new View.OnClickListener() {
+    getFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
       @Override
-      public void onClick(View view) {
-        getClick(view.getId());
+      public void onBackStackChanged() {
+        setLayout();
       }
     });
 
-    fShowUI.setVisibility(View.GONE);
+    fSettingContainer = findViewById(R.id.settingContainer);
+    fSettingContainer.setVisibility(View.GONE);
+
+    View.OnTouchListener defaultListener = new DefaultTouchListener();
+
+    fSettingContainer.setOnTouchListener(defaultListener);
+    findViewById(R.id.bottomBar).setOnTouchListener(defaultListener);
+    findViewById(R.id.leftBar).setOnTouchListener(defaultListener);
 
     fDrawingView = (ZoomPanDrawingView) findViewById(R.id.drawingView);
+
     fManager = fDrawingView.getCanvasManager();
     fPaintState = fManager.getPaintState();
 
+    PropertyChangeEventListener listener = new PropertyChangeEventListener() {
+      @Override
+      public void propertyChange(PropertyChangeEvent aEvent) {
+        if (fColorSwitch != null) {
+          fColorSwitch.setIcon(fColorIconGenerator.getIcon(fPaintState.getMainColor(), fPaintState.getSubColor()));
+        }
+      }
+    };
+
     new FileUtils(fManager).loadTempImage(this);
 
+    fPaintState.addPropertyEventListener("color", listener);
+    fPaintState.addPropertyEventListener("subcolor", listener);
+
+    fColorFragment = new ColorUIFragment();
+    fColorFragment.setPaintState(fPaintState);
+    fColorIconGenerator = new ColorSwitchIconGenerator(this);
+
     fManager.addTool(0, new LineCreator(fManager));
-    fManager.addTool(1, new ScrawlCreator(fManager));
-    fManager.addTool(2, new SplatterCreator(fManager));
-    fManager.addTool(3, new RibbonCreator(fManager));
-    fManager.addTool(4, new XShapeCreator(fManager));
-    fManager.addTool(5, new PaintBrushCreator(fManager));
+    ScrawlCreator scrawlCreator = new ScrawlCreator(fManager);
+
+    fManager.addTool(1, scrawlCreator);
+    fBrushSettings.put(scrawlCreator, new ScrawlUI(scrawlCreator));
+    SplatterCreator splatterCreator = new SplatterCreator(fManager);
+
+    fManager.addTool(2, splatterCreator);
+    fBrushSettings.put(splatterCreator, new SplatterUI(splatterCreator));
+
+    RibbonCreator ribbonCreator = new RibbonCreator(fManager);
+    fManager.addTool(3, ribbonCreator);
+    fBrushSettings.put(ribbonCreator, new RibbonUI(ribbonCreator));
+
+    XShapeCreator xShapeCreator = new XShapeCreator(fManager);
+    fManager.addTool(4, xShapeCreator);
+    fBrushSettings.put(xShapeCreator, new XShapeUI(xShapeCreator));
+
+    PaintBrushCreator paintBrushCreator = new PaintBrushCreator(fManager);
+    fManager.addTool(5, paintBrushCreator);
+    fBrushSettings.put(paintBrushCreator, new PaintBrushUI(paintBrushCreator));
+
+    BallCreator ballCreator = new BallCreator(fManager);
     fManager.addTool(6, new BallCreator(fManager));
-    fManager.addTool(7, new BasicShapesCreator(fManager));
-    fManager.addTool(8, new StraightlineCreator(fManager));
-    fManager.addTool(9, new NearestPointLineCreator(fManager));
-    fManager.addTool(10, new SketchCreator(fManager));
-    fManager.addTool(11, new XShapeV2Creator(fManager));
-    Log.e("JSON", "START");
+    fBrushSettings.put(ballCreator, new BallUI(ballCreator));
+
+    BasicShapesCreator basicShapesCreator = new BasicShapesCreator(fManager);
+    fManager.addTool(7, basicShapesCreator);
+    fBrushSettings.put(basicShapesCreator, new BasicShapeUI(basicShapesCreator));
+
+    StraightlineCreator straightlineCreator = new StraightlineCreator(fManager);
+    fManager.addTool(8, straightlineCreator);
+    fBrushSettings.put(straightlineCreator, new StraightLineUI(straightlineCreator));
+
+    NearestPointLineCreator nearestPointLineCreator = new NearestPointLineCreator(fManager);
+    fManager.addTool(9, nearestPointLineCreator);
+    fBrushSettings.put(nearestPointLineCreator, new NearestPointUI(nearestPointLineCreator));
+
+    NearestPointLineCreator sketchCreator = new SketchCreator(fManager);
+    fManager.addTool(10, sketchCreator);
+    fBrushSettings.put(sketchCreator, new NearestPointUI(sketchCreator));
+
+    XShapeV2Creator xShapeV2Creator = new XShapeV2Creator(fManager);
+    fManager.addTool(11, xShapeV2Creator);
+    fBrushSettings.put(xShapeV2Creator, new XShapeV2UI(xShapeV2Creator));
+
+    fSettingsFragment = new SettingFragment();
+    fSettingsFragment.setGeneralSetting(new ExtraSettingsUI(fPaintState));
+
     try {
-      fManager.addTool(12, new ComplexShapeCreator(fManager, JSONLoader.getInstance().loadJSON(this, R.raw.parts)));
+      ComplexShapeCreator.ShapeGroup bones = JSONLoader.getInstance().loadJSON(this, R.raw.bones);
+      ComplexShapeCreator.ShapeGroup parts = JSONLoader.getInstance().loadJSON(this, R.raw.parts);
+      ComplexShapeCreator.ShapeGroup ozwalled = JSONLoader.getInstance().loadJSON(this, R.raw.ozwalled);
+
+      ComplexShapeCreator complexShapeCreator = new ComplexShapeCreator(fManager, bones, parts, ozwalled);
+      fManager.addTool(12, complexShapeCreator);
+      fBrushSettings.put(complexShapeCreator, new ComplexeShapeUI(complexShapeCreator));
     } catch (Exception e) {
-      Log.e("JSON", e.getMessage(), e);
+      Log.e("exceptions", e.getMessage());
     }
     fManager.addTool(13, new MultiLineCreator(fManager));
     fManager.addTool(14, new TextCreator(fManager));
 
     fManager.setCurrentTool(0);
-    fCurrentCreatorID = R.id.i_line;
-
-    ViewGroup drawingContainer = (ViewGroup) findViewById(R.id.drawingContainer);
-    drawingContainer.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-      @Override
-      public void onLayoutChange(View view, int i, int i2, int i3, int i4, int i5, int i6, int i7, int i8) {
-        fManager.redraw();
-      }
-    });
-
-    View.OnTouchListener dummyTouchListener = new View.OnTouchListener() {
-      @Override
-      public boolean onTouch(View view, MotionEvent motionEvent) {
-        return true;
-      }
-    };
-
-    fSettingContainer = (LinearLayout) findViewById(R.id.settingContainer);
-    fSettingContainer.setOnTouchListener(dummyTouchListener);
-    fSettingContainer.setVisibility(View.GONE);
+    fSpinner = (Spinner) findViewById(R.id.mirroring);
+    fSpinner.setAdapter(new MirrorSpinnerAdapter(this, R.id.mirroring));
+    fSpinner.setOnItemSelectedListener(new MirrorSpinnerAdapter.MirrorListener(fPaintState));
 
     SeekBar seekBar = (SeekBar) findViewById(R.id.i_stroke_weight);
 
@@ -208,180 +211,44 @@ public class DrawActivity extends Activity {
       }
     });
 
-    View.OnClickListener clickListener = new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        getClick(view.getId());
-      }
-    };
+    fOpacitySeekBar = (VerticalSeekBar) findViewById(R.id.opacity);
+    fOpacitySeekBar.setMax(255);
+    fOpacitySeekBar.setProgress(255);
 
-    findViewById(R.id.i_flip_v).setOnClickListener(clickListener);
-    findViewById(R.id.i_flip_h).setOnClickListener(clickListener);
-    findViewById(R.id.i_flip_gradient).setOnClickListener(clickListener);
-    findViewById(R.id.i_flip_style).setOnClickListener(clickListener);
-    findViewById(R.id.i_kaleidoscope).setOnClickListener(clickListener);
-
-    fFragmentManager = getFragmentManager();
-    fFragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+    fOpacitySeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
       @Override
-      public void onBackStackChanged() {
-        setLayout();
+      public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
       }
+
+      @Override
+      public void onStartTrackingTouch(SeekBar seekBar) {
+
+      }
+
+      @Override
+      public void onStopTrackingTouch(SeekBar seekBar) {
+        int alpha = seekBar.getProgress();
+        int color = fPaintState.getMainColor();
+        fPaintState.setMainColor(Color.argb(alpha, Color.red(color),
+                                            Color.green(color),
+                                            Color.blue(color)));
+      }
+
     });
 
-    fEmptySettings = new CreatorWithoutUI();
-
-    fBottomBar = findViewById(R.id.bottom_bar);
-    fBottomBar.setOnTouchListener(dummyTouchListener);
-
-    fSettingsFragment = new SettingFragment();
-    fSettingsFragment.getNewCreator(fEmptySettings);
-
-    fColorSettings = new ColorUIFragment();
-    fColorSettings.setHistoryColor(fManager.getPaintState().getHistoryColors());
-
-    fManager.getPaintState().setColorHistoryListener(new PaintState.ColorHistoryListener() {
+    fPaintState.addPropertyEventListener("color", new PropertyChangeEventListener() {
       @Override
-      public void historyChanged() {
-        if (fColorSettings != null) {
-          fColorSettings.setHistoryColor(fManager.getPaintState().getHistoryColors());
-          Log.i("INFO", "Color history event");
+      public void propertyChange(PropertyChangeEvent aEvent) {
+        int alpha = Color.alpha(fPaintState.getMainColor());
+        if (alpha != fOpacitySeekBar.getProgress()) {
+          fOpacitySeekBar.setProgressAndThumb(alpha);
         }
       }
     });
-
-    fColorSettings.setColor(fPaintState.getMainColor(), false);
-    ColorUIFragment.Pipette pipette = new ColorUIFragment.Pipette(fColorSettings, fManager);
-    fManager.setTouchListener(pipette);
-
-    fColorSettings.addHueSwitchListener(new ColorUIFragment.HueSwitchListener() {
-
-      @Override
-      public void amplitudeChanged(float aAmplitude) {
-        fPaintState.setColorVariation(aAmplitude);
-      }
-    });
-
-    fFirstIconGenerator = new RoundIconGenerator(this);
-    fSecondIconGenerator = new RoundIconGenerator(this);
-
-    fStyleButton = (ImageButton) findViewById(R.id.i_flip_style);
-    fGradientButton = (ImageButton) findViewById(R.id.i_flip_gradient);
-
-    fHorizontalButton = (ImageButton) findViewById(R.id.i_flip_h);
-    fVerticalButton = (ImageButton) findViewById(R.id.i_flip_v);
-
-    fKaleidoscopeButton = (ImageButton) findViewById(R.id.i_kaleidoscope);
-
-    View.OnLongClickListener descriptionClick = new View.OnLongClickListener() {
-      @Override
-      public boolean onLongClick(View view) {
-        if (view.getContentDescription() != null) {
-          CharSequence txt = view.getContentDescription();
-          Toast.makeText(fContext, txt, Toast.LENGTH_SHORT).show();
-        }
-        return true;
-      }
-    };
-
-    fStyleButton.setOnLongClickListener(descriptionClick);
-    fGradientButton.setOnLongClickListener(descriptionClick);
-    fHorizontalButton.setOnLongClickListener(descriptionClick);
-    fVerticalButton.setOnLongClickListener(descriptionClick);
-    fKaleidoscopeButton.setOnLongClickListener(descriptionClick);
-
-    fHorizontalButton.setAlpha(sAlphaHide);
-    fVerticalButton.setAlpha(sAlphaHide);
-    fKaleidoscopeButton.setAlpha(sAlphaHide);
-
-    fActionBar = getActionBar();
-    if (fActionBar != null) {
-      fActionBar.setDisplayShowTitleEnabled(false);
-      fActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-      fFirstColor = fActionBar.newTab();
-      fSecondColor = fActionBar.newTab();
-      fFirstColor.setIcon(fFirstIconGenerator.getIcon(fPaintState.getMainColor(), true));
-      ColorOnTabListener listener = new ColorOnTabListener();
-
-      fFirstColor.setTabListener(listener);
-
-      fActionBar.addTab(fFirstColor);
-
-      fSecondColor.setIcon(fSecondIconGenerator.getIcon(fPaintState.getSubColor(), false));
-      fSecondColor.setTabListener(listener);
-
-      fActionBar.addTab(fSecondColor);
-
-      fActionBar.setDisplayUseLogoEnabled(false);
-      fActionBar.setDisplayHomeAsUpEnabled(true);
-    }
-  }
-
-  @Override
-  protected void onStop() {
-    super.onStop();
-  }
-
-  @Override
-  protected void onDestroy() {
-    super.onDestroy();
-    fManager.removeListeners();
-    fDrawingView.close();
-    fDrawingView = null;
-    fManager = null;
-    fColorSettings.removeListeners();
-    fColorSettings = null;
-    fSecondaryFragment = null;
-    fSettingsFragment.close();
-    fSettingsFragment = null;
-  }
-
-  private void addFragment(Fragment aFragment) {
-
-    fSecondaryFragment = aFragment;
-    if (!aFragment.isAdded()) {
-      fTransactionFlag = true;
-      FragmentTransaction transaction = fFragmentManager.beginTransaction();
-      Fragment f = fFragmentManager.findFragmentById(R.id.settingContainer);
-      if (f != null) {
-        transaction.replace(R.id.settingContainer, aFragment);
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        fFragmentManager.popBackStack();
-        transaction.addToBackStack(null);
-      } else {
-        transaction.add(R.id.settingContainer, aFragment);
-        transaction.addToBackStack(null);
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-      }
-      transaction.commit();
-      fFragmentManager.executePendingTransactions();
-      fTransactionFlag = false;
-      setLayout();
-    }
-  }
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.menu, menu);
-    MenuItem item = menu.findItem(R.id.i_overflow);
-    SubMenu subMenu;
-    if (item != null) {
-      subMenu = item.getSubMenu();
-      getMenuInflater().inflate(R.menu.sub_menu, subMenu);
-    }
-
-    item = menu.findItem(R.id.i_creators);
-
-    if (item != null) {
-      subMenu = item.getSubMenu();
-      getMenuInflater().inflate(R.menu.creators_menu, subMenu);
-    }
-
-    return true;
   }
 
   private void setLayout() {
-    if (fTransactionFlag) {
+    if (fFragmentTransition) {
       return;
     }
     if (fSecondaryFragment == null || !fSecondaryFragment.isAdded()) {
@@ -414,171 +281,124 @@ public class DrawActivity extends Activity {
     }
   }
 
+  private void addFragment(Fragment aFragment) {
+
+    fSecondaryFragment = aFragment;
+    if (!aFragment.isAdded()) {
+      fFragmentTransition = true;
+      FragmentTransaction transaction = getFragmentManager().beginTransaction();
+      Fragment f = getFragmentManager().findFragmentById(R.id.settingContainer);
+      if (f != null) {
+        transaction.replace(R.id.settingContainer, aFragment);
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        getFragmentManager().popBackStack();
+        transaction.addToBackStack(null);
+      } else {
+        transaction.add(R.id.settingContainer, aFragment);
+        transaction.addToBackStack(null);
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+      }
+      transaction.commit();
+      getFragmentManager().executePendingTransactions();
+      fFragmentTransition = false;
+      setLayout();
+    }
+  }
+
   @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    getClick(item.getItemId());
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.menu2, menu);
+    MenuItem item = menu.findItem(R.id.i_overflow);
+    SubMenu subMenu;
+    if (item != null) {
+      subMenu = item.getSubMenu();
+      getMenuInflater().inflate(R.menu.sub_menu, subMenu);
+    }
+
+    item = menu.findItem(R.id.i_color_switch);
+    if (item != null) {
+      item.setIcon(fColorIconGenerator.getIcon(fPaintState.getMainColor(), fPaintState.getSubColor()));
+      fColorSwitch = item;
+    }
+
+    item = menu.findItem(R.id.i_creators);
+
+    if (item != null) {
+      subMenu = item.getSubMenu();
+      getMenuInflater().inflate(R.menu.creators_menu, subMenu);
+    }
+
     return true;
   }
 
-  private void getClick(int id) {
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    int id = item.getItemId();
+
     switch (id) {
-    case R.id.i_undo: {
-      fManager.undo();
-      break;
-    }
-    case R.id.i_redo: {
-      fManager.redo();
-      break;
-    }
+
     case R.id.i_reset_view: {
       fDrawingView.resetZoomPan();
       break;
     }
     case R.id.i_line: {
       fManager.setCurrentTool(0);
-      fCurrentCreatorID = id;
-      fSettingsFragment.getNewCreator(fEmptySettings);
       break;
     }
     case R.id.i_scraw: {
       fManager.setCurrentTool(1);
-      fCurrentCreatorID = id;
-      fSettingsFragment.getNewCreator(new ScrawlUI((ScrawlCreator) fManager.getCurrentCreator()));
       break;
     }
     case R.id.i_splatter: {
       fManager.setCurrentTool(2);
-      fCurrentCreatorID = id;
-      fSettingsFragment.getNewCreator(new SplatterUI((SplatterCreator) fManager.getCurrentCreator()));
       break;
     }
     case R.id.i_ribbon: {
       fManager.setCurrentTool(3);
-      fCurrentCreatorID = id;
-      fSettingsFragment.getNewCreator(new RibbonUI((RibbonCreator) fManager.getCurrentCreator()));
       break;
     }
     case R.id.i_xshape: {
       fManager.setCurrentTool(4);
-      fCurrentCreatorID = id;
-      fSettingsFragment.getNewCreator(new XShapeUI((XShapeCreator) fManager.getCurrentCreator()));
       break;
     }
     case R.id.i_paintbrush: {
       fManager.setCurrentTool(5);
-      fCurrentCreatorID = id;
-      fSettingsFragment.getNewCreator(new PaintBrushUI((PaintBrushCreator) fManager.getCurrentCreator()));
       break;
     }
     case R.id.i_ball: {
       fManager.setCurrentTool(6);
-      fCurrentCreatorID = id;
-      fSettingsFragment.getNewCreator(new BallUI((BallCreator) fManager.getCurrentCreator()));
       break;
     }
     case R.id.i_basic_shapes: {
       fManager.setCurrentTool(7);
-      fCurrentCreatorID = id;
-      fSettingsFragment.getNewCreator(new BasicShapeUI((BasicShapesCreator) fManager.getCurrentCreator()));
       break;
     }
     case R.id.i_straigtline: {
       fManager.setCurrentTool(8);
-      fCurrentCreatorID = id;
-      fSettingsFragment.getNewCreator(new StraightLineUI((StraightlineCreator) fManager.getCurrentCreator()));
       break;
     }
     case R.id.i_web_brush: {
       fManager.setCurrentTool(9);
-      fCurrentCreatorID = id;
-      fSettingsFragment.getNewCreator(new NearestPointUI((NearestPointLineCreator) fManager.getCurrentCreator()));
       break;
     }
     case R.id.i_sketch_brush: {
       fManager.setCurrentTool(10);
-      fCurrentCreatorID = id;
-      fSettingsFragment.getNewCreator(new NearestPointUI((NearestPointLineCreator) fManager.getCurrentCreator()));
       break;
     }
     case R.id.i_xshape2: {
       fManager.setCurrentTool(11);
-      fCurrentCreatorID = id;
-      fSettingsFragment.getNewCreator(new XShapeV2UI((XShapeV2Creator) fManager.getCurrentCreator()));
       break;
     }
     case R.id.i_complex: {
       fManager.setCurrentTool(12);
-      fCurrentCreatorID = id;
-      fSettingsFragment.getNewCreator(fEmptySettings);
       break;
     }
     case R.id.i_multiline: {
       fManager.setCurrentTool(13);
-      fCurrentCreatorID = id;
-      fSettingsFragment.getNewCreator(fEmptySettings);
       break;
     }
     case R.id.i_textcreator: {
       fManager.setCurrentTool(14);
-      fCurrentCreatorID = id;
-      fSettingsFragment.getNewCreator(fEmptySettings);
-      break;
-    }
-    case R.id.i_flip_h: {
-      fPaintState.setMirrorHorizontal(!fPaintState.getMirrorHorizontal());
-      if (fPaintState.getMirrorHorizontal()) {
-        fHorizontalButton.setAlpha(1.f);
-        fKaleidoscopeButton.setAlpha(sAlphaHide);
-        fPaintState.setKaleidoscopeActive(false);
-      } else {
-        fHorizontalButton.setAlpha(sAlphaHide);
-      }
-      break;
-    }
-    case R.id.i_flip_v: {
-      fPaintState.setMirrorVertical(!fPaintState.getMirrorVertical());
-      if (fPaintState.getMirrorVertical()) {
-        fVerticalButton.setAlpha(1.f);
-        fKaleidoscopeButton.setAlpha(sAlphaHide);
-        fPaintState.setKaleidoscopeActive(false);
-      } else {
-        fVerticalButton.setAlpha(sAlphaHide);
-      }
-      break;
-    }
-    case R.id.i_kaleidoscope: {
-      fPaintState.setKaleidoscopeActive(!fPaintState.isKaleidoscopeActive());
-      if (fPaintState.isKaleidoscopeActive()) {
-        fKaleidoscopeButton.setAlpha(1.f);
-        fPaintState.setMirrorVertical(false);
-        fPaintState.setMirrorHorizontal(false);
-        fVerticalButton.setAlpha(sAlphaHide);
-        fHorizontalButton.setAlpha(sAlphaHide);
-
-      } else {
-        fKaleidoscopeButton.setAlpha(sAlphaHide);
-      }
-      break;
-    }
-
-    case R.id.i_flip_gradient: {
-      if (fPaintState.isGradientActive()) {
-        fPaintState.setGradientActive(false);
-        fGradientButton.setImageDrawable(getResources().getDrawable(R.drawable.unicolor));
-      } else {
-        fPaintState.setGradientActive(true);
-        fGradientButton.setImageDrawable(getResources().getDrawable(R.drawable.gradient));
-      }
-      break;
-    }
-    case R.id.i_flip_style: {
-      if (fPaintState.getStyle() == Paint.Style.FILL) {
-        fPaintState.setStyle(Paint.Style.STROKE);
-        fStyleButton.setImageDrawable(getResources().getDrawable(R.drawable.stroke));
-      } else {
-        fPaintState.setStyle(Paint.Style.FILL);
-        fStyleButton.setImageDrawable(getResources().getDrawable(R.drawable.fill));
-      }
       break;
     }
     case R.id.i_clear: {
@@ -586,12 +406,6 @@ public class DrawActivity extends Activity {
       break;
     }
     case R.id.i_settings: {
-      addFragment(fSettingsFragment);
-      getClick(fCurrentCreatorID);
-      break;
-    }
-    case R.id.i_extra_setting: {
-      fSettingsFragment.getNewCreator(new ExtraSettingsUI(fPaintState));
       addFragment(fSettingsFragment);
       break;
     }
@@ -603,63 +417,18 @@ public class DrawActivity extends Activity {
       new FileUtils(fManager).share(this);
       break;
     }
+    case R.id.i_color_switch: {
+      fPaintState.switchColor();
+      break;
+    }
+    case R.id.i_colors_wheel: {
+      int color = fPaintState.getMainColor();
+      addFragment(fColorFragment);
+      fColorFragment.setColor(color, true);
+      break;
+    }
     case R.id.i_about: {
       createInfoDialog();
-      break;
-    }
-    case R.id.i_help: {
-      Intent intent = new Intent(this, HelpActivity.class);
-
-      startActivity(intent);
-      break;
-    }
-    case android.R.id.home: {
-      fActionBar.hide();
-
-      ObjectAnimator translation = ObjectAnimator.ofFloat(fBottomBar,
-                                                          "translationY",
-                                                          fBottomBar.getHeight());
-      translation.setDuration(sDurationAnimation);
-
-      translation.addListener(new Animator.AnimatorListener() {
-        @Override
-        public void onAnimationStart(Animator animator) {
-        }
-
-        @Override
-        public void onAnimationEnd(Animator animator) {
-          fBottomBar.setVisibility(View.GONE);
-        }
-
-        @Override
-        public void onAnimationCancel(Animator animator) {
-        }
-
-        @Override
-        public void onAnimationRepeat(Animator animator) {
-        }
-      });
-
-      translation.start();
-
-      fShowUI.setVisibility(View.VISIBLE);
-      if (fColorSettings.isAdded() || fSettingsFragment.isAdded()) {
-        fFragmentManager.popBackStack();
-      }
-      break;
-    }
-    case R.id.i_show_ui: {
-
-      fShowUI.setVisibility(View.GONE);
-      fBottomBar.setVisibility(View.VISIBLE);
-      fBottomBar.setTranslationY(0);
-      fActionBar.show();
-      break;
-    }
-    case R.id.i_colors: {
-      int tmp_color = fPaintState.getMainColor();
-      addFragment(fColorSettings);
-      fColorSettings.setColor(tmp_color, true);
       break;
     }
     case R.id.i_load: {
@@ -669,6 +438,9 @@ public class DrawActivity extends Activity {
       break;
     }
     }
+
+    fSettingsFragment.setBrushSetting(getBrushSettings());
+    return super.onOptionsItemSelected(item);
   }
 
   @Override
@@ -678,6 +450,24 @@ public class DrawActivity extends Activity {
       Uri targetUri = data.getData();
       new FileUtils(fManager).load(this, targetUri);
     }
+  }
+
+  public void redo(View aView) {
+    fManager.redo();
+  }
+
+  public void gradient(View aView) {
+    fPaintState.setGradientActive(!fPaintState.isGradientActive());
+    int drawable = fPaintState.isGradientActive() ? R.drawable.gradient : R.drawable.unicolor;
+    ImageButton button = (ImageButton) aView;
+    button.setImageResource(drawable);
+  }
+
+  public void style(View aView) {
+    fPaintState.setStyle(fPaintState.getStyle() == Paint.Style.FILL ? Paint.Style.STROKE : Paint.Style.FILL);
+    int drawable = fPaintState.getStyle() == Paint.Style.FILL ? R.drawable.fill : R.drawable.stroke;
+    ImageButton button = (ImageButton) aView;
+    button.setImageResource(drawable);
   }
 
   private void createClearDialog() {
@@ -765,8 +555,19 @@ public class DrawActivity extends Activity {
       startWebIntent("http://mrdoob.com/projects/harmony");
       break;
     }
-
     }
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    fManager.removeListeners();
+    fDrawingView.close();
+    fDrawingView = null;
+    fManager = null;
+    fSecondaryFragment = null;
+    fColorFragment.removeListeners();
+    fColorFragment = null;
   }
 
   private void createInfoDialog() {
@@ -788,54 +589,17 @@ public class DrawActivity extends Activity {
     dialog.show();
   }
 
-  private class ColorOnTabListener implements ActionBar.TabListener, ColorUIFragment.ColorChangeListener {
-
-    private boolean isFirst = true;
-    private boolean isInit = false;
-
-    public ColorOnTabListener() {
-      fColorSettings.addColorListener(this);
+  public ASettingsGroupUI getBrushSettings() {
+    if (fBrushSettings.containsKey(fManager.getCurrentCreator())) {
+      return fBrushSettings.get(fManager.getCurrentCreator());
     }
+    return fEmptySettings;
+  }
 
+  private static class DefaultTouchListener implements View.OnTouchListener {
     @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-      if (isInit) {
-        fPaintState.switchColor();
-      } else {
-        isInit = true;
-      }
-      if (tab.getPosition() == 0) {
-        isFirst = true;
-        fFirstColor.setIcon(fFirstIconGenerator.getIcon(fPaintState.getMainColor(), true));
-        fSecondColor.setIcon(fSecondIconGenerator.getIcon(fPaintState.getSubColor(), false));
-        fColorSettings.setColor(fPaintState.getMainColor(), false);
-      } else if (tab.getPosition() == 1) {
-        isFirst = false;
-        fFirstColor.setIcon(fFirstIconGenerator.getIcon(fPaintState.getSubColor(), false));
-        fSecondColor.setIcon(fSecondIconGenerator.getIcon(fPaintState.getMainColor(), true));
-        fColorSettings.setColor(fPaintState.getMainColor(), false);
-      }
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-      int tmp_color = fPaintState.getMainColor();
-      addFragment(fColorSettings);
-      fColorSettings.setColor(tmp_color, true);
-    }
-
-    @Override
-    public void colorChange(int aColor) {
-      fPaintState.setMainColor(aColor);
-      if (isFirst) {
-        fFirstColor.setIcon(fFirstIconGenerator.getIcon(fPaintState.getMainColor(), true));
-      } else {
-        fSecondColor.setIcon(fSecondIconGenerator.getIcon(fPaintState.getMainColor(), true));
-      }
+    public boolean onTouch(View aView, MotionEvent aMotionEvent) {
+      return true;
     }
   }
 

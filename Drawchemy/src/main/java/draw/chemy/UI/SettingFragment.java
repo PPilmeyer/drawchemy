@@ -31,50 +31,67 @@ import org.al.chemy.R;
 
 public class SettingFragment extends Fragment {
 
-    private RelativeLayout fLayout;
-    private LayoutInflater fLayoutInflater = null;
-    private ASettingsGroupUI fSettingsGroupUI;
+  private RelativeLayout fBrushLayout;
+  private RelativeLayout fGeneralLayout;
+  private LayoutInflater fLayoutInflater = null;
+  private ASettingsGroupUI fBrushSettingUI;
+  private ASettingsGroupUI fGeneralSettingUI;
 
-    public SettingFragment() {
+  public SettingFragment() {
+  }
+
+  @Override
+  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    View view = inflater.inflate(R.layout.settinglayout, container, false);
+    fBrushLayout = (RelativeLayout) view.findViewById(R.id.brushSettingLayout);
+    fGeneralLayout = (RelativeLayout) view.findViewById(R.id.generalSettingLayout);
+
+    View b = view.findViewById(R.id.backButton);
+    b.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        getFragmentManager().popBackStack();
+      }
+    });
+
+    fLayoutInflater = inflater;
+
+    fBrushSettingUI.fillView(fLayoutInflater, fBrushLayout, getActivity());
+    fGeneralSettingUI.fillView(fLayoutInflater, fGeneralLayout, getActivity());
+    view.invalidate();
+
+    return view;
+  }
+
+  public void setBrushSetting(ASettingsGroupUI aSettingsGroupUI) {
+    fBrushSettingUI = aSettingsGroupUI;
+    if (getView() != null) {
+      fBrushLayout.removeAllViewsInLayout();
+      fBrushSettingUI.fillView(fLayoutInflater, fBrushLayout, getActivity());
+      getView().invalidate();
     }
+  }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.creator_base, container, false);
-        fLayout = (RelativeLayout) view.findViewById(R.id.creatorContainer);
-        Button b = (Button) view.findViewById(R.id.finishCreatorButton);
-        b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                getFragmentManager().popBackStack();
-            }
-        });
-        fLayoutInflater = inflater;
-
-        fSettingsGroupUI.fillView(fLayoutInflater, fLayout, getActivity());
-        view.invalidate();
-
-        return view;
+  public void setGeneralSetting(ASettingsGroupUI aSettingsGroupUI) {
+    fGeneralSettingUI = aSettingsGroupUI;
+    if (getView() != null) {
+      fGeneralLayout.removeAllViewsInLayout();
+      fGeneralSettingUI.fillView(fLayoutInflater, fGeneralLayout, getActivity());
+      getView().invalidate();
     }
+  }
 
-    public void getNewCreator(ASettingsGroupUI aSettingsGroupUI) {
-        fSettingsGroupUI = aSettingsGroupUI;
-        if (getView() != null) {
-            fLayout.removeAllViewsInLayout();
-            fSettingsGroupUI.fillView(fLayoutInflater, fLayout, getActivity());
-            getView().invalidate();
-        }
+  @Override
+  public void onDestroyView() {
+    if (getView() != null) {
+      fGeneralLayout.removeAllViewsInLayout();
+      fBrushLayout.removeAllViewsInLayout();
     }
+    super.onDestroyView();
+  }
 
-    @Override
-    public void onDestroyView() {
-        if (getView() != null) {
-            fLayout.removeAllViewsInLayout();
-        }
-        super.onDestroyView();
-    }
-
-    public void close() {
-        fSettingsGroupUI = null;
-    }
+  public void close() {
+    fGeneralSettingUI = null;
+    fBrushSettingUI = null;
+  }
 }

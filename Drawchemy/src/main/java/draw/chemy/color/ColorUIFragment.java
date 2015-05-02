@@ -19,6 +19,9 @@
 
 package draw.chemy.color;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Fragment;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
@@ -34,13 +37,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
-
-import org.al.chemy.R;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import draw.chemy.DrawManager;
+import draw.chemy.PaintState;
+import draw.chemy.utils.PropertyChangeEvent;
+import draw.chemy.utils.PropertyChangeEventListener;
+import org.al.chemy.R;
 
 public class ColorUIFragment extends Fragment {
 
@@ -70,6 +71,8 @@ public class ColorUIFragment extends Fragment {
 
   private List<Integer> fColors;
   private boolean fPipetteActive = false;
+  private PaintState fPaintState;
+  private MyOnSeekBarChangeListener fListener;
 
   public ColorUIFragment() {
     fColorListeners = new ArrayList<ColorChangeListener>();
@@ -87,7 +90,7 @@ public class ColorUIFragment extends Fragment {
     }
     for (int i = 0; i < fPaletteButton.length; i++) {
       GradientDrawable drawable = (GradientDrawable) fPaletteButton[i].getBackground();
-      drawable.setColor(fColors.get(i));
+      drawable.setColor(fColors.get(i) | 0xFF000000);
     }
   }
 
@@ -95,13 +98,12 @@ public class ColorUIFragment extends Fragment {
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.colorlayout,
                                  container, false);
-
+    fColor = fPaintState.getMainColor();
     setColor(fColor);
-
     fHueBar = (SeekBar) view.findViewById(R.id.seekHue);
 
     fSaturationBar = (SeekBar) view.findViewById(R.id.seekSaturation);
-    fBrightnessBar = (SeekBar) view.findViewById(R.id.seekBrightness);
+    fBrightnessBar = (SeekBar) view.findViewById(R.id.seekValue);
     fAlphaSeekBar = (SeekBar) view.findViewById(R.id.seekAlpha);
 
     fHueBar.setProgress(fHue);
@@ -117,13 +119,12 @@ public class ColorUIFragment extends Fragment {
     setSaturationDrawable();
     setHueDrawable();
 
-    MyOnSeekBarChangeListener listener = new MyOnSeekBarChangeListener();
-    fHueBar.setOnSeekBarChangeListener(listener);
-    fSaturationBar.setOnSeekBarChangeListener(listener);
-    fBrightnessBar.setOnSeekBarChangeListener(listener);
-    fAlphaSeekBar.setOnSeekBarChangeListener(listener);
+    fHueBar.setOnSeekBarChangeListener(fListener);
+    fSaturationBar.setOnSeekBarChangeListener(fListener);
+    fBrightnessBar.setOnSeekBarChangeListener(fListener);
+    fAlphaSeekBar.setOnSeekBarChangeListener(fListener);
 
-    fHueSwitchSeekbar = (SeekBar) view.findViewById(R.id.i_hue_switch_ampl);
+    fHueSwitchSeekbar = (SeekBar) view.findViewById(R.id.seekColorRandomization);
 
     fHueSwitchSeekbar.setProgress(fHueAmp);
 
@@ -139,21 +140,24 @@ public class ColorUIFragment extends Fragment {
       @Override
       public void onStopTrackingTouch(SeekBar seekBar) {
         fHueAmp = fHueSwitchSeekbar.getProgress();
+        if (fPaintState != null) {
+          fPaintState.setColorVariation(fHueSwitchSeekbar.getProgress() / 100.f);
+        }
         for (HueSwitchListener listener : fHueSwitchListeners) {
           listener.amplitudeChanged(fHueSwitchSeekbar.getProgress() / 100.f);
         }
       }
     });
 
-    Button pipette = (Button) view.findViewById(R.id.pipette_button);
+    /*Button pipette = (Button) view.findViewById(R.id.pipette_button);
     pipette.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         fPipetteActive = true;
       }
-    });
+    });*/
 
-    Button fFinishButton = (Button) view.findViewById(R.id.finishButton);
+    View fFinishButton = view.findViewById(R.id.backButton);
     fFinishButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -210,7 +214,9 @@ public class ColorUIFragment extends Fragment {
 
     setBrightnessDrawable();
     setSaturationDrawable();
-
+    if (fPaintState != null) {
+      fPaintState.setMainColor(fColor);
+    }
     for (ColorChangeListener listener : fColorListeners) {
       listener.colorChange(fColor);
     }
@@ -255,6 +261,26 @@ public class ColorUIFragment extends Fragment {
 
   private boolean isPipetteActive() {
     return fPipetteActive;
+  }
+
+  public void setPaintState(PaintState aPaintState) {
+    fPaintState = aPaintState;
+    fListener = new MyOnSeekBarChangeListener();
+    setHistoryColor(fPaintState.getHistoryColors());
+    fPaintState.setColorHistoryListener(new PaintState.ColorHistoryListener() {
+      @Override
+      public void historyChanged() {
+        setHistoryColor(fPaintState.getHistoryColors());
+      }
+    });
+    fPaintState.addPropertyEventListener("color", new PropertyChangeEventListener() {
+      @Override
+      public void propertyChange(PropertyChangeEvent aEvent) {
+        if (fColor != fPaintState.getMainColor()) {
+          setColor(fPaintState.getMainColor(), false);
+        }
+      }
+    });
   }
 
   private class MyOnSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
@@ -399,6 +425,5 @@ public class ColorUIFragment extends Fragment {
       int pixel = fDrawManager.getBitmap().getPixel(x, y);
       fFragment.setColor(pixel, true);
     }
-
   }
 }

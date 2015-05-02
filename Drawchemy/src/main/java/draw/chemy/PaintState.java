@@ -19,16 +19,19 @@
 
 package draw.chemy;
 
-import android.graphics.Color;
-import android.graphics.CornerPathEffect;
-import android.graphics.Paint;
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PaintState {
+import android.graphics.Color;
+import android.graphics.CornerPathEffect;
+import android.graphics.Paint;
+import draw.chemy.utils.PropertyChangeEvent;
+import draw.chemy.utils.PropertyChangeEventListener;
+import draw.chemy.utils.PropertyChangeEventSource;
+import draw.chemy.utils.PropertyChangeEventSupport;
+
+public class PaintState implements PropertyChangeEventSource {
 
   //Default
   private int fMainColor = Color.BLACK;
@@ -51,11 +54,34 @@ public class PaintState {
 
   private PaintState.MIRROR fMirrorState = PaintState.MIRROR.None;
 
+  private PropertyChangeEventSupport fPropertyChangeEventSupport = new PropertyChangeEventSupport();
+
+  @Override
+  public void addPropertyEventListener(PropertyChangeEventListener aListener) {
+    fPropertyChangeEventSupport.addPropertyEventListener(aListener);
+  }
+
+  @Override
+  public void addPropertyEventListener(String aProperty, PropertyChangeEventListener aListener) {
+    fPropertyChangeEventSupport.addPropertyEventListener(aProperty, aListener);
+  }
+
+  @Override
+  public void removePropertyEventListener(PropertyChangeEventListener aListener) {
+    fPropertyChangeEventSupport.removePropertyEventListener(aListener);
+  }
+
+  @Override
+  public void firePropertyChange(PropertyChangeEvent aEvent) {
+    fPropertyChangeEventSupport.firePropertyChange(aEvent);
+  }
+
   public enum MIRROR {
     None,
     Horizontal,
     Vertical,
-    Both
+    Both,
+    Kaleidoscope
   }
 
   public int getMainColor() {
@@ -67,8 +93,12 @@ public class PaintState {
   }
 
   public void setMainColor(int aColor) {
-    fMainColor = aColor;
-    fNewColorUsage = true;
+    if(aColor != fMainColor) {
+      PropertyChangeEvent event = new PropertyChangeEvent("color", this, fMainColor, aColor);
+      fMainColor = aColor;
+      fNewColorUsage = true;
+      firePropertyChange(event);
+    }
   }
 
   public int getModifiedMainColor() {
@@ -85,16 +115,6 @@ public class PaintState {
 
   public boolean getMirrorVertical() {
     return fMirrorState == PaintState.MIRROR.Vertical || fMirrorState == PaintState.MIRROR.Both;
-  }
-
-  private boolean fKaleidoscopeFlag = false;
-
-  public void setKaleidoscopeActive(Boolean aFlag) {
-    fKaleidoscopeFlag = aFlag;
-  }
-
-  public boolean isKaleidoscopeActive() {
-    return fKaleidoscopeFlag;
   }
 
   public int getKaleidoscopeSec() {
@@ -123,8 +143,15 @@ public class PaintState {
       fMirrorState = checked ? PaintState.MIRROR.Both : PaintState.MIRROR.Horizontal;
       break;
     }
-
+    case Kaleidoscope: {
+      fMirrorState = checked ? PaintState.MIRROR.Both : PaintState.MIRROR.Horizontal;
+      break;
     }
+    }
+  }
+
+  public void setMirrorState(MIRROR aMirrorState) {
+    fMirrorState = aMirrorState;
   }
 
   public void setMirrorHorizontal(boolean checked) {
@@ -167,14 +194,17 @@ public class PaintState {
 
   @SuppressWarnings("all")
   public void setSubColor(int aColor) {
-    fSubColor = aColor;
+    if(fSubColor != aColor) {
+      PropertyChangeEvent event = new PropertyChangeEvent("subcolor", this, fSubColor, aColor);
+      fSubColor = aColor;
+      firePropertyChange(event);
+    }
   }
 
   public void switchColor() {
     int tmp = fMainColor;
-    fMainColor = fSubColor;
-    fSubColor = tmp;
-    fNewColorUsage = true;
+    setMainColor(fSubColor);
+    setSubColor(tmp);
   }
 
   public void setColorVariation(float aColorVariation) {
@@ -263,7 +293,6 @@ public class PaintState {
     }
 
     private void updateColor(int aNewColor) {
-      Log.i("INFO", "update color");
       for (ColorElem fColor : fColors) {
         fColor.priority++;
       }

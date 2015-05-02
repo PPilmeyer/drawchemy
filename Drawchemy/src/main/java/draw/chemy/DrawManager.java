@@ -215,7 +215,7 @@ public class DrawManager implements View.OnTouchListener {
     float point[] = new float[]{motionEvent.getX(), motionEvent.getY()};
     fInputMatrix.mapPoints(point);
 
-    if (fTouchListener.isActive()) {
+    if (fTouchListener != null && fTouchListener.isActive()) {
       fTouchListener.touch(action, point, motionEvent.getX(), motionEvent.getY());
       return true;
     }
@@ -252,11 +252,11 @@ public class DrawManager implements View.OnTouchListener {
       op = new GradientOp(op, fPaintState.getModifiedMainColor(), fPaintState.getModifiedSubColor());
     }
 
-    if (fPaintState.getMirrorState() != PaintState.MIRROR.None) {
+    if (fPaintState.getMirrorState() != PaintState.MIRROR.None && fPaintState.getMirrorState() != PaintState.MIRROR.Kaleidoscope) {
       op = new MirrorOp(op, fPaintState.getMirrorState());
     }
 
-    if (fPaintState.isKaleidoscopeActive()) {
+    if (fPaintState.getMirrorState() == PaintState.MIRROR.Kaleidoscope) {
       op = new KaleidoscopeOp(op);
     }
 

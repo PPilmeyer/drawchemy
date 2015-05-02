@@ -45,10 +45,19 @@ public class ComplexShapeCreator extends ACreator {
 
   private int fFlow = 10;
   private int fCount = 0;
+  private int fShapeGroupID = -1;
 
   public ComplexShapeCreator(DrawManager aManager, ShapeGroup... aShapeGroups) {
     super(aManager);
     this.fShapeGroups = aShapeGroups;
+  }
+
+  public void setShapeGroup(int aShapeGroupID) {
+    fShapeGroupID = aShapeGroupID;
+  }
+
+  public int getShapeGroupId() {
+    return fShapeGroupID;
   }
 
   @Override
@@ -56,7 +65,12 @@ public class ComplexShapeCreator extends ACreator {
 
     fCurrentOperation = new MultiPathOperation(getPaint());
     fCount = 0;
-    Shape shape = ShapeGroup.getShape(fShapeGroups);
+    Shape shape;
+    if (fShapeGroupID == -1) {
+      shape = ShapeGroup.getShape(fShapeGroups);
+    } else {
+      shape = fShapeGroups[fShapeGroupID].getShape();
+    }
     transformPath(shape.getCopyPath(), x, y);
     return fCurrentOperation;
   }
@@ -84,7 +98,12 @@ public class ComplexShapeCreator extends ACreator {
   @Override
   public void updateDrawingOperation(float x, float y) {
     if (fCount++ % fFlow == 0) {
-      Shape shape = ShapeGroup.getShape(fShapeGroups);
+      Shape shape;
+      if (fShapeGroupID == -1) {
+        shape = ShapeGroup.getShape(fShapeGroups);
+      } else {
+        shape = fShapeGroups[fShapeGroupID].getShape();
+      }
       transformPath(shape.getCopyPath(), x, y);
       redraw();
     }

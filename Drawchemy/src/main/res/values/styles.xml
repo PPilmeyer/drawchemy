@@ -1,23 +1,21 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo">
+  <!-- Base application theme. -->
+  <style name="AppTheme" parent="android:Theme.Holo">
 
-        <item name="android:windowActionBarOverlay">true</item>
-        <item name="android:actionBarStyle">@style/CustomActionBar</item>
-        <item name="android:actionBarTabStyle">@style/CustomTabStyle</item>
-        <item name="android:seekBarStyle">@style/CustomSeekBar</item>
-    </style>
+    <item name="android:windowActionBarOverlay">true</item>
+    <item name="android:actionBarStyle">@style/CustomActionBar</item>
+    <item name="android:actionBarTabStyle">@style/CustomTabStyle</item>
+  </style>
 
-    <style name="CustomActionBar" parent="android:style/Widget.Holo.ActionBar">
-        <item name="android:background">@drawable/ab_background</item>
-    </style>
+  <style name="CustomActionBar" parent="android:style/Widget.Holo.ActionBar">
+    <item name="android:windowActionBarOverlay">true</item>
+    <item name="android:paddingLeft">-8dip</item>
+    <item name="android:background">@color/bg</item>
+  </style>
 
-    <style name="CustomTabStyle" parent="android:style/Widget.Holo.ActionBar.TabView">
-        <item name="android:background">@android:color/transparent</item>
-    </style>
+  <style name="CustomTabStyle" parent="android:style/Widget.Holo.ActionBar.TabView">
+    <item name="android:background">@android:color/transparent</item>
+  </style>
 
-    <style name="CustomSeekBar" parent="android:style/Widget.Holo.SeekBar">
-        <item name="android:thumb">@drawable/thumb</item>
-    </style>
 </resources>
