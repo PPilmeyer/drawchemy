@@ -177,8 +177,10 @@ public class DrawActivity extends Activity {
       ComplexShapeCreator.ShapeGroup bones = JSONLoader.getInstance().loadJSON(this, R.raw.bones);
       ComplexShapeCreator.ShapeGroup parts = JSONLoader.getInstance().loadJSON(this, R.raw.parts);
       ComplexShapeCreator.ShapeGroup ozwalled = JSONLoader.getInstance().loadJSON(this, R.raw.ozwalled);
+      ComplexShapeCreator.ShapeGroup stains = JSONLoader.getInstance().loadJSON(this, R.raw.stains);
+      ComplexShapeCreator.ShapeGroup swirl = JSONLoader.getInstance().loadJSON(this, R.raw.swirl);
 
-      ComplexShapeCreator complexShapeCreator = new ComplexShapeCreator(fManager, bones, parts, ozwalled);
+      ComplexShapeCreator complexShapeCreator = new ComplexShapeCreator(fManager, bones, parts, ozwalled, stains, swirl);
       fManager.addTool(12, complexShapeCreator);
       fBrushSettings.put(complexShapeCreator, new ComplexeShapeUI(complexShapeCreator));
     } catch (Exception e) {

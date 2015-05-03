@@ -55,6 +55,12 @@ public class ComplexeShapeUI extends ASettingsGroupUI {
         case R.id.fluid:
           fCreator.setShapeGroup(2);
           break;
+        case R.id.stains:
+          fCreator.setShapeGroup(3);
+          break;
+        case R.id.swirl:
+          fCreator.setShapeGroup(4);
+          break;
         case R.id.complexAll:
           fCreator.setShapeGroup(-1);
           break;
@@ -72,6 +78,14 @@ public class ComplexeShapeUI extends ASettingsGroupUI {
 
     button = (RadioButton) fView.findViewById(R.id.fluid);
     button.setChecked(fCreator.getShapeGroupId() == 2);
+    button.setOnClickListener(listener);
+
+    button = (RadioButton) fView.findViewById(R.id.stains);
+    button.setChecked(fCreator.getShapeGroupId() == 3);
+    button.setOnClickListener(listener);
+
+    button = (RadioButton) fView.findViewById(R.id.swirl);
+    button.setChecked(fCreator.getShapeGroupId() == 4);
     button.setOnClickListener(listener);
 
     button = (RadioButton) fView.findViewById(R.id.complexAll);
