@@ -452,6 +452,10 @@ public class DrawActivity extends Activity {
     }
   }
 
+  public void undo(View aView) {
+    fManager.undo();
+  }
+
   public void redo(View aView) {
     fManager.redo();
   }

@@ -180,7 +180,7 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
 
     @Override
     public void run() {
-      while (fRun) {
+      while (fRun && fInstance != null) {
         try {
           fInstance.fDrawLock.lock();
           if (fRun) {
