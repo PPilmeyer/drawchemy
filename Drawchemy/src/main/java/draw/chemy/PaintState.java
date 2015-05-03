@@ -109,14 +109,6 @@ public class PaintState implements PropertyChangeEventSource {
     return getColor(getMainColor());
   }
 
-  public boolean getMirrorHorizontal() {
-    return fMirrorState == PaintState.MIRROR.Horizontal || fMirrorState == PaintState.MIRROR.Both;
-  }
-
-  public boolean getMirrorVertical() {
-    return fMirrorState == PaintState.MIRROR.Vertical || fMirrorState == PaintState.MIRROR.Both;
-  }
-
   public int getKaleidoscopeSec() {
     return fKaleidoscopeSec;
   }
@@ -125,55 +117,8 @@ public class PaintState implements PropertyChangeEventSource {
     fKaleidoscopeSec = aKaleidoscopeSec;
   }
 
-  public void setMirrorVertical(boolean checked) {
-    switch (fMirrorState) {
-    case None: {
-      fMirrorState = checked ? PaintState.MIRROR.Vertical : PaintState.MIRROR.None;
-      break;
-    }
-    case Horizontal: {
-      fMirrorState = checked ? PaintState.MIRROR.Both : PaintState.MIRROR.Horizontal;
-      break;
-    }
-    case Vertical: {
-      fMirrorState = checked ? PaintState.MIRROR.Vertical : PaintState.MIRROR.None;
-      break;
-    }
-    case Both: {
-      fMirrorState = checked ? PaintState.MIRROR.Both : PaintState.MIRROR.Horizontal;
-      break;
-    }
-    case Kaleidoscope: {
-      fMirrorState = checked ? PaintState.MIRROR.Both : PaintState.MIRROR.Horizontal;
-      break;
-    }
-    }
-  }
-
   public void setMirrorState(MIRROR aMirrorState) {
     fMirrorState = aMirrorState;
-  }
-
-  public void setMirrorHorizontal(boolean checked) {
-    switch (fMirrorState) {
-    case None: {
-      fMirrorState = checked ? PaintState.MIRROR.Horizontal : PaintState.MIRROR.None;
-      break;
-    }
-    case Horizontal: {
-      fMirrorState = checked ? PaintState.MIRROR.Horizontal : PaintState.MIRROR.None;
-      break;
-    }
-    case Vertical: {
-      fMirrorState = checked ? PaintState.MIRROR.Both : PaintState.MIRROR.Vertical;
-      break;
-    }
-    case Both: {
-      fMirrorState = checked ? PaintState.MIRROR.Both : PaintState.MIRROR.Vertical;
-      break;
-    }
-
-    }
   }
 
   public int getModifiedSubColor() {

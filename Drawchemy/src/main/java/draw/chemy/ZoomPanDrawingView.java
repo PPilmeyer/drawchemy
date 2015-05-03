@@ -65,7 +65,7 @@ public class ZoomPanDrawingView extends SurfaceView implements SurfaceHolder.Cal
     ZOOM_PAN
   }
 
-  List<OverlayPainter> fOverlayPainters = new ArrayList<OverlayPainter>();
+  final List<OverlayPainter> fOverlayPainters = new ArrayList<OverlayPainter>();
 
   @SuppressWarnings("all")
   public ZoomPanDrawingView(Context context, AttributeSet attrs) {

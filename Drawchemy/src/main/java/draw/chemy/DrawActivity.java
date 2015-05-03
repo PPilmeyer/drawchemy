@@ -62,7 +62,6 @@ public class DrawActivity extends Activity {
   private DrawManager fManager;
   private PaintState fPaintState;
   private ZoomPanDrawingView fDrawingView;
-  private Spinner fSpinner;
 
   private ColorSwitchIconGenerator fColorIconGenerator;
   private VerticalSeekBar fOpacitySeekBar;
@@ -75,7 +74,7 @@ public class DrawActivity extends Activity {
   private Fragment fSecondaryFragment;
   private View fSettingContainer;
 
-  private static int sDurationAnimation = 600;
+  private static final int sDurationAnimation = 600;
   private MenuItem fColorSwitch;
   private SettingFragment fSettingsFragment;
   private ASettingsGroupUI fEmptySettings = new EmptyBrushSettings();
@@ -148,7 +147,7 @@ public class DrawActivity extends Activity {
     fBrushSettings.put(paintBrushCreator, new PaintBrushUI(paintBrushCreator));
 
     BallCreator ballCreator = new BallCreator(fManager);
-    fManager.addTool(6, new BallCreator(fManager));
+    fManager.addTool(6, ballCreator);
     fBrushSettings.put(ballCreator, new BallUI(ballCreator));
 
     BasicShapesCreator basicShapesCreator = new BasicShapesCreator(fManager);
@@ -189,9 +188,9 @@ public class DrawActivity extends Activity {
     fManager.addTool(14, new TextCreator(fManager));
 
     fManager.setCurrentTool(0);
-    fSpinner = (Spinner) findViewById(R.id.mirroring);
-    fSpinner.setAdapter(new MirrorSpinnerAdapter(this, R.id.mirroring));
-    fSpinner.setOnItemSelectedListener(new MirrorSpinnerAdapter.MirrorListener(fPaintState));
+    Spinner spinner = (Spinner) findViewById(R.id.mirroring);
+    spinner.setAdapter(new MirrorSpinnerAdapter(this, R.id.mirroring));
+    spinner.setOnItemSelectedListener(new MirrorSpinnerAdapter.MirrorListener(fPaintState));
 
     SeekBar seekBar = (SeekBar) findViewById(R.id.i_stroke_weight);
 
@@ -474,6 +473,7 @@ public class DrawActivity extends Activity {
     button.setImageResource(drawable);
   }
 
+  @SuppressWarnings("all")
   private void createClearDialog() {
 
     final Dialog clearDialog = new Dialog(this);
@@ -574,6 +574,7 @@ public class DrawActivity extends Activity {
     fColorFragment = null;
   }
 
+  @SuppressWarnings("all")
   private void createInfoDialog() {
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
