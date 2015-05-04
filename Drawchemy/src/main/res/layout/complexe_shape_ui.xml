@@ -25,12 +25,6 @@
 
     <RadioButton
         android:layout_width="wrap_content"
-        android:id="@+id/fluid"
-        android:text="@string/fluid"
-        android:layout_height="wrap_content"/>
-
-    <RadioButton
-        android:layout_width="wrap_content"
         android:id="@+id/stains"
         android:text="@string/stains"
         android:layout_height="wrap_content"/>

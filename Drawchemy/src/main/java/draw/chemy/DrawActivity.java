@@ -36,7 +36,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -176,15 +175,14 @@ public class DrawActivity extends Activity {
     try {
       ComplexShapeCreator.ShapeGroup bones = JSONLoader.getInstance().loadJSON(this, R.raw.bones);
       ComplexShapeCreator.ShapeGroup parts = JSONLoader.getInstance().loadJSON(this, R.raw.parts);
-      ComplexShapeCreator.ShapeGroup ozwalled = JSONLoader.getInstance().loadJSON(this, R.raw.ozwalled);
       ComplexShapeCreator.ShapeGroup stains = JSONLoader.getInstance().loadJSON(this, R.raw.stains);
       ComplexShapeCreator.ShapeGroup swirl = JSONLoader.getInstance().loadJSON(this, R.raw.swirl);
 
-      ComplexShapeCreator complexShapeCreator = new ComplexShapeCreator(fManager, bones, parts, ozwalled, stains, swirl);
+      ComplexShapeCreator complexShapeCreator = new ComplexShapeCreator(fManager, bones, parts, stains, swirl);
       fManager.addTool(12, complexShapeCreator);
       fBrushSettings.put(complexShapeCreator, new ComplexeShapeUI(complexShapeCreator));
     } catch (Exception e) {
-      Log.e("exceptions", e.getMessage());
+
     }
     fManager.addTool(13, new MultiLineCreator(fManager));
     fManager.addTool(14, new TextCreator(fManager));
