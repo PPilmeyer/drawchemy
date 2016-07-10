@@ -20,3 +20,14 @@ Drawchemy is under *License GPLv3*.
 The minimum Android version is *honeycomb* 3.0
 
 Link to *Google Play* : https://play.google.com/store/apps/details?id=draw.chemy
+
+# Import in Android Studio
+the root directory is not a android studio project, it is a directory which contains an android studio project.
+1. `File > Open`
+2. `Project Structure > Project` and set the SDK
+3. `Project Structure > Module > Add > New Module > Application Module`
+4. Add the drawchemy/Drawchemy/src/main/java as source dir and  drawchemy/Drawchemy/src/main/res as resources
+5. Go to the Android Module you created at step 3 and correct the manifest location, the resources directory in the `Structure` tab and the directory for generated sources in `Generated Sources`
+6. Apply
+
+This has been tested on Android Studio 2.1.1 on Linux Mint Rebecca
