@@ -21,8 +21,9 @@ The minimum Android version is *honeycomb* 3.0
 
 Link to *Google Play* : https://play.google.com/store/apps/details?id=draw.chemy
 
-# Import in Android Studio
+## Import in Android Studio
 the root directory is not a android studio project, it is a directory which contains an android studio project.
+
 1. `File > Open`
 2. `Project Structure > Project` and set the SDK
 3. `Project Structure > Module > Add > New Module > Application Module`
