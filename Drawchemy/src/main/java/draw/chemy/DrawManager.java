@@ -72,11 +72,11 @@ public class DrawManager implements View.OnTouchListener {
   private final PaintState fPaintState = new PaintState();
 
   public DrawManager(int aWidth, int aHeight) {
-    fBackgroundImage = Bitmap.createBitmap(aWidth, aHeight, Bitmap.Config.RGB_565);
+    fBackgroundImage = Bitmap.createBitmap(aWidth, aHeight, Bitmap.Config.ARGB_8888);
 
     fBackgroundCanvas = new Canvas(fBackgroundImage);
 
-    fBackgroundImageBackUP = Bitmap.createBitmap(aWidth, aHeight, Bitmap.Config.RGB_565);
+    fBackgroundImageBackUP = Bitmap.createBitmap(aWidth, aHeight, Bitmap.Config.ARGB_8888);
 
     fBackgroundCanvasBackUP = new Canvas(fBackgroundImageBackUP);
 
@@ -297,7 +297,7 @@ public class DrawManager implements View.OnTouchListener {
   }
 
   public Bitmap copyBitmap() {
-    Bitmap result = Bitmap.createBitmap(fBackgroundImage.getWidth(), fBackgroundImage.getHeight(), Bitmap.Config.RGB_565);
+    Bitmap result = Bitmap.createBitmap(fBackgroundImage.getWidth(), fBackgroundImage.getHeight(), Bitmap.Config.ARGB_8888);
     draw(new Canvas(result));
     return result;
   }
